@@ -1,0 +1,16 @@
+package org
+
+import java.util.Date
+import java.sql.Timestamp
+
+package object shaqal {
+
+  type -:[+D <: Database] = Connector[D]
+
+  implicit def timestamp(d: Date) = new Timestamp(d.getTime)
+  implicit def timestamp(d: Option[Date]) = d map (d => new Timestamp(d.getTime))
+
+//  def tableExists[D <: InformationSchemaDB](table: TableLike, db: InformationSchemaDB)(implicit c: -:[D]) = {
+//    db.InformationSchema.Tables where (_.table_name is table.tableName)
+//  }
+}
