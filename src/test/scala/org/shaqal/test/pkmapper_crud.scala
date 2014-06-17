@@ -1,12 +1,10 @@
 package org.shaqal.test
 
-import org.scalatest.FeatureSpec
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.BeforeAndAfter
+import org.scalatest._
 import org.shaqal._
 import org.shaqal.test.db.TestDB
 
-abstract class PKMapperCrudTest extends FeatureSpec with BeforeAndAfter with ShouldMatchers {
+abstract class PKMapperCrudTest extends FeatureSpec with BeforeAndAfter with Matchers {
 
   case class Person(id: Int, name: String)
 

@@ -16,7 +16,7 @@ trait InsertSQL { this: SQL =>
   def render(implicit adapter: Adapter) = List(
     keywordInsertInto,
     tableName.fullName,
-    columns map (_.columnName) mkString ", " parens,
+    columns map (adapter identifier _.columnName) mkString ", " parens,
     keywordValues,
     columns map (_ => "?") mkString ", " parens) mkString " "
 
@@ -24,7 +24,7 @@ trait InsertSQL { this: SQL =>
     keywordInsertInto,
     Indent(
       tableName.fullName,
-      Indent(CommaLines(columns map (_.columnName) toList).parens)),
+      Indent(CommaLines(columns map (adapter identifier _.columnName) toList).parens)),
     keywordValues + " " + (columns map (_ => "?") mkString ", " parens))
 }
 

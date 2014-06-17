@@ -25,6 +25,8 @@ abstract class Col(val columnName: String, val sqlType: Int)
   def isnt(value: T): Expr
   //  def in(values: List[T]) = In(this, values)
 
+  def is(that: Col.ColOf[T]) = new JoinTerm(this, that)
+  
   def auto(implicit rs: ResultSet): T
   def auto(colIndex: Int)(implicit rs: ResultSet): T
 
@@ -37,8 +39,6 @@ abstract class Col(val columnName: String, val sqlType: Int)
 
 object Col {
   type ColOf[TT] = Col { type T = TT }
-  implicit def fromTuple[T](t: Tuple2[ColOf[T], ColOf[T]]) = new JoinExpr(t._1, t._2)
-
 }
 
 trait notnull extends NotNullReadWritable { this: Col =>

@@ -41,3 +41,5 @@ class CrudTest extends org.shaqal.test.CrudTest with H2
 class PKCrudTest extends org.shaqal.test.PKCrudTest with H2
 
 class PKMapperCrudTest extends org.shaqal.test.PKMapperCrudTest with H2
+
+class PK2MapperCrudTest extends org.shaqal.test.PK2MapperCrudTest with H2

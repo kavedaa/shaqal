@@ -5,16 +5,29 @@ import org.shaqal.sql.adapter._
 import org.shaqal.sql.pretty._
 
 sealed abstract class JoinType(val keyword: String)
+
 case object InnerJoin extends JoinType("inner join")
 case object LeftJoin extends JoinType("left outer join")
 case object RightJoin extends JoinType("right outer join")
 case object FullJoin extends JoinType("full outer join")
 
-class JoinExpr(left: Column, right: Column) extends Expr {
-//  def simplified = this
-  def render(implicit adapter: Adapter) = left.fullName + " = " + right.fullName
-  def params = Nil
-  def pp(implicit adapter: Adapter) = render
+abstract class JoinExpr extends Renderable { self =>
+  def terms: Seq[JoinTerm]
+  def &&(that: JoinTerm) = new JoinExpr { def terms = self.terms :+ that }
+  def render(implicit adapter: Adapter) = terms map(_.render) mkString " and "
+}
+
+class JoinTerm(left: Column, right: Column) extends JoinExpr {
+  def terms = Seq(this)
+  override def render(implicit adapter: Adapter) = left.fullName + " = " + right.fullName  
+}
+
+object JoinExpr {
+  def apply(ts: Seq[JoinTerm]) = new JoinExpr { def terms = ts }
+}
+
+object JoinTerm {
+  implicit def joinTerm(t: (Column, Column)) = new JoinTerm(t._1, t._2)
 }
 
 class JoinElement(item: FromItem, joinType: JoinType, condition: JoinExpr) extends Renderable {

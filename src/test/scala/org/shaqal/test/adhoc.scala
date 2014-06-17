@@ -2,11 +2,9 @@ package org.shaqal.test
 
 import org.shaqal._
 import org.shaqal.test.db.TestDB
-import org.scalatest.FunSuite
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.BeforeAndAfter
+import org.scalatest._
 
-abstract class AdhocJoiningTest extends FunSuite with ShouldMatchers with BeforeAndAfter {
+abstract class AdhocJoiningTest extends FeatureSpec with Matchers with BeforeAndAfter {
 
   implicit def dbc: DBC[TestDB]
 
@@ -47,20 +45,52 @@ abstract class AdhocJoiningTest extends FunSuite with ShouldMatchers with Before
     BarTable createTable ()
   }
 
-  test("adhoc join") {
+  feature("join on single column") {
+    
+    scenario("join column is notnull") {
+      
+      FooTable insert FooTable.Values(f => Seq(f.i := 1, f.s := "one"))
+      FooTable insert FooTable.Values(f => Seq(f.i := 2, f.s := "two"))
+      
+      BarTable insert BarTable.Values(b => Seq(b.i := 2, b.s := "a"))
+      BarTable insert BarTable.Values(b => Seq(b.i := 3, b.s := "b"))
 
-    FooTable insert FooTable.Values(f => Seq(f.i := 1, f.s := "one"))
-    FooTable insert FooTable.Values(f => Seq(f.i := 2, f.s := "two"))
-    FooTable insert FooTable.Values(f => Seq(f.i := 3, f.s := "three"))
+      val joined = FooTable join BarTable on(_.i is _.i)
+      
+      val data = joined select { case (foo, bar) => (foo.s, bar.s) } list()
+      
+      data shouldEqual Seq(("two", "a"))
+    }
+    
+    scenario("join column is nullable") {
+      
+      FooTable insert FooTable.Values(f => Seq(f.i := 1, f.s := "one", f.in := Some(1)))
+      FooTable insert FooTable.Values(f => Seq(f.i := 2, f.s := "two", f.in := Some(2)))
+      
+      BarTable insert BarTable.Values(b => Seq(b.i := 2, b.s := "a", b.in := None))
+      BarTable insert BarTable.Values(b => Seq(b.i := 3, b.s := "b", b.in := None))
+      
+    }
+  }
+  
+  feature("join on two colums") {
 
-    BarTable insert BarTable.Values(b => Seq(b.i := 2, b.s := "a"))
-    BarTable insert BarTable.Values(b => Seq(b.i := 3, b.s := "b"))
-    BarTable insert BarTable.Values(b => Seq(b.i := 4, b.s := "c"))
+    scenario("notnull") {
+      
+      FooTable insert FooTable.Values(f => Seq(f.i := 1, f.s := "one"))
+      FooTable insert FooTable.Values(f => Seq(f.i := 2, f.s := "two"))
+      FooTable insert FooTable.Values(f => Seq(f.i := 3, f.s := "three"))
 
-    val joined = FooTable join BarTable on { (foo, bar) => (foo.i -> bar.i) && (foo.i -> bar.i) }
+      BarTable insert BarTable.Values(b => Seq(b.i := 2, b.s := "a"))
+      BarTable insert BarTable.Values(b => Seq(b.i := 3, b.s := "b"))
+      BarTable insert BarTable.Values(b => Seq(b.i := 4, b.s := "c"))
 
-    joined select { case (foo, bar) => (foo.s, bar.s) } list () should equal(List(("two", "a"), ("three", "b")))
+      val joined = FooTable join BarTable on { (foo, bar) => (foo.i is bar.i) && (foo.i is bar.i) }
 
+      val data = joined select { case (foo, bar) => (foo.s, bar.s) } list ()
+
+      data should equal(List(("two", "a"), ("three", "b")))
+    }
   }
 
 }
