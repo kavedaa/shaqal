@@ -171,8 +171,43 @@ Now we can create the table:
   BasicDB.Person create()
 ```
 
+(Note that the database itself must already have been created manually.)
+
 ### Using primary keys
 
+When we have a primary key on a table, access can be further simplified by using the key column(s) as an "index" to the table. On the `Person` table, `id` would be chosen as the primary key. We can inform *shaqal* about this, as well as which field of the `Person` model class it corresponds to, by using the `PKMapper` trait:
 
+```scala
+trait PersonMapper extends PKMapper[Person, Int] {
 
+  val id = new int("id") with notnull
+  val name = new varchar("name") with notnull
+  val age = new int("age") with nullable
+
+  def fields = Seq(id, name, age)
+
+  val (reader, writer) = RW(
+    implicit rs => Person(id.read, name.read, age.read),
+    p => Seq(id := p.id, name := p.name, age := p.age))
+    
+  val (pk, pkf) = PK(id, _.id)    
+}
+```
+(Note that this is independent of actually setting up a primary key constraint on the table.)
+
+Now we can access the table like this:
+
+```scala
+  val bob = BasicDB.Person(2)
+  
+  BasicDB.Person updateAt 3 set BasicDB.Person.Value(_.age := Some(58))
+  
+  BasicDB.Person update Person(4, "Elisabeth", None)
+  
+  BasicDB.Person deleteAt 3
+  
+  BasicDB.Person delete lisa
+```
+
+It is of course also possible to use composite primary keys (where the key is tied to several columns), this will not be shown here.
 
