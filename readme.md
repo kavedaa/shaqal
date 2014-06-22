@@ -140,10 +140,39 @@ And read data:
   val person = BasicDB.Person where(_.id is 3) option()
   
   val allPersons = BasicDB.Person list()
-
 ```
 
 We can of course also use all the operations shown previously.
+
+### Creating tables
+
+There are two basic scenarios when working with databases: the database already exists, or we create the database ourselves.
+
+In the second scenario it can be useful to have the database abstraction tool take care of creating the tables in the database. We can do this with *shaqal* by mixing in the `TableDefinition` trait to the table abstraction:
+
+```scala
+trait PersonAccessor extends Accessor with TableDefinition {
+
+  val id = new int("id") with notnull
+  val name = new varchar(500)("name") with notnull
+  val age = new int("age") with nullable
+
+  def fields = Seq(id, name, age)
+  
+  def constraints = Nil  
+}
+```
+
+We have to add a `constraints` method which we for now just set to `Nil`. We'll see how to add constraints to the table later. (Also note that we added an optional length parameter to the varchar type for `name`.)
+
+Now we can create the table:
+
+```scala
+  BasicDB.Person create()
+```
+
+### Using primary keys
+
 
 
 
