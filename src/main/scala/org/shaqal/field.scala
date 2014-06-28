@@ -18,6 +18,11 @@ trait Fields { this: TableLike =>
 
   def foreigns = fields collect { case foreign: Foreign => foreign }
 
-  def cols = (fields collect { case c: Col => c }) ++ (foreigns flatMap (_.fks))
+//  def cols = (fields collect { case c: Col => c }) ++ (foreigns flatMap (_.fks))
 
+  def cols = fields flatMap {
+    case col: Col => Seq(col)
+    case foreign: Foreign => foreign.fks
+  }
+  
 }
