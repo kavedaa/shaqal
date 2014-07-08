@@ -9,12 +9,14 @@ trait Transactions[D <: Database] { this: DBC[D] =>
     onTransaction()
     try {
       val conn = getConnection
+      val autoCommit = conn.getAutoCommit
       try {
         conn setAutoCommit false
         Success(tx(createTXC(conn)))
       } 
       finally {
-        conn close ()
+        conn setAutoCommit autoCommit
+        close (conn)
       }
     } 
     catch {
@@ -28,6 +30,7 @@ trait Transactions[D <: Database] { this: DBC[D] =>
     onTransaction()
     try {
       val conn = getConnection
+      val autoCommit = conn.getAutoCommit
       try {
         conn setAutoCommit false
         val txc = createTXC(conn)
@@ -44,7 +47,8 @@ trait Transactions[D <: Database] { this: DBC[D] =>
         }
       } 
       finally {
-        conn close ()
+        conn setAutoCommit autoCommit
+        close (conn)
       }
     } 
     catch {
