@@ -105,3 +105,20 @@ trait PK3[C1, C2, C3] extends ReadOnlyPK3[C1, C2, C3] with CompositePK { this: A
   def updateAt(v1: PKVal[C1], v2: PKVal[C2], v3: PKVal[C3]) = super.updateAtSpecs((v1, v2, v3))
   def deleteAt(v1: PKVal[C1], v2: PKVal[C2], v3: PKVal[C3])(implicit c: -:[D]) = super.deleteAtSpecs((v1, v2, v3))
 }
+
+trait ReadOnlyPK4[C1, C2, C3, C4] extends ReadOnlyCompositePK { this: Query =>
+  
+  val pk: (ColOf[C1], ColOf[C2], ColOf[C3], ColOf[C4])
+  
+  def at(v1: PKVal[C1], v2: PKVal[C2], v3: PKVal[C3], v4: PKVal[C4]) = super.atSpecs((v1, v2, v3, v4))
+  def existsAt(v1: PKVal[C1], v2: PKVal[C2], v3: PKVal[C3], v4: PKVal[C4])(implicit c: -:[D]) = super.existsAtSpecs((v1, v2, v3, v4))
+}
+
+trait PK4[C1, C2, C3, C4] extends ReadOnlyPK4[C1, C2, C3, C4] with CompositePK { this: AccessorLike with Query =>
+
+  val pk: (ColOf[C1], ColOf[C2], ColOf[C3], ColOf[C4])
+  
+  override def at(v1: PKVal[C1], v2: PKVal[C2], v3: PKVal[C3], v4: PKVal[C4]) = super.atSpecs((v1, v2, v3, v4))
+  def updateAt(v1: PKVal[C1], v2: PKVal[C2], v3: PKVal[C3], v4: PKVal[C4]) = super.updateAtSpecs((v1, v2, v3, v4))
+  def deleteAt(v1: PKVal[C1], v2: PKVal[C2], v3: PKVal[C3], v4: PKVal[C4])(implicit c: -:[D]) = super.deleteAtSpecs((v1, v2, v3, v4))
+}

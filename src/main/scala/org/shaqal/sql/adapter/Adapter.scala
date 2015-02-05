@@ -17,7 +17,9 @@ abstract class Adapter {
     Types.VARCHAR -> "varchar",
     Types.DOUBLE -> "double",
     Types.TIMESTAMP -> "datetime",
-    Types.NUMERIC -> "numeric")
+    Types.DATE -> "date",
+    Types.NUMERIC -> "numeric",
+    Types.BIT -> "bit")
 
   def identifier(s: String): String
 

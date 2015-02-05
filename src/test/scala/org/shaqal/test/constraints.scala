@@ -6,6 +6,7 @@ import org.scalatest.FeatureSpec
 import java.sql.SQLException
 import org.shaqal._
 import org.shaqal.test.db.TestDB
+import org.shaqal.sql.True
 
 trait ConstraintPKTestTableRelation extends Accessor with TableDefinition {
   val id = new int("id") with notnull
@@ -49,7 +50,7 @@ abstract class ConstraintsTest extends FeatureSpec with BeforeAndAfter with Shou
   implicit def dbc: DBC[TestDB]
 
   import ConstraintsTestDB._
-  
+
   before {
 
     ConstraintFK2TestTable drop (true)
@@ -58,13 +59,13 @@ abstract class ConstraintsTest extends FeatureSpec with BeforeAndAfter with Shou
     ConstraintPKTestTable drop (true)
 
     ConstraintPKTestTable createTable ()
-    ConstraintPKTestTable addConstraints ()
+    ConstraintPKTestTable addReferentialConstraints()
     ConstraintPK2TestTable createTable ()
-    ConstraintPK2TestTable addConstraints ()
+    ConstraintPK2TestTable addReferentialConstraints()
     ConstraintFKTestTable createTable ()
-    ConstraintFKTestTable addConstraints ()
+    ConstraintFKTestTable addReferentialConstraints()
     ConstraintFK2TestTable createTable ()
-    ConstraintFK2TestTable addConstraints ()
+    ConstraintFK2TestTable addReferentialConstraints()
   }
 
   feature("primary key") {
@@ -109,6 +110,19 @@ abstract class ConstraintsTest extends FeatureSpec with BeforeAndAfter with Shou
       } should produce[SQLException]
     }
 
+    scenario("deleting rows where some of them has columns referenced from another table") {
+
+      ConstraintPKTestTable insert ConstraintPKTestTable.Value(_.id := 1)
+      ConstraintPKTestTable insert ConstraintPKTestTable.Value(_.id := 2)
+      ConstraintPKTestTable insert ConstraintPKTestTable.Value(_.id := 3)
+      ConstraintFKTestTable insert ConstraintFKTestTable.Value(_.foreignId := 2)
+
+      evaluating {
+        ConstraintPKTestTable deleteWhere (_ => True)
+      } should produce[SQLException]
+
+      ConstraintPKTestTable count () shouldEqual 3
+    }
   }
 
   feature("composite foreign key") {

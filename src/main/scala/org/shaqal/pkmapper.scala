@@ -127,14 +127,37 @@ trait DualPK3Mapper[A, B, C1, C2, C3] extends DualPK3MapperLike[A, B, C1, C2, C3
 
 trait PK3Mapper[A, C1, C2, C3] extends DualPK3Mapper[A, A, C1, C2, C3]
 
-trait PK4Mapper[A, C1, C2, C3, C4] extends ReadOnlyMapperLike[A] with MapperQuery[A] with CompositePKLike[A] { pkm =>
+trait ReadOnlyPK4MapperLike[A, C1, C2, C3, C4] extends CompositePKLike[A] with ReadOnlyMapperLike[A] with ReadOnlyPK4[C1, C2, C3, C4] with MapperQuery[A] {
+
+  def apply(v: (C1, C2, C3, C4))(implicit c: -:[D]) = at(v._1, v._2, v._3, v._4) option ()
+  def apply(v1: C1, v2: C2, v3: C3, v4: C4)(implicit c: -:[D]) = at(v1, v2, v3, v4) option ()
+}
+
+trait ReadOnlyPK4Mapper[A, C1, C2, C3, C4] extends ReadOnlyPK4MapperLike[A, C1, C2, C3, C4] {
 
   type R = this.type
   val r: R = this
-
-  //  def apply(pkValues: (C1, C2, C3, C4))(implicit c: -:[D]) = super.apply(pkValues)
-  //  def exists(pkValues: (C1, C2, C3, C4))(implicit c: -:[D]) = super.exists(pkValues)
-  //  def updateAt(pkValues: (C1, C2, C3, C4))(implicit c: -:[D]) = super.updateAt(pkValues)
-
-  object PK { def apply(pk: (ColOf[C1], ColOf[C2], ColOf[C3], ColOf[C4]), pkf: A => (C1, C2, C3, C4)) = (pk, pkf) }
 }
+
+trait DualPK4MapperLike[A, B, C1, C2, C3, C4] extends ReadOnlyPK4MapperLike[A, C1, C2, C3, C4] with DualMapperLike[A, B] with PK4[C1, C2, C3, C4] {
+
+  val pkf: A => (C1, C2, C3, C4)
+
+  def update(a: A)(implicit writer: W[A], c: -:[D]) = updateAtValues(pkf(a)) set a
+  def delete(a: A)(implicit c: -:[D]) = deleteAtValues(pkf(a))
+
+  def update(values: (C1, C2, C3, C4), a: A)(implicit writer: W[A], c: -:[D]) = updateAtValues(values) set a
+
+  def insertOrUpdate(a: A)(implicit writer: W[A], c: -:[D]): Either[Option[GG], Int] =
+    if (existsAtValues(pkf(a))) Right(update(a)) else Left(insert(a))
+
+  object PK { def apply(pk: (ColOf[C1], ColOf[C2], ColOf[C3], ColOf[C4]), pkf: B => (C1, C2, C3, C4)) = (pk, pkf) }
+}
+
+trait DualPK4Mapper[A, B, C1, C2, C3, C4] extends DualPK4MapperLike[A, B, C1, C2, C3, C4] with MapperQuery[A] {
+  type R = this.type
+  val r: R = this
+}
+
+trait PK4Mapper[A, C1, C2, C3, C4] extends DualPK4Mapper[A, A, C1, C2, C3, C4]
+

@@ -40,9 +40,13 @@ abstract class double(name: String)(implicit t: TableLike)
   def table = t
 }
 
-
 abstract class timestamp(name: String)(implicit t: TableLike)
   extends TimestampCol(name) with ColumnDefinition {
+  def table = t
+}
+
+abstract class date(name: String)(implicit t: TableLike)
+  extends DateCol(name) with ColumnDefinition {
   def table = t
 }
 
@@ -51,5 +55,9 @@ abstract class numeric(val precision: DataLength, val scale: DataLength)(name: S
   def this(precision: DataLength)(name: String)(implicit t: TableLike) = this(precision, new DataLength(None))(name)
   def this(name: String)(implicit t: TableLike) = this(new DataLength(None), new DataLength(None))(name)
   def table = t
+}
 
+abstract class bit(name: String)(implicit t: TableLike)
+  extends BitCol(name) with ColumnDefinition {
+  def table = t
 }

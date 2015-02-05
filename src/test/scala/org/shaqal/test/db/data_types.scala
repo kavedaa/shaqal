@@ -16,7 +16,9 @@ trait DataTypesNullable { this: TableLike =>
   val varcharTestNullable = new varchar(100)("varcharTestNullable") with nullable
   val doubleTestNullable = new double("doubleTestNullable") with nullable
   val timestampTestNullable = new timestamp("timestampTestNullable") with nullable
+  val dateTestNullable = new date("dateTestNullable") with nullable
   val numericTestNullable = new numeric(5, 2)("numericTestNullable") with nullable
+  val bitTestNullable = new bit("bitTestNullable") with nullable
 
   def nullableFields = Seq(
     smallintTestNullable,
@@ -27,7 +29,9 @@ trait DataTypesNullable { this: TableLike =>
     varcharTestNullable,
     doubleTestNullable,
     timestampTestNullable,
-    numericTestNullable)
+    dateTestNullable,
+    numericTestNullable,
+    bitTestNullable)
 }
 
 trait DataTypesNotNullable { this: TableLike =>
@@ -40,7 +44,9 @@ trait DataTypesNotNullable { this: TableLike =>
   val varcharTest = new varchar(100)("varcharTest") with notnull
   val doubleTest = new double("doubleTest") with notnull
   val timestampTest = new timestamp("timestampTest") with notnull
+  val dateTest = new date("dateTest") with notnull
   val numericTest = new numeric(5, 2)("numericTest") with notnull
+  val bitTest = new bit("bitTest") with notnull
 
   def notNullableFields = Seq(
     smallintTest,
@@ -51,13 +57,17 @@ trait DataTypesNotNullable { this: TableLike =>
     varcharTest,
     doubleTest,
     timestampTest,
-    numericTest)
+    dateTest,
+    numericTest,
+    bitTest)
 }
 
 trait DataTypesNullableTable
   extends DataTypesNullable with Accessor with TableDefinition {
 
-  def fields = nullableFields
+  val id = new int("id") with notnull
+  
+  def fields = id +: nullableFields
 
   def constraints = Nil
 }
@@ -65,7 +75,9 @@ trait DataTypesNullableTable
 trait DataTypesTable
   extends DataTypesNullable with DataTypesNotNullable with Accessor with TableDefinition {
 
-  def fields = nullableFields ++ notNullableFields
+  val id = new int("id") with notnull
+  
+  def fields = id +: (nullableFields ++ notNullableFields)
 
   def constraints = Nil
 }

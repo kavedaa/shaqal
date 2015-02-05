@@ -33,3 +33,24 @@ object Foo {
   c.bar
   
 }
+
+object Bar {
+  
+  trait A {
+    def x[B[_], T](implicit b: B[T]) = b
+  }
+  
+  object A {
+    implicit val s = "hello"
+    
+  }
+  
+  val a = new A {}
+  
+  
+  
+//  a.x[String]
+  
+  
+  
+}

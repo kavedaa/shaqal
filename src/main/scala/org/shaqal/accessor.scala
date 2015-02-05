@@ -27,6 +27,8 @@ trait Query extends Selecting with AggregateFunctions with Adhoc {
   }
 
   def exists()(implicit c: -:[D]): Boolean = count > 0
+  
+  def existsWhere(w: R => Expr)(implicit c: -:[D]): Boolean = where(w) exists()
 }
 
 

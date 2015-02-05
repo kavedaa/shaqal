@@ -72,12 +72,12 @@ object AdapterCommons {
       case Some(schemaName) =>
         new SingleSQL {
           def render(implicit adapter: Adapter) = "select 1 from information_schema.tables where table_name = (?) and table_schema = (?)"
-          def params = Seq[StringParam](table.tableName, schemaName)
+          def params = Seq[StringParam](table.tableName.toUpperCase, schemaName.toUpperCase)
         }
       case None =>
         new SingleSQL {
           def render(implicit adapter: Adapter) = "select 1 from information_schema.tables where table_name = (?)"
-          def params = Seq[StringParam](table.tableName)
+          def params = Seq[StringParam](table.tableName.toUpperCase)
         }
     }
     c.queryElement(sql, identity).isDefined
@@ -86,7 +86,7 @@ object AdapterCommons {
   def schemaExists(schema: Database#Schema)(implicit c: -:[Database]) = {
     val sql = new SingleSQL {
       def render(implicit adapter: Adapter) = "select 1 from information_schema.schemata where schema_name = (?)"
-      def params = Seq(StringParam(schema.name))
+      def params = Seq(StringParam(schema.name.toUpperCase))
     }
     c.queryElement(sql, identity).isDefined
   }

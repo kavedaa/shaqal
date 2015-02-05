@@ -22,9 +22,8 @@ object H2Adapter extends Adapter {
 
   def dropSchemaSql(name: String) = AdapterCommons dropSchemaSql name
 
-  //	for some reason the standard way of doing this doesn't work on H2
-  def tableExists(table: TableLike)(implicit c: -:[Database]) = ???
+  def tableExists(table: TableLike)(implicit c: -:[Database]) = AdapterCommons tableExists table
   
-  def schemaExists(schema: Database#Schema)(implicit c: -:[Database]) = ???
+  def schemaExists(schema: Database#Schema)(implicit c: -:[Database]) = AdapterCommons schemaExists schema
   
 }

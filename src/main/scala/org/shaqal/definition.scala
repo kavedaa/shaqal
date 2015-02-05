@@ -21,25 +21,40 @@ trait TableDefinition extends Constraints { this: TableLike with Fields =>
     addElement(ColumnDefinitionElements.Default(defaultValue))
   }
 
-  def create[U](f: String => U)(implicit c: -:[D]) {
+  def create[U](f: String => U)(implicit c: -:[D]): Boolean = {
     if (!tableExists()) {
       createTable()
-      addConstraints()
+      addReferentialConstraints()
       f(path mkString ".")
+      true
     }
+    else false
   }
 
-  def create()(implicit c: -:[D]) {
-    create(s => Unit)	
+  def create()(implicit c: -:[D]): Boolean = {
+    create(s => Unit)
   }
-  
+
   def createTable()(implicit c: -:[D]) {
     val sql = c.adapter createTableSql (TableName(this), cols map c.adapter.columnDefinitionSql)
     c execute sql
+    addNonReferentialConstraints()
   }
 
   def addConstraints()(implicit c: -:[D]) {
-    constraints foreach { constraint =>
+    addNonReferentialConstraints()
+    addReferentialConstraints()
+  }
+
+  def addReferentialConstraints()(implicit c: -:[D]) {
+    referentialConstraints foreach { constraint =>
+      val sql = c.adapter addConstraintSql (TableName(this), constraint)
+      c execute sql
+    }
+  }
+
+  def addNonReferentialConstraints()(implicit c: -:[D]) {
+    nonReferentialConstraints foreach { constraint =>
       val sql = c.adapter addConstraintSql (TableName(this), constraint)
       c execute sql
     }
@@ -71,9 +86,9 @@ trait SchemaDefinition { this: Database#Schema =>
   }
 
   def create()(implicit c: -:[D]) {
-    create(s => Unit)	
+    create(s => Unit)
   }
-  
+
   def createSchema()(implicit c: -:[D]) { c execute createSql(c.adapter) }
 
   def schemaExists()(implicit c: -:[D]) = c.adapter schemaExists this

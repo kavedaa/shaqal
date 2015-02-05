@@ -43,6 +43,7 @@ trait TableLike {
 
   def tableName: String
   def path = List(schema.schemaName, Some(tableName)).flatten
+  def fullName(implicit adapter: Adapter) = path map adapter.identifier mkString "."
 
   implicit val tableLike = this
 }

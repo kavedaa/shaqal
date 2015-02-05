@@ -25,7 +25,7 @@ abstract class FromItem {
 
 case class TableName(table: TableLike) extends FromItem {
   def tableAlias = None
-  def fullName(implicit adapter: Adapter) = table.path map adapter.identifier mkString "."
+  def fullName(implicit adapter: Adapter) = table.fullName
   def render(implicit adapter: Adapter) = fullName
   def pp(implicit adapter: Adapter) = render
 }

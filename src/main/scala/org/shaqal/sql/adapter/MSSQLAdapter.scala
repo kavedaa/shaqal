@@ -12,7 +12,7 @@ object MSSQLAdapter extends Adapter {
   
   def identifier(s: String) = List("[", s, "]") mkString
 
-  def identity = "identity"
+  def identity = "identity primary key"
 
   def columnDefinitionSql(definition: ColumnDefinition) =
     new AdapterCommons.ColumnDefinitionSQL(definition.columnName, definition dataTypeName this, definition.elements.toList)

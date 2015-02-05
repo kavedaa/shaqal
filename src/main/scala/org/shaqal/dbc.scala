@@ -34,9 +34,9 @@ extends DBC[D] {
 
 abstract class DataSourceDBC[D <: Database](
 //  val description: String,
-  server: String,
-  database: String,
-  port: Int,
+  val server: String,
+  val database: String,
+  val port: Int,
   username: String,
   password: String,
   dsFactory: DataSourceFactory)

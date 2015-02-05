@@ -6,9 +6,11 @@ import org.shaqal.sql.adapter._
 
 trait Constraints { this: TableLike with TableDefinition =>
 
-  sealed trait Constraint extends SingleSQL
+  sealed trait Constraint extends SingleSQL {
+    val name: Option[String]
+  }
 
-  class PrimaryKey private (columns: Seq[Column]) extends Constraint {
+  class PrimaryKey private (columns: Seq[Column], val name: Option[String] = None) extends Constraint {
     def render(implicit adapter: Adapter) = s"primary key (${columns map (_.columnName) mkString ", "})"
     def params = Nil
   }
@@ -34,7 +36,7 @@ trait Constraints { this: TableLike with TableDefinition =>
     def render = "cascade"
   }
   
-  class ReferentialConstraint(columns: Seq[Column], refColumns: TableColumns) extends Constraint {
+  class ReferentialConstraint(columns: Seq[Column], refColumns: TableColumns, val name: Option[String] = None) extends Constraint {
 
     private var deleteAction: Option[ReferentialAction] = None
     private var updateAction: Option[ReferentialAction] = None
@@ -42,7 +44,7 @@ trait Constraints { this: TableLike with TableDefinition =>
     def onUpdate(refAction: ReferentialAction) = { updateAction = Some(refAction); this }
 
     def render(implicit adapter: Adapter) = {
-      val keyRef = s"foreign key (${columns map (_.columnName) mkString ", "}) references ${refColumns.render}"
+      val keyRef = s"foreign key (${columns map (c => adapter identifier c.columnName) mkString ", "}) references ${refColumns.render}"
       val delAction = deleteAction map(a => s"on delete ${a.render}")
       val updAction = updateAction map(a => s"on delete ${a.render}")
       List(Some(keyRef), delAction, updAction).flatten mkString " "
@@ -56,10 +58,13 @@ trait Constraints { this: TableLike with TableDefinition =>
   }
 
   def constraints: Seq[Constraint]
+  
+  def referentialConstraints = constraints filter(_.isInstanceOf[ReferentialConstraint])
+  def nonReferentialConstraints = constraints filterNot(_.isInstanceOf[ReferentialConstraint])
 }
 
 class TableColumns(table: TableLike, columns: Seq[Column]) {
-  def render(implicit adapter: Adapter) = s"${table.tableName}(${columns map (_.columnName) mkString ", "})"
+  def render(implicit adapter: Adapter) = s"${table.fullName}(${columns map (c => adapter identifier c.columnName) mkString ", "})"
 }
 
 trait TableColumnator[R <: ReadOnlyAccessorLike, -Z] {

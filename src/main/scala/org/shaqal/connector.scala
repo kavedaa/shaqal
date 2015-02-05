@@ -76,6 +76,7 @@ class TXC[+D <: Database](dbc: DBC[D], conn: Connection) extends Connector[D] {
 
   override def onSql(sql: SQL) { dbc onSql sql }
   override def onError(t: Throwable) { dbc onError t }
+  override def onError(sql: SQL, t: Throwable) { dbc onError (sql, t) }
   override def onTransaction() { dbc onTransaction () }
   override def onCommit() { dbc onCommit () }
   override def onRollback() { dbc onRollback () }

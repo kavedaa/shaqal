@@ -1,14 +1,12 @@
 package org.shaqal.test
 
-import org.scalatest.FeatureSpec
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.BeforeAndAfter
+import org.scalatest._
 import org.shaqal._
 import org.shaqal.sql._
 import org.shaqal.test.db.TestDB
 import java.text.SimpleDateFormat
 
-abstract class DataTypesTest extends FeatureSpec with BeforeAndAfter with ShouldMatchers {
+abstract class DataTypesTest extends FeatureSpec with BeforeAndAfter with Matchers {
 
   implicit def dbc: DBC[TestDB]
 
@@ -16,12 +14,14 @@ abstract class DataTypesTest extends FeatureSpec with BeforeAndAfter with Should
 
   info("Test all supported datatypes - insert and read back data")
 
-  val df = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss")
+  val dtf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss")
+  val df = new SimpleDateFormat("yyyy.MM.dd")
 
   before {
     DT createTable ()
 
     DT insert DT.Values(d => Seq(
+      d.id := 1,
       d.smallintTest := 1,
       d.intTest := 123456,
       d.bigintTest := 12345678901L,
@@ -29,8 +29,10 @@ abstract class DataTypesTest extends FeatureSpec with BeforeAndAfter with Should
       d.charTest := "abc",
       d.varcharTest := "John Smith",
       d.doubleTest := 3.14,
-      d.timestampTest := df parse "2012.12.31 23:59:59",
-      d.numericTest := BigDecimal("123.45")))
+      d.timestampTest := dtf parse "2012.12.31 23:59:59",
+      d.dateTest := new java.sql.Date((df parse "2012.12.31").getTime),
+      d.numericTest := BigDecimal("123.45"),
+      d.bitTest := true))
   }
 
   after {
@@ -161,17 +163,35 @@ abstract class DataTypesTest extends FeatureSpec with BeforeAndAfter with Should
   feature("timestamp") {
 
     scenario("not nullable") {
-      DT select (_.timestampTest) option () map df.format should equal(Some("2012.12.31 23:59:59"))
+      DT select (_.timestampTest) option () map dtf.format should equal(Some("2012.12.31 23:59:59"))
     }
 
     scenario("nullable, when not null") {
-      DT updateWhere (_ => True) set DT.Value(_.timestampTestNullable := Some(df parse "2012.12.31 23:59:59"))
-      DT select (_.timestampTestNullable) option () map (_ map df.format) should equal(Some(Some("2012.12.31 23:59:59")))
+      DT updateWhere (_ => True) set DT.Value(_.timestampTestNullable := Some(dtf parse "2012.12.31 23:59:59"))
+      DT select (_.timestampTestNullable) option () map (_ map dtf.format) should equal(Some(Some("2012.12.31 23:59:59")))
     }
 
     scenario("nullable, when null") {
       DT updateWhere (_ => True) set DT.Value(_.timestampTestNullable := None)
-      DT select (_.timestampTestNullable) option () map (_ map df.format) should equal(Some(None))
+      DT select (_.timestampTestNullable) option () map (_ map dtf.format) should equal(Some(None))
+    }
+
+  }
+
+  feature("date") {
+
+    scenario("not nullable") {
+      DT select (_.dateTest) option () map df.format should equal(Some("2012.12.31"))
+    }
+
+    scenario("nullable, when not null") {
+      DT updateWhere (_ => True) set DT.Value(_.dateTestNullable := Some(new java.sql.Date((df parse "2012.12.31").getTime)))
+      DT select (_.dateTestNullable) option () map (_ map df.format) should equal(Some(Some("2012.12.31")))
+    }
+
+    scenario("nullable, when null") {
+      DT updateWhere (_ => True) set DT.Value(_.dateTestNullable := None)
+      DT select (_.dateTestNullable) option () map (_ map df.format) should equal(Some(None))
     }
 
   }
@@ -193,4 +213,21 @@ abstract class DataTypesTest extends FeatureSpec with BeforeAndAfter with Should
     }
   }
 
+  feature("bit") {
+
+    scenario("not nullable") {
+      DT select (_.bitTest) option () should equal(Some(true))
+    }
+
+    scenario("nullable, when not null") {
+      DT updateWhere (_ => True) set DT.Value(_.bitTestNullable := Some(true))
+      DT select (_.bitTestNullable) option () should equal(Some(Some(true)))
+    }
+
+    scenario("nullable, when null") {
+      DT updateWhere (_ => True) set DT.Value(_.bitTestNullable := None)
+      DT select (_.bitTestNullable) option () should equal(Some(None))
+    }
+  }
+  
 }

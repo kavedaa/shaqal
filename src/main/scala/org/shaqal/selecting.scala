@@ -43,6 +43,10 @@ object Selecter {
   implicit val tuple2Selecter = new Selecter[(Readable, Readable)] {
     def apply(t: (Readable, Readable)) = t.productIterator.toSeq.asInstanceOf[Seq[Readable]]
   }
+
+  implicit val tuple3Selecter = new Selecter[(Readable, Readable, Readable)] {
+    def apply(t: (Readable, Readable, Readable)) = t.productIterator.toSeq.asInstanceOf[Seq[Readable]]
+  }
   
 //  implicit def tuple2Selecter[Q1, Q2] = new Selecter[(ReadableOf[Q1], ReadableOf[Q2])] {
 //    def apply(t: (ReadableOf[Q1], ReadableOf[Q2])) = t.productIterator.toSeq.asInstanceOf[Seq[Readable]]
@@ -64,5 +68,12 @@ object SelectReader {
       def apply(rs: ResultSet) = (t._1 read rs, t._2 read rs)
     }
   }
+  
+  implicit def tuple3Reader[R1 <: Readable, R2 <: Readable, R3 <: Readable] = new SelectReader[(R1, R2, R3), (R1#Q, R2#Q, R3#Q)] {
+    def apply(t: (R1, R2, R3)): Reader[(R1#Q, R2#Q, R3#Q)] = new Reader[(R1#Q, R2#Q, R3#Q)] {
+      def apply(rs: ResultSet) = (t._1 read rs, t._2 read rs, t._3 read rs)
+    }
+  }
+  
 }
 
