@@ -5,24 +5,28 @@ import org.shaqal.sql._
 import scala.collection.generic.CanBuildFrom
 import org.shaqal.sql.adapter.Adapter
 
-case class Count(column: Option[Column]) extends SelectExpression {
+abstract class AggregateExpression extends SelectExpression {
+  implicit val cf = ColumnFormat.TableAlias    
+}
+
+case class Count(column: Option[Column]) extends AggregateExpression {
   def columnAlias = column map(_.aliasName) getOrElse "count"
-  def render(implicit adapter: Adapter) = s"count (${column map(_.fullName) getOrElse "*"}) as " + columnAlias
+  def render(implicit adapter: Adapter) = s"count (${column map(_.render) getOrElse "*"}) as " + columnAlias
 }
 
-case class Max(column: Column) extends SelectExpression {
+case class Max(column: Column) extends AggregateExpression {
   def columnAlias = column.aliasName
-  def render(implicit adapter: Adapter) = s"max (${column.fullName}) as $columnAlias"
+  def render(implicit adapter: Adapter) = s"max (${column.render}) as $columnAlias"
 }
 
-case class Min(column: Column) extends SelectExpression {
+case class Min(column: Column) extends AggregateExpression {
   def columnAlias = column.aliasName
-  def render(implicit adapter: Adapter) = s"min (${column.fullName}) as $columnAlias"
+  def render(implicit adapter: Adapter) = s"min (${column.render}) as $columnAlias"
 }
 
-case class Avg(column: Column) extends SelectExpression {
+case class Avg(column: Column) extends AggregateExpression {
   def columnAlias = column.aliasName
-  def render(implicit adapter: Adapter) = s"avg (${column.fullName}) as $columnAlias"
+  def render(implicit adapter: Adapter) = s"avg (${column.render}) as $columnAlias"
 }
 
 trait AggregateFunctions { this: Query =>

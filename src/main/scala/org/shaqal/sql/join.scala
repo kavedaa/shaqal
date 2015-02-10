@@ -18,8 +18,9 @@ abstract class JoinExpr extends Renderable { self =>
 }
 
 class JoinTerm(left: Column, right: Column) extends JoinExpr {
+  implicit val cf = ColumnFormat.TableAlias
   def terms = Seq(this)
-  override def render(implicit adapter: Adapter) = left.fullName + " = " + right.fullName  
+  override def render(implicit adapter: Adapter) = left.render + " = " + right.render
 }
 
 object JoinExpr {
@@ -30,18 +31,13 @@ object JoinTerm {
   implicit def joinTerm(t: (Column, Column)) = new JoinTerm(t._1, t._2)
 }
 
-class JoinElement(item: FromItem, joinType: JoinType, condition: JoinExpr) extends Renderable {
-  def render(implicit adapter: Adapter) = List(joinType.keyword, item.render, "on", condition.render) mkString " "
-  override def pp(implicit adapter: Adapter) = ElementList(joinType.keyword, Indent(item.pp), "on " + condition.render)
+class JoinElement(item: FromItem, joinType: JoinType, condition: JoinExpr) {
+  def render(implicit adapter: Adapter) = Seq(joinType.keyword, item.render, "on", condition.render) mkString " "
+  def pp(implicit adapter: Adapter) = ElementList(joinType.keyword, Indent(item.pp), "on " + condition.render)
 }
 
-class JoinedItem(item: FromItem, joins: Seq[JoinElement]) extends FromItem {
+class JoinedItem(baseTable: TableLike, joins: Seq[JoinElement]) extends FromItem {
   
-  def tableAlias = None
-  
-  override def join(that: FromItem, joinType: JoinType, condition: JoinExpr)
-    = new JoinedItem(item, joins :+ new JoinElement(that, joinType, condition))
-    
-  def render(implicit adapter: Adapter) = (item.render +: (joins map(_.render))) mkString " "
-  override def pp(implicit adapter: Adapter) = ElementList(Indent(item.pp), joins map(_.pp) toList)
+  def render(implicit adapter: Adapter) = (baseTable.fullNameAndAlias +: (joins map(_.render))) mkString " "
+  override def pp(implicit adapter: Adapter) = ElementList(Indent(baseTable.fullNameAndAlias), joins map(_.pp) toList)
 }

@@ -19,7 +19,7 @@ trait Adhoc {
       type R = (R1, R2)
       type QueryType = Query
       val r = (q1.r, q2.r)
-      def fromItem = new JoinedItem(q1.fromItem, Seq(new JoinElement(q2.fromItem, InnerJoin, f(q1.r, q2.r))))
+      def fromItem = ??? // new JoinedItem(q1.r, Seq(new JoinElement(TableAlias(q2.r, ""), InnerJoin, f(q1.r, q2.r))))
       override def whereExpr = q1.whereExpr && q2.whereExpr
 
       def where(w: R => Expr): QueryOf[DD, (R1, R2)] = new Query {

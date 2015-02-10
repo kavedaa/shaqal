@@ -13,10 +13,10 @@ object H2Adapter extends Adapter {
   def columnDefinitionSql(definition: ColumnDefinition) =
     new AdapterCommons.ColumnDefinitionSQL(definition.columnName, definition dataTypeName this, definition.elements.toList)
   
-  def createTableSql(tableName: TableName, columnDefs: Seq[SingleSQL]) =
-    AdapterCommons createTableSql(tableName, columnDefs)
+  def createTableSql(table: TableLike, columnDefs: Seq[SingleSQL]) =
+    AdapterCommons createTableSql(table, columnDefs)
 
-  def dropTableSql(tableName: TableName) = AdapterCommons dropTableSql tableName
+  def dropTableSql(table: TableLike) = AdapterCommons dropTableSql table
 
   def createSchemaSql(name: String) = AdapterCommons createSchemaSql name
 

@@ -4,6 +4,7 @@ import org.shaqal.sql._
 import org.shaqal.sql.Util._
 import org.shaqal.sql.adapter._
 import org.shaqal.sql.pretty._
+import org.shaqal.TableLike
 
 trait Exists { this: SQL =>
 
@@ -40,19 +41,19 @@ trait Exists { this: SQL =>
 
 trait TableExists extends Exists { this: SQL =>
 
-  val tableName: TableName
+  val table: TableLike
 
-  def existsStatement = tableName.table.schema.schemaName match {
+  def existsStatement = table.schema.schemaName match {
     case Some(schemaName) =>
       s"if ($predicate exists (select * from information_schema.tables where table_schema = (?) and table_name = (?)))"
     case None =>
       s"if ($predicate exists (select * from information_schema.tables where table_name = (?)))"
   }
 
-  def existsParams = tableName.table.schema.schemaName match {
+  def existsParams = table.schema.schemaName match {
     case Some(schemaName) =>
-      Seq(schemaName, tableName.table.tableName)
-    case None => Seq(tableName.table.tableName)
+      Seq(schemaName, table.tableName)
+    case None => Seq(table.tableName)
   }
 }
 
@@ -66,8 +67,8 @@ trait SchemaExists extends Exists { this: SQL =>
   def existsParams = Seq(schemaName)
 }
 
-class CreateTableSQL(val tableName: TableName, columnDefs: Seq[SingleSQL])
-  extends org.shaqal.sql.adapter.common.CreateTableSQL(tableName, columnDefs)
+class CreateTableSQL(val table: TableLike, columnDefs: Seq[SingleSQL])
+  extends org.shaqal.sql.adapter.common.CreateTableSQL(table, columnDefs)
   with TableExists {
 
   val predicate = "not"
@@ -81,11 +82,11 @@ class CreateTableSQL(val tableName: TableName, columnDefs: Seq[SingleSQL])
   override def params = super[TableExists].params ++ (columnDefs.toList flatMap (_.params))
 }
 
-class DropTableSQL(val tableName: TableName) extends SingleSQL with TableExists {
+class DropTableSQL(val table: TableLike) extends SingleSQL with TableExists {
 
   val predicate = ""
 
-  def statement(implicit adapter: Adapter) = s"drop table ${tableName.render}"
+  def statement(implicit adapter: Adapter) = s"drop table ${table.fullName}"
 }
 
 class CreateSchemaSQL(val schemaName: String) extends SingleSQL with SchemaExists {

@@ -45,7 +45,15 @@ trait TableLike {
   def path = List(schema.schemaName, Some(tableName)).flatten
   def fullName(implicit adapter: Adapter) = path map adapter.identifier mkString "."
 
+  def aliasPath: Seq[TableLike] = Seq(this)
+  
+  def aliasName = (aliasPath flatMap(_.path) mkString "_").toLowerCase + "$"
+  
+  def fullNameAndAlias(implicit adapter: Adapter) = Seq(fullName, "as", aliasName) mkString " "
+  
   implicit val tableLike = this
+  
+  override def toString = path mkString "."
 }
 
 trait DefaultSchema extends SchemaLike { this: Database =>

@@ -17,11 +17,11 @@ object MSSQLAdapter extends Adapter {
   def columnDefinitionSql(definition: ColumnDefinition) =
     new AdapterCommons.ColumnDefinitionSQL(definition.columnName, definition dataTypeName this, definition.elements.toList)
 
-  def createTableSql(tableName: TableName, columnDefs: Seq[SingleSQL]) =
-    new CreateTableSQL(tableName, columnDefs)
+  def createTableSql(table: TableLike, columnDefs: Seq[SingleSQL]) =
+    new CreateTableSQL(table, columnDefs)
 
-  def dropTableSql(tableName: TableName) =
-    new DropTableSQL(tableName)
+  def dropTableSql(table: TableLike) =
+    new DropTableSQL(table)
 
   def createSchemaSql(name: String) = 
     new CreateSchemaSQL(name)

@@ -6,7 +6,7 @@ import org.shaqal.sql.Util._
 import org.shaqal.sql.pretty._
 import org.shaqal.sql.adapter.Adapter
 
-abstract class CreateTableSQL(tableName: TableName, columnDefs: Seq[SingleSQL])
+abstract class CreateTableSQL(table: TableLike, columnDefs: Seq[SingleSQL])
   extends SingleSQL {
 
   val instruction: String
@@ -14,11 +14,11 @@ abstract class CreateTableSQL(tableName: TableName, columnDefs: Seq[SingleSQL])
   def createRender(implicit adapter: Adapter) =
     List(
       instruction,
-      tableName.render,
+      table.fullName,
       columnDefs map (_.render) mkString ", " parens) mkString " "
 
   def createPp(implicit adapter: Adapter) = ElementList(
-    List(instruction, tableName.render) mkString " ",
+    List(instruction, table.fullName) mkString " ",
     Indent(
       CommaLines(columnDefs.toList map (_.render)).parens))
 
@@ -34,20 +34,20 @@ object AdapterCommons {
     def params = elements flatMap (_.params)
   }
 
-  class AddConstraintSQL(tableName: TableName, constraint: SingleSQL)
+  class AddConstraintSQL(table: TableLike, constraint: SingleSQL)
     extends SingleSQL {
 
     def render(implicit adapter: Adapter) =
       Seq(
         "alter table",
-        tableName.render,
+        table.fullName,
         "add",
         constraint.render) mkString " "
 
     def params = constraint.params
   }
 
-  def createTableSql(tableName: TableName, columnDefs: Seq[SingleSQL]) = new CreateTableSQL(tableName, columnDefs) {
+  def createTableSql(table: TableLike, columnDefs: Seq[SingleSQL]) = new CreateTableSQL(table, columnDefs) {
 
     val instruction = "create table if not exists"
 
@@ -58,8 +58,8 @@ object AdapterCommons {
     def params = columnDefs flatMap (_.params)
   }
 
-  def dropTableSql(tableName: TableName) = new SingleSQL {
-    def render(implicit adapter: Adapter) = s"drop table if exists ${tableName.render}"
+  def dropTableSql(table: TableLike) = new SingleSQL {
+    def render(implicit adapter: Adapter) = s"drop table if exists ${table.fullName}"
     def params = Nil
   }
 

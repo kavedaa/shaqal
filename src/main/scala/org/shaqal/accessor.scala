@@ -7,14 +7,14 @@ abstract class Reader[X] extends (ResultSet => X)
 
 abstract class Writer[X] extends (X => Seq[ColumnParam])
 
-trait Query extends Selecting with AggregateFunctions with Adhoc { 
+trait Query extends Selecting with AggregateFunctions with Adhoc {
 
   type D <: Database
   type R
   val r: R
-  
+
   type QueryType <: Query
-  
+
   def fromItem: FromItem
   def whereExpr: Expr = True
 
@@ -27,27 +27,30 @@ trait Query extends Selecting with AggregateFunctions with Adhoc {
   }
 
   def exists()(implicit c: -:[D]): Boolean = count > 0
-  
-  def existsWhere(w: R => Expr)(implicit c: -:[D]): Boolean = where(w) exists()
-}
 
+  def existsWhere(w: R => Expr)(implicit c: -:[D]): Boolean = where(w) exists ()
+}
 
 trait ReadOnlyAccessorLike extends TableLike with Fields with Joining with Adhoc { r =>
 
   type R
-  
-  def * : Seq[Col] = cols ++: (foreigns flatMap(_.*))
+
+  def * : Seq[Col] = cols ++: (foreigns flatMap (_.*))
 
   def fromItem: FromItem =
     if (foreigns.isEmpty)
       TableName(this)
-    else
-      new JoinedItem(TableName(this), foreigns map { f => new JoinElement(f.fromItem, f.joinType, f.joinExpr) })
+    else {
+      val joinElements = foreigns map { f =>
+        new JoinElement(f.fromItem, f.joinType, f.joinExpr)
+      }
+      new JoinedItem(r, joinElements)
+    }
 
   //	Using typeclass pattern to avoid method overloading (this method is used for FK constraints)
   def apply[Z](f: r.type => Z)(implicit columnator: TableColumnator[r.type, Z]) =
     columnator columnate (this, f)
-    
+
 }
 
 trait AccessorLike extends ReadOnlyAccessorLike with Inserting with Updating with Deleting { r =>
@@ -85,7 +88,7 @@ trait ReadOnlyAccessor extends ReadOnlyAccessorLike with Query { relation =>
     override def whereExpr = ReadOnlyAccessor.this.whereExpr && w(r)
     def where(w: R => Expr) = ReadOnlyAccessor.this.where(w)
   }
-  
+
 }
 
 trait Accessor extends AccessorLike with Query { relation =>
@@ -97,7 +100,7 @@ trait Accessor extends AccessorLike with Query { relation =>
   trait AccessorWriter[A] extends Writer[A]
 
   type W[A] = AccessorWriter[A]
-  
+
   val Writer = AccessorWriter
 
   object AccessorWriter extends AccessorWriterFactory {
@@ -120,10 +123,8 @@ trait Accessor extends AccessorLike with Query { relation =>
     def where(w: R => Expr) = Accessor.this.where(w)
   }
 
-  def join[R2](other: QueryOf[D, R2]) = new AdhocJoining[D, R, R2](r, other)            
-  
-    
-  
+  def join[R2](other: QueryOf[D, R2]) = new AdhocJoining[D, R, R2](r, other)
+
 }
 
 trait Auto[G] { this: AccessorLike =>

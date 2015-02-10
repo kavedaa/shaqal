@@ -11,14 +11,34 @@ trait ColumnLike {
   def hasGeneratedValue = false
 }
 
+sealed abstract class ColumnFormat {
+  def render(c: Column)(implicit adapter: Adapter): String
+}
+
+object ColumnFormat {
+  
+  object Name extends ColumnFormat {
+    def render(c: Column)(implicit adapter: Adapter) = 
+      adapter identifier c.columnName 
+  }
+  
+  object TableAlias extends ColumnFormat {
+    def render(c: Column)(implicit adapter: Adapter) = 
+      Seq(c.table.aliasName, Name render c) mkString "."
+  }
+
+  object Full extends ColumnFormat {
+    def render(c: Column)(implicit adapter: Adapter) = 
+      Seq(TableAlias render c, "as", c.aliasName) mkString " "
+  }  
+}
+
 trait Column extends ColumnLike {
 
   def table: TableLike
 
-  def path = table.path :+ columnName
-  def fullName(implicit adapter: Adapter) = path map adapter.identifier mkString "."
-  def aliasName = path mkString "_"
-  def render(implicit adapter: Adapter) = List(fullName, "as", aliasName) mkString " "
+  def aliasName = Seq(table.aliasName, columnName) mkString "_"
+  def render(implicit columnFormat: ColumnFormat, adapter: Adapter) = columnFormat render this 
 }
 
 class ColumnTerm(column: ColumnLike, fromItem: FromItem) {

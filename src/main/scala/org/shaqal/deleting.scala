@@ -6,5 +6,5 @@ import org.shaqal.sql._
 trait Deleting { this: AccessorLike =>
 
   def deleteWhere(where: R => Expr)(implicit c: -:[D]) =
-    c delete new DeleteSQL(TableName(r), where(r))
+    c delete new DeleteSQL(r, where(r))
 }

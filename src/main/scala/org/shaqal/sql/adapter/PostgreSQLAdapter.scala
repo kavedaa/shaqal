@@ -38,18 +38,18 @@ abstract class PostgreSQLAdapter extends Adapter {
 
 object PostgreSQLAdapter extends PostgreSQLAdapter {
 
-  def createTableSql(tableName: TableName, columnDefs: Seq[SingleSQL]) =
+  def createTableSql(table: TableLike, columnDefs: Seq[SingleSQL]) =
     throw new UnsupportedOperationException("Only supported on PostgreSQL 9.1 or higher, use PostgreSQL9Adapter if applicable.")
 
-  def dropTableSql(tableName: TableName) =
+  def dropTableSql(table: TableLike) =
     throw new UnsupportedOperationException("Only supported on PostgreSQL 9.1 or higher, use PostgreSQL9Adapter if applicable.")
 }
 
 object PostgreSQL9Adapter extends PostgreSQLAdapter {
 
-  def createTableSql(tableName: TableName, columnDefs: Seq[SingleSQL]) =
-    AdapterCommons createTableSql (tableName, columnDefs)
+  def createTableSql(table: TableLike, columnDefs: Seq[SingleSQL]) =
+    AdapterCommons createTableSql (table, columnDefs)
 
-  def dropTableSql(tableName: TableName) =
-    AdapterCommons dropTableSql tableName
+  def dropTableSql(table: TableLike) =
+    AdapterCommons dropTableSql table
 }

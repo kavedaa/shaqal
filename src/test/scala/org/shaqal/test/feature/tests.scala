@@ -3,6 +3,7 @@ package org.shaqal.test.feature
 import org.shaqal._
 import org.shaqal.test.db.TestDB
 import org.shaqal.sql.adapter.H2Adapter
+import org.shaqal.sql.SQL
 
 class H2DBC[D <: Database](name: String) extends UrlDBC[D](
   s"jdbc:h2:mem:$name;DB_CLOSE_DELAY=-1",
@@ -10,16 +11,18 @@ class H2DBC[D <: Database](name: String) extends UrlDBC[D](
   "sa",
   "") with UseSingleConnection {
 
-  def adapter = H2Adapter
+  implicit val adapter = H2Adapter
   
   override def onTransaction() { println("transaction") }
 }
 
 trait H2 {
-  implicit def dbc = new H2DBC[TestDB]("test")   
+  implicit def dbc = new H2DBC[TestDB]("test") {
+    override def onSql(sql: SQL) = println(sql.pp.render)
+  }   
 }
 
-class AdhocJoiningTest extends org.shaqal.test.AdhocJoiningTest with H2
+// class AdhocJoiningTest extends org.shaqal.test.AdhocJoiningTest with H2
 
 class AggregateTest extends org.shaqal.test.AggregateTest with H2
 
@@ -43,3 +46,9 @@ class PKCrudTest extends org.shaqal.test.PKCrudTest with H2
 class PKMapperCrudTest extends org.shaqal.test.PKMapperCrudTest with H2
 
 class PK2MapperCrudTest extends org.shaqal.test.PK2MapperCrudTest with H2
+
+class AliasTest extends org.shaqal.test.AliasTest with H2
+
+class JoinOrderTest extends org.shaqal.test.JoinOrderTest with H2
+
+class SchemaTest extends org.shaqal.test.SchemaTest with H2

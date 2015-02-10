@@ -7,9 +7,9 @@ trait Inserting extends Writing { this: AccessorLike =>
 
   //	SQL
 
-  def insertSql(columnValues: Seq[ColumnParam]) = InsertSQL(TableName(Inserting.this), columnValues)
+  def insertSql(columnValues: Seq[ColumnParam]) = InsertSQL(Inserting.this, columnValues)
 
-  def batchInsertSql(columns: Seq[Column], paramsSeqs: Seq[Seq[Param[_]]]) = InsertSQL(TableName(Inserting.this), columns, paramsSeqs)
+  def batchInsertSql(columns: Seq[Column], paramsSeqs: Seq[Seq[Param[_]]]) = InsertSQL(Inserting.this, columns, paramsSeqs)
 
   //	Insert API
 

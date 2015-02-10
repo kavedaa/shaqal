@@ -26,10 +26,12 @@ class MSSQLDBC[D <: Database]
 }
    
 trait MSSQL {
-  implicit def dbc = new MSSQLDBC[TestDB]  
+  implicit def dbc = new MSSQLDBC[TestDB]   {
+//    override def onSql(sql: SQL) = println(sql.pp.render)
+  }
 }
 
-class AdhocJoiningTest extends org.shaqal.test.AdhocJoiningTest with MSSQL
+// class AdhocJoiningTest extends org.shaqal.test.AdhocJoiningTest with MSSQL
 
 class AggregateTest extends org.shaqal.test.AggregateTest with MSSQL
 
@@ -52,3 +54,7 @@ class WhereTest extends org.shaqal.test.WhereTest with MSSQL
 class CrudTest extends org.shaqal.test.CrudTest with MSSQL
 
 class PKCrudTest extends org.shaqal.test.PKCrudTest with MSSQL
+
+class AliasTest extends org.shaqal.test.AliasTest with MSSQL
+
+class JoinOrderTest extends org.shaqal.test.JoinOrderTest with MSSQL

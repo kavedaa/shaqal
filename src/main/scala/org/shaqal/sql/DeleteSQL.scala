@@ -4,15 +4,17 @@ import org.shaqal._
 import org.shaqal.sql.pretty._
 import org.shaqal.sql.adapter._
 
-case class DeleteSQL(table: TableName, where: Expr) extends SingleSQL {
+case class DeleteSQL(table: TableLike, where: Expr) extends SingleSQL {
 
+  implicit val cf = ColumnFormat.Name
+  
   def render(implicit adapter: Adapter) = List(
     "delete from",
     table.fullName) :::
     (if (where == True)
       Nil
     else
-      List("where", where.render)) mkString " "
+      List("where", Expr render where)) mkString " "
 
   def params = where.params
 
@@ -23,7 +25,7 @@ case class DeleteSQL(table: TableName, where: Expr) extends SingleSQL {
       (if (where != True)
         ElementList(
         "where",
-        Indent(where.pp))
+        Indent(Expr pp where))
       else
         ElementList())
 }

@@ -4,8 +4,10 @@ import org.shaqal._
 import org.shaqal.sql.pretty._
 import org.shaqal.sql.adapter._
 
-case class UpdateSQL(table: TableName, columnParams: Seq[ColumnParam], where: Expr) extends SingleSQL {
+case class UpdateSQL(table: TableLike, columnParams: Seq[ColumnParam], where: Expr) extends SingleSQL {
   
+  implicit val cf = ColumnFormat.Name
+
   def render(implicit adapter: Adapter) =
     List(
       "update",
@@ -13,7 +15,7 @@ case class UpdateSQL(table: TableName, columnParams: Seq[ColumnParam], where: Ex
       "set",
       (columnParams map(_.column.columnName + " = (?)") mkString ", "),
       "where",
-      where.render) mkString " "
+      Expr render where) mkString " "
     
   def params = (columnParams map(_.param)) ++: where.params
   
@@ -24,5 +26,5 @@ case class UpdateSQL(table: TableName, columnParams: Seq[ColumnParam], where: Ex
     Indent(
       CommaLines(columnParams.toList map(_.column.columnName + " = (?)"))),
     "where",
-    Indent(where.pp))
+    Indent(Expr pp where))
 }

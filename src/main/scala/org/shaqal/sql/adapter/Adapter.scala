@@ -28,15 +28,15 @@ abstract class Adapter {
   def columnDefinitionSql(columnDefinition: ColumnDefinition): SingleSQL
   
   def createTableSql(
-    tableName: TableName,
+    table: TableLike,
     columnDefs: Seq[SingleSQL]): SingleSQL
 
     //	not sure if we need adapter for this
   def addConstraintSql(
-    tableName: TableName,
-    constraint: SingleSQL) = new AdapterCommons.AddConstraintSQL(tableName, constraint)
+    table: TableLike,
+    constraint: SingleSQL) = new AdapterCommons.AddConstraintSQL(table, constraint)
 
-  def dropTableSql(tableName: TableName): SingleSQL
+  def dropTableSql(table: TableLike): SingleSQL
 
   def createSchemaSql(name: String): SingleSQL
 
