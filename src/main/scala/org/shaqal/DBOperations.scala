@@ -43,9 +43,10 @@ trait DBOperations { this: Connector[_] =>
     query(sql, rsMapper, (x: T) => builder += x)
     builder.result
   }
-  
+
   def query[U, T](sql: SingleSQL, rsMapper: ResultSet => T, process: T => U) {
     onSql(sql)
+    Debug incQueries ()
     try {
       val conn = getConnection
       try {
@@ -53,7 +54,12 @@ trait DBOperations { this: Connector[_] =>
         try {
           setParams(prep, sql.params)
           val rs = prep executeQuery ()
-          try { while (rs.next()) process(rsMapper(rs)) }
+          try {
+            while (rs.next()) {
+              Debug incRows ()
+              process(rsMapper(rs))
+            }
+          }
           catch { case _: CancelException => }
           finally { rs close () }
         }

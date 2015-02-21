@@ -6,7 +6,7 @@ import org.shaqal.sql.adapter.common.AdapterCommons
 
 object H2Adapter extends Adapter {
 
-  def identifier(s: String) = s
+  def identifier(s: String) = List("\"", s, "\"").mkString
 
   def identity = "identity"
 

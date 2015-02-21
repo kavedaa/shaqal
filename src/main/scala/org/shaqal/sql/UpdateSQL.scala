@@ -13,7 +13,7 @@ case class UpdateSQL(table: TableLike, columnParams: Seq[ColumnParam], where: Ex
       "update",
       table.fullName,
       "set",
-      (columnParams map(_.column.columnName + " = (?)") mkString ", "),
+      (columnParams map(c => (adapter identifier(c.column.columnName)) + " = (?)") mkString ", "),
       "where",
       Expr render where) mkString " "
     
@@ -24,7 +24,7 @@ case class UpdateSQL(table: TableLike, columnParams: Seq[ColumnParam], where: Ex
     Indent(table.fullName),
     "set",
     Indent(
-      CommaLines(columnParams.toList map(_.column.columnName + " = (?)"))),
+      CommaLines(columnParams.toList map(c => (adapter identifier(c.column.columnName)) + " = (?)"))),
     "where",
     Indent(Expr pp where))
 }

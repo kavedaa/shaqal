@@ -7,6 +7,8 @@ import org.shaqal.sql.adapter.common.AdapterCommons
 
 abstract class Adapter {
 
+  implicit val adapter = this
+  
   def dataType(sqlType: Int) = dataTypes(sqlType)
 
   protected val dataTypes = collection.mutable.Map(

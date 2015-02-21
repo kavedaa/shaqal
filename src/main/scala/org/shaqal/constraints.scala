@@ -11,7 +11,7 @@ trait Constraints { this: TableLike with TableDefinition =>
   }
 
   class PrimaryKey private (columns: Seq[Column], val name: Option[String] = None) extends Constraint {
-    def render(implicit adapter: Adapter) = s"primary key (${columns map (_.columnName) mkString ", "})"
+    def render(implicit adapter: Adapter) = s"primary key (${columns map (adapter identifier _.columnName) mkString ", "})"
     def params = Nil
   }
 

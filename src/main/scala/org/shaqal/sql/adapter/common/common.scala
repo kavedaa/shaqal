@@ -63,9 +63,11 @@ object AdapterCommons {
     def params = Nil
   }
 
-  def createSchemaSql(name: String) = SQL { s"create schema if not exists $name" }
+  def createSchemaSql(name: String)(implicit adapter: Adapter) = 
+    SQL { s"create schema if not exists ${adapter identifier name}" }
   
-  def dropSchemaSql(name: String) = SQL { s"drop schema if exists $name" }
+  def dropSchemaSql(name: String)(implicit adapter: Adapter) = 
+    SQL { s"drop schema if exists ${adapter identifier name}" }
   
   def tableExists(table: TableLike)(implicit c: -:[Database]) = {
     val sql = table.schema.schemaName match {

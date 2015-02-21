@@ -18,7 +18,7 @@ class H2DBC[D <: Database](name: String) extends UrlDBC[D](
 
 trait H2 {
   implicit def dbc = new H2DBC[TestDB]("test") {
-    override def onSql(sql: SQL) = println(sql.pp.render)
+//    override def onSql(sql: SQL) = println(sql.pp.render)
   }   
 }
 
