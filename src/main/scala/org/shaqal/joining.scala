@@ -38,12 +38,6 @@ trait Joining { r: ReadOnlyAccessorLike =>
     val joinType = InnerJoin
   }
 
-  abstract class Join2[C1, C2, ColType1 <: Col, ColType2 <: Col](val fk1: ColType1 { type T = C1 }, val fk2: ColType2 { type T = C2 })
-    extends DualJoin[C1, C2] {
-    val fk = (fk1, fk2)
-    val joinType = InnerJoin
-  }
-
   abstract class LeftJoin[C, ColType <: Col](val fk: ColType { type T = C })
     extends SingleJoin[C] {
     val joinType = LeftJoin
@@ -59,6 +53,30 @@ trait Joining { r: ReadOnlyAccessorLike =>
     val joinType = FullJoin
   }
 
+  abstract class Join2[C1, C2, ColType1 <: Col, ColType2 <: Col](val fk1: ColType1 { type T = C1 }, val fk2: ColType2 { type T = C2 })
+    extends DualJoin[C1, C2] {
+    val fk = (fk1, fk2)
+    val joinType = InnerJoin
+  }
+
+  abstract class LeftJoin2[C1, C2, ColType1 <: Col, ColType2 <: Col](val fk1: ColType1 { type T = C1 }, val fk2: ColType2 { type T = C2 })
+    extends DualJoin[C1, C2] {
+    val fk = (fk1, fk2)
+    val joinType = LeftJoin
+  }
+
+  abstract class RightJoin2[C1, C2, ColType1 <: Col, ColType2 <: Col](val fk1: ColType1 { type T = C1 }, val fk2: ColType2 { type T = C2 })
+    extends DualJoin[C1, C2] {
+    val fk = (fk1, fk2)
+    val joinType = RightJoin
+  }
+  
+  abstract class FullJoin2[C1, C2, ColType1 <: Col, ColType2 <: Col](val fk1: ColType1 { type T = C1 }, val fk2: ColType2 { type T = C2 })
+    extends DualJoin[C1, C2] {
+    val fk = (fk1, fk2)
+    val joinType = FullJoin
+  }
+
   trait MapperForeign[J] extends Foreign with Readable { this: ReadOnlyMapperLike[J] =>
     type T = J
     def get(implicit rs: ResultSet): J = reader(rs)
@@ -70,17 +88,19 @@ trait Joining { r: ReadOnlyAccessorLike =>
     def f[X](x: => X)(implicit rs: ResultSet) = fk f x
   }
 
-  //	We cannot compute the right types here, so we need to be explicit about it
+  //	We cannot compute the right types here, so we need to be explicit about nullability
 
-  trait MapperJoin2[J] extends MapperForeign[J] with DualJoinLike { this: ReadOnlyMapperLike[J] =>
+  trait MapperJoin2Like[J] extends MapperForeign[J] with DualJoinLike { this: ReadOnlyMapperLike[J] =>
+    def checkNull(implicit rs: ResultSet) = fk._1.checkNull || fk._2.checkNull    
+  }
+  
+  trait MapperJoin2[J] extends MapperJoin2Like[J] { this: ReadOnlyMapperLike[J] =>
     type F[X] = X
-    def checkNull(implicit rs: ResultSet) = fk._1.checkNull || fk._2.checkNull
     def f[X](x: => X)(implicit rs: ResultSet) = x
   }
 
-  trait NullableMapperJoin2[J] extends MapperForeign[J] with DualJoinLike { this: ReadOnlyMapperLike[J] =>
+  trait MapperJoin2Nullable[J] extends MapperJoin2Like[J] { this: ReadOnlyMapperLike[J] =>
     type F[X] = Option[X]
-    def checkNull(implicit rs: ResultSet) = fk._1.checkNull || fk._2.checkNull
     def f[X](x: => X)(implicit rs: ResultSet) = if (checkNull) None else Some(x)
   }
 

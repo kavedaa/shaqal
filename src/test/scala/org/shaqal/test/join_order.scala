@@ -18,7 +18,7 @@ abstract class JoinOrderTest extends FunSuite with Matchers with BeforeAndAfter 
       def constraints = Seq(PrimaryKey(id))
     }
     
-    object Country extends Table("CountryOhMyOhMyThisIsAReallyLongName") with CountryAccessor
+    object Country extends Table("Country") with CountryAccessor
     
     trait AddressAccessor extends Accessor with TableDefinition {
       val id = new int("id") with notnull
@@ -32,9 +32,9 @@ abstract class JoinOrderTest extends FunSuite with Matchers with BeforeAndAfter 
       def constraints = Seq(PrimaryKey(id), ForeignKey(countryId) references Country(_.id))
     }
     
-    object Address extends Table("AddressAndASomewhatLongishNameToo") with AddressAccessor
+    object Address extends Table("Address") with AddressAccessor
     
-    object Person extends Table("PersonCanItBeEvenLongerNoIDontThinkSo") with Accessor with TableDefinition {
+    object Person extends Table("Person") with Accessor with TableDefinition {
       val id = new int("id") with notnull
       val name = new varchar(1000)("name") with notnull
       val addressId = new int("addressId") with nullable //  the reason we need outer join

@@ -58,3 +58,7 @@ class PKCrudTest extends org.shaqal.test.PKCrudTest with MSSQL
 class AliasTest extends org.shaqal.test.AliasTest with MSSQL
 
 class JoinOrderTest extends org.shaqal.test.JoinOrderTest with MSSQL
+
+class SchemaTest extends org.shaqal.test.SchemaTest with MSSQL
+
+class Join2Test extends org.shaqal.test.Join2Test with MSSQL
