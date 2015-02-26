@@ -11,7 +11,9 @@ trait Constraints { this: TableLike with TableDefinition =>
   }
 
   class PrimaryKey private (columns: Seq[Column], val name: Option[String] = None) extends Constraint {
-    def render(implicit adapter: Adapter) = s"primary key (${columns map (adapter identifier _.columnName) mkString ", "})"
+    def defaultName = ("PK" +: underscoreName +: (columns map(_.columnName))) mkString "_"
+    def constraintName(implicit adapter: Adapter) = adapter identifier (name getOrElse defaultName)
+    def render(implicit adapter: Adapter) = s"constraint $constraintName primary key (${columns map (adapter identifier _.columnName) mkString ", "})"
     def params = Nil
   }
 
@@ -36,15 +38,23 @@ trait Constraints { this: TableLike with TableDefinition =>
     def render = "cascade"
   }
   
-  class ReferentialConstraint(columns: Seq[Column], refColumns: TableColumns, val name: Option[String] = None) extends Constraint {
+  class ReferentialConstraint (columns: Seq[Column], ref: TableColumns, val name: Option[String] = None) extends Constraint {
 
+    def defaultName(implicit adapter: Adapter) = {
+      val referencing = underscoreName +: (columns map(_.columnName))
+      val referenced = ref.table.underscoreName +: (ref.columns map(_.columnName))
+      ("FK" +: referencing ++: referenced) mkString "_"
+    }
+    
+    def constraintName(implicit adapter: Adapter) = adapter identifier (name getOrElse defaultName)
+    
     private var deleteAction: Option[ReferentialAction] = None
     private var updateAction: Option[ReferentialAction] = None
     def onDelete(refAction: ReferentialAction) = { deleteAction = Some(refAction); this }
     def onUpdate(refAction: ReferentialAction) = { updateAction = Some(refAction); this }
 
     def render(implicit adapter: Adapter) = {
-      val keyRef = s"foreign key (${columns map (c => adapter identifier c.columnName) mkString ", "}) references ${refColumns.render}"
+      val keyRef = s"constraint $constraintName foreign key (${columns map (c => adapter identifier c.columnName) mkString ", "}) references ${ref.render}"
       val delAction = deleteAction map(a => s"on delete ${a.render}")
       val updAction = updateAction map(a => s"on delete ${a.render}")
       List(Some(keyRef), delAction, updAction).flatten mkString " "
@@ -63,7 +73,7 @@ trait Constraints { this: TableLike with TableDefinition =>
   def nonReferentialConstraints = constraints filterNot(_.isInstanceOf[ReferentialConstraint])
 }
 
-class TableColumns(table: TableLike, columns: Seq[Column]) {
+case class TableColumns(table: TableLike, columns: Seq[Column]) {
   def render(implicit adapter: Adapter) = s"${table.fullName}(${columns map (c => adapter identifier c.columnName) mkString ", "})"
 }
 

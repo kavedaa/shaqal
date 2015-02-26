@@ -43,8 +43,13 @@ trait TableLike {
 
   def tableName: String
   def path = List(schema.schemaName, Some(tableName)).flatten
+  
+  //  TODO reconsider naming here
+  
   def fullName(implicit adapter: Adapter) = path map adapter.identifier mkString "."
 
+  def underscoreName = path mkString "_"
+  
   def aliasPath: Seq[TableLike] = Seq(this)
   
   def aliasName = (aliasPath flatMap(_.path) mkString "_").toLowerCase + "$"
