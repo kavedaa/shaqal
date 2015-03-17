@@ -53,4 +53,6 @@ class JoinOrderTest extends org.shaqal.test.JoinOrderTest with H2
 
 class SchemaTest extends org.shaqal.test.SchemaTest with H2
 
+class JoinTest extends org.shaqal.test.JoinTest with H2
+
 class Join2Test extends org.shaqal.test.Join2Test with H2
