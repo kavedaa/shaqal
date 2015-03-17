@@ -44,7 +44,7 @@ abstract class Adapter {
 
   def dropSchemaSql(name: String): SingleSQL
 
-  def tableExists(table: TableLike)(implicit c: -:[Database]): Boolean
+//  def tableExists(table: TableLike)(implicit c: -:[Database]): Boolean
   
   def schemaExists(schema: Database#Schema)(implicit c: -:[Database]): Boolean
 }

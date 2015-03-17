@@ -26,6 +26,22 @@ trait Constraints { this: TableLike with TableDefinition =>
     def apply(cs: (Column, Column, Column, Column, Column)) = product(cs)
   }
 
+  class Unique private (columns: Seq[Column], val name: Option[String] = None) extends Constraint {
+    def defaultName = ("UQ" +: underscoreName +: (columns map(_.columnName))) mkString "_"
+    def constraintName(implicit adapter: Adapter) = adapter identifier (name getOrElse defaultName)
+    def render(implicit adapter: Adapter) = s"constraint $constraintName unique (${columns map (adapter identifier _.columnName) mkString ", "})"
+    def params = Nil
+  }
+
+  object Unique {
+    def apply(c: Column) = new Unique(Seq(c))
+    private def product(p: Product) = new Unique(p.productIterator.toSeq.asInstanceOf[Seq[Column]])
+    def apply(cs: (Column, Column)) = product(cs)
+    def apply(cs: (Column, Column, Column)) = product(cs)
+    def apply(cs: (Column, Column, Column, Column)) = product(cs)
+    def apply(cs: (Column, Column, Column, Column, Column)) = product(cs)
+  }
+
   sealed trait ReferentialAction {
     def render: String
   }

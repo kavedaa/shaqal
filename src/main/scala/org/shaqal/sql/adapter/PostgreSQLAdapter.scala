@@ -30,7 +30,7 @@ abstract class PostgreSQLAdapter extends Adapter {
 
   def dropSchemaSql(name: String) = AdapterCommons dropSchemaSql name
   
-  def tableExists(table: TableLike)(implicit c: -:[Database]) = AdapterCommons tableExists table
+//  def tableExists(table: TableLike)(implicit c: -:[Database]) = AdapterCommons tableExists table
   
   def schemaExists(schema: Database#Schema)(implicit c: -:[Database]) = AdapterCommons schemaExists schema  
 

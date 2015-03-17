@@ -92,7 +92,9 @@ abstract class ListInfixColumnExpr(val op: String) extends ColumnExpr {
 //  def pp(implicit adapter: Adapter) = render(adapter)
 }
 
-// case class In(column: Column, values: List[Any]) extends ListInfixColumnExpr("in")
+case class In(column: Column, values: Seq[Param[_]]) extends Expr {
+  def params = values
+}
 
 abstract class PostfixColumnExpr(val op: String) extends ColumnExpr {
 //  def render(implicit adapter: Adapter) = (column.fullName + " " + op).parens

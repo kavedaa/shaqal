@@ -30,7 +30,7 @@ abstract class SchemaTest extends FunSuite with Matchers with BeforeAndAfter {
         val id = new int("id") with notnull
         val addressId = new int("addressId") with notnull
         val address = new Join(addressId) with AccessorJoin with Foo.AddressAccessor {
-          override def schema = Foo.Address.schema    //  TODO figure a way to avoid this uglyness
+          override val schema = Foo.Address.schema    //  TODO figure a way to avoid this uglyness
           def tableName = Foo.Address.tableName
         }
         def fields = Seq(id, address)

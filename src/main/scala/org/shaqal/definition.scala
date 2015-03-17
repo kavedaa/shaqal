@@ -22,7 +22,7 @@ trait TableDefinition extends Constraints { this: TableLike with Fields =>
   }
 
   def create[U](f: String => U)(implicit c: -:[D]): Boolean = {
-    if (!tableExists()) {
+    if (!database.tableExists(this)) {
       createTable()
       addReferentialConstraints()
       f(path mkString ".")
@@ -60,7 +60,7 @@ trait TableDefinition extends Constraints { this: TableLike with Fields =>
     }
   }
 
-  def tableExists()(implicit c: -:[D]) = c.adapter tableExists this
+//  def tableExists()(implicit c: -:[D]) = c.adapter tableExists this
 
   def drop(areYouSure: Boolean)(implicit c: -:[D]) =
     if (areYouSure) {

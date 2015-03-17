@@ -69,21 +69,23 @@ object AdapterCommons {
   def dropSchemaSql(name: String)(implicit adapter: Adapter) = 
     SQL { s"drop schema if exists ${adapter identifier name}" }
   
-  def tableExists(table: TableLike)(implicit c: -:[Database]) = {
-    val sql = table.schema.schemaName match {
-      case Some(schemaName) =>
-        new SingleSQL {
-          def render(implicit adapter: Adapter) = "select 1 from information_schema.tables where table_name = (?) and table_schema = (?)"
-          def params = Seq[StringParam](table.tableName.toUpperCase, schemaName.toUpperCase)
-        }
-      case None =>
-        new SingleSQL {
-          def render(implicit adapter: Adapter) = "select 1 from information_schema.tables where table_name = (?)"
-          def params = Seq[StringParam](table.tableName.toUpperCase)
-        }
-    }
-    c.queryElement(sql, identity).isDefined
-  }
+//  def tableExists(table: TableLike)(implicit c: -:[Database]) = {
+//    val sql = table.schema.schemaName match {      
+//      case Some(schemaName) =>
+//        table.database.InformationSchema.Tables where(t => (t.table_Schema is schemaName) && (t.table_Name is table.tableName))
+////        new SingleSQL {
+////          def render(implicit adapter: Adapter) = "select 1 from information_schema.tables where table_name = (?) and table_schema = (?)"
+////          def params = Seq[StringParam](table.tableName.toUpperCase, schemaName.toUpperCase)
+////        }
+//      case None =>
+//        table.database.InformationSchema.Tables where(t => t.table_Name is table.tableName)
+////        new SingleSQL {
+////          def render(implicit adapter: Adapter) = "select 1 from information_schema.tables where table_name = (?)"
+////          def params = Seq[StringParam](table.tableName.toUpperCase)
+////        }
+//    }
+//    sql exists()
+//  }
 
   def schemaExists(schema: Database#Schema)(implicit c: -:[Database]) = {
     val sql = new SingleSQL {

@@ -21,6 +21,19 @@ trait ConstraintPK2TestTableRelation extends Accessor with TableDefinition {
   def constraints = Seq(PrimaryKey(id1, id2))
 }
 
+trait ConstraintUQTestTableRelation extends Accessor with TableDefinition {
+  val id = new int("id") with notnull
+  def fields = Seq(id)
+  def constraints = Seq(Unique(id))
+}
+
+trait ConstraintUQ2TestTableRelation extends Accessor with TableDefinition {
+  val id1 = new int("id1") with notnull
+  val id2 = new int("id2") with notnull
+  def fields = Seq(id1, id2)
+  def constraints = Seq(Unique(id1, id2))
+}
+
 trait ConstraintFKTestTableRelation extends Accessor with TableDefinition {
   val foreignId = new int("foreignId") with notnull
   def fields = Seq(foreignId)
@@ -37,6 +50,8 @@ trait ConstraintFK2TestTableRelation extends Accessor with TableDefinition {
 trait ConstraintsTestDB extends Database with DefaultSchema {
   object ConstraintPKTestTable extends Table("ConstraintPKTestTable") with ConstraintPKTestTableRelation
   object ConstraintPK2TestTable extends Table("ConstraintPK2TestTable") with ConstraintPK2TestTableRelation
+  object ConstraintUQTestTable extends Table("ConstraintUQTestTable") with ConstraintUQTestTableRelation
+  object ConstraintUQ2TestTable extends Table("ConstraintUQ2TestTable") with ConstraintUQ2TestTableRelation
   object ConstraintFKTestTable extends Table("ConstraintFKTestTable") with ConstraintFKTestTableRelation
   object ConstraintFK2TestTable extends Table("ConstraintFK2TestTable") with ConstraintFK2TestTableRelation
 }
@@ -57,11 +72,15 @@ abstract class ConstraintsTest extends FeatureSpec with BeforeAndAfter with Shou
     ConstraintFKTestTable drop (true)
     ConstraintPK2TestTable drop (true)
     ConstraintPKTestTable drop (true)
+    ConstraintUQ2TestTable drop (true)
+    ConstraintUQTestTable drop (true)
 
     ConstraintPKTestTable createTable ()
     ConstraintPKTestTable addReferentialConstraints()
     ConstraintPK2TestTable createTable ()
     ConstraintPK2TestTable addReferentialConstraints()
+    ConstraintUQTestTable create()
+    ConstraintUQ2TestTable create()
     ConstraintFKTestTable createTable ()
     ConstraintFKTestTable addReferentialConstraints()
     ConstraintFK2TestTable createTable ()
@@ -88,6 +107,30 @@ abstract class ConstraintsTest extends FeatureSpec with BeforeAndAfter with Shou
 
       evaluating {
         ConstraintPK2TestTable insert ConstraintPK2TestTable.Values(c => Seq(c.id1 := 1, c.id2 := 1))
+      } should produce[SQLException]
+    }
+  }
+
+  feature("unique") {
+
+    scenario("inserting a row with unique value same as existing") {
+
+      ConstraintUQTestTable insert ConstraintUQTestTable.Value(_.id := 1)
+
+      evaluating {
+        ConstraintUQTestTable insert ConstraintUQTestTable.Value(_.id := 1)
+      } should produce[SQLException]
+    }
+  }
+
+  feature("composite unique") {
+
+    scenario("inserting a row with unique values same as existing") {
+
+      ConstraintUQ2TestTable insert ConstraintUQ2TestTable.Values(c => Seq(c.id1 := 1, c.id2 := 1))
+
+      evaluating {
+        ConstraintUQ2TestTable insert ConstraintUQ2TestTable.Values(c => Seq(c.id1 := 1, c.id2 := 1))
       } should produce[SQLException]
     }
   }
