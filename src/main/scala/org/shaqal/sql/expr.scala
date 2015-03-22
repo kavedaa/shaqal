@@ -129,6 +129,9 @@ object Expr {
         
     case p: PostfixColumnExpr =>
       (p.column.render + " " + p.op).parens
+      
+    case In(column, values) =>
+      (column.render + " in " + (values map (_ => "(?)") mkString ", ").parens)
   }
 
   def pp(expr: Expr)(implicit columnFormat: ColumnFormat, adapter: Adapter): Element = expr match {

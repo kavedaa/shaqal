@@ -11,16 +11,16 @@ abstract class WhereTest extends FeatureSpec with Matchers with BeforeAndAfter {
 
   import org.shaqal.test.db.CommonTestDB.{ DataTypesTable => DT }
 
-    val dtf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss")
-    val df = new SimpleDateFormat("yyyy.MM.dd")
-    
-    final val LastSecondOf2012 = dtf parse "2012.12.31 23:59:59"
-    final val LastDayOf2012 = new java.sql.Date((df parse "2012.12.31").getTime) 
-    final val FirstSecondOf2013 = dtf parse "2013.01.01 00:00:01"
-    final val FirstDayOf2013 = new java.sql.Date((df parse "2013.01.01").getTime) 
-    
+  val dtf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss")
+  val df = new SimpleDateFormat("yyyy.MM.dd")
+
+  final val LastSecondOf2012 = dtf parse "2012.12.31 23:59:59"
+  final val LastDayOf2012 = new java.sql.Date((df parse "2012.12.31").getTime)
+  final val FirstSecondOf2013 = dtf parse "2013.01.01 00:00:01"
+  final val FirstDayOf2013 = new java.sql.Date((df parse "2013.01.01").getTime)
+
   before {
-    
+
     DT createTable ()
 
     DT insert DT.Values(d => Seq(
@@ -72,7 +72,7 @@ abstract class WhereTest extends FeatureSpec with Matchers with BeforeAndAfter {
   feature("is null") {
 
     //  testing one datatype should be sufficient here 
-    
+
     scenario("int, nullable") {
       DT where (_.intTestNullable.isNull) select (_.id) list () shouldEqual List(2)
     }
@@ -81,7 +81,7 @@ abstract class WhereTest extends FeatureSpec with Matchers with BeforeAndAfter {
   feature("is not null") {
 
     //  and here
-    
+
     scenario("int, nullable") {
       DT where (_.intTestNullable.isNotNull) select (_.id) list () shouldEqual List(1)
     }
@@ -97,9 +97,9 @@ abstract class WhereTest extends FeatureSpec with Matchers with BeforeAndAfter {
     scenario("smallint, nullable") {
       DT where (_.smallintTestNullable is (1: Short)) select (_.id) list () shouldEqual List(1)
     }
-    
+
     scenario("smallint, nullable, is null") {
-      DT where(_.smallintTestNullable is None) select(_.id) list() shouldEqual List(2)
+      DT where (_.smallintTestNullable is None) select (_.id) list () shouldEqual List(2)
     }
 
     scenario("int, not null") {
@@ -143,89 +143,89 @@ abstract class WhereTest extends FeatureSpec with Matchers with BeforeAndAfter {
     }
 
     scenario("char, not null") {
-      DT where(_.charTest is "abc") select(_.id) list() shouldEqual List(1)
+      DT where (_.charTest is "abc") select (_.id) list () shouldEqual List(1)
     }
-    
+
     scenario("char, nullable") {
-      DT where(_.charTestNullable is "abc") select(_.id) list() shouldEqual List(1)
+      DT where (_.charTestNullable is "abc") select (_.id) list () shouldEqual List(1)
     }
-    
+
     scenario("char, nullable, is null") {
-      DT where(_.charTestNullable is None) select(_.id) list() shouldEqual List(2)
+      DT where (_.charTestNullable is None) select (_.id) list () shouldEqual List(2)
     }
-    
+
     scenario("varchar, not null") {
-      DT where(_.varcharTest is "John Smith") select(_.id) list() shouldEqual List(1)
+      DT where (_.varcharTest is "John Smith") select (_.id) list () shouldEqual List(1)
     }
-    
+
     scenario("varchar, nullable") {
-      DT where(_.varcharTestNullable is "John Smith") select(_.id) list() shouldEqual List(1)      
+      DT where (_.varcharTestNullable is "John Smith") select (_.id) list () shouldEqual List(1)
     }
-    
+
     scenario("varchar, nullable, is null") {
-      DT where(_.varcharTestNullable is None) select(_.id) list() shouldEqual List(2)
+      DT where (_.varcharTestNullable is None) select (_.id) list () shouldEqual List(2)
     }
-    
+
     scenario("double, not null") {
-      DT where(_.doubleTest is 3.14) select(_.id) list() shouldEqual List(1)
+      DT where (_.doubleTest is 3.14) select (_.id) list () shouldEqual List(1)
     }
-    
+
     scenario("double, nullable") {
-      DT where(_.doubleTestNullable is 3.14) select(_.id) list() shouldEqual List(1)
+      DT where (_.doubleTestNullable is 3.14) select (_.id) list () shouldEqual List(1)
     }
-    
+
     scenario("double, nullable, is null") {
-      DT where(_.doubleTestNullable is None) select(_.id) list() shouldEqual List(2)
+      DT where (_.doubleTestNullable is None) select (_.id) list () shouldEqual List(2)
     }
-    
+
     scenario("timestamp, not null") {
-      DT where(_.timestampTest is LastSecondOf2012) select(_.id) list() shouldEqual List(1)
+      DT where (_.timestampTest is LastSecondOf2012) select (_.id) list () shouldEqual List(1)
     }
-    
+
     scenario("timestamp, nullable") {
-      DT where(_.timestampTestNullable is LastSecondOf2012) select(_.id) list() shouldEqual List(1)
+      DT where (_.timestampTestNullable is LastSecondOf2012) select (_.id) list () shouldEqual List(1)
     }
-    
+
     scenario("timestamp, nullable, is null") {
-      DT where(_.timestampTestNullable is None) select(_.id) list() shouldEqual List(2)
+      DT where (_.timestampTestNullable is None) select (_.id) list () shouldEqual List(2)
     }
-    
+
     scenario("date, not null") {
-      DT where(_.dateTest is LastDayOf2012) select(_.id) list() shouldEqual List(1)
+      DT where (_.dateTest is LastDayOf2012) select (_.id) list () shouldEqual List(1)
     }
-    
+
     scenario("date, nullable") {
-      DT where(_.dateTestNullable is LastDayOf2012) select(_.id) list() shouldEqual List(1)
+      DT where (_.dateTestNullable is LastDayOf2012) select (_.id) list () shouldEqual List(1)
     }
-    
+
     scenario("date, nullable, is null") {
-      DT where(_.dateTestNullable is None) select(_.id) list() shouldEqual List(2)
+      DT where (_.dateTestNullable is None) select (_.id) list () shouldEqual List(2)
     }
-   
+
     scenario("numeric, not null") {
-      DT where(_.numericTest is BigDecimal("123.45")) select(_.id) list() shouldEqual List(1)
+      DT where (_.numericTest is BigDecimal("123.45")) select (_.id) list () shouldEqual List(1)
     }
-    
+
     scenario("numeric, nullable") {
-      DT where(_.numericTestNullable is BigDecimal("123.45")) select(_.id) list() shouldEqual List(1)
+      DT where (_.numericTestNullable is BigDecimal("123.45")) select (_.id) list () shouldEqual List(1)
     }
 
     scenario("numeric, nullable, is null") {
-      DT where(_.numericTestNullable is None) select(_.id) list() shouldEqual List(2)
+      DT where (_.numericTestNullable is None) select (_.id) list () shouldEqual List(2)
     }
-   
+
     scenario("bit, not null") {
-      DT where(_.bitTest is true) select(_.id) list() shouldEqual List(1)
+      DT where (_.bitTest is true) select (_.id) list () shouldEqual List(1)
     }
-    
+
     scenario("bit, nullable") {
-      DT where(_.bitTestNullable is true) select(_.id) list() shouldEqual List(1)
+      DT where (_.bitTestNullable is true) select (_.id) list () shouldEqual List(1)
     }
 
     scenario("bit, nullable, is null") {
-      DT where(_.bitTestNullable is None) select(_.id) list() shouldEqual List(2)
+      DT where (_.bitTestNullable is None) select (_.id) list () shouldEqual List(2)
     }
-    
+
   }
 
   feature("isnt") {
@@ -245,7 +245,7 @@ abstract class WhereTest extends FeatureSpec with Matchers with BeforeAndAfter {
     scenario("smallint, nullable, isn't null") {
       DT where (_.smallintTestNullable isnt None) select (_.id) list () shouldEqual List(1)
     }
-    
+
     scenario("int, not null") {
       DT where (_.intTest isnt 123456) select (_.id) list () shouldEqual List(2)
     }
@@ -269,13 +269,13 @@ abstract class WhereTest extends FeatureSpec with Matchers with BeforeAndAfter {
     scenario("bigint, nullable") {
       DT where (_.bigintTestNullable isnt 12345678901L) select (_.id) list () shouldEqual Nil
     }
-    
+
     scenario("bigint, nullable, isn't some") {
-      DT where(_.bigintTestNullable isnt Some(12345678901L)) select(_.id) list() shouldEqual List(2)
+      DT where (_.bigintTestNullable isnt Some(12345678901L)) select (_.id) list () shouldEqual List(2)
     }
-    
+
     scenario("bigint, nullable, isn't null") {
-      DT where(_.bigintTestNullable isnt None) select(_.id) list() shouldEqual List(1)
+      DT where (_.bigintTestNullable isnt None) select (_.id) list () shouldEqual List(1)
     }
 
     scenario("char1, not null") {
@@ -285,15 +285,15 @@ abstract class WhereTest extends FeatureSpec with Matchers with BeforeAndAfter {
     scenario("char1, nullable") {
       DT where (_.char1TestNullable isnt 'a') select (_.id) list () shouldEqual Nil
     }
-    
+
     scenario("char1, nullable, isn't some") {
-      DT where(_.char1TestNullable isnt Some('a')) select(_.id) list() shouldEqual List(2)
+      DT where (_.char1TestNullable isnt Some('a')) select (_.id) list () shouldEqual List(2)
     }
-    
+
     scenario("char1, nullable, isn't null") {
-      DT where(_.char1TestNullable isnt None) select(_.id) list() shouldEqual List(1)
+      DT where (_.char1TestNullable isnt None) select (_.id) list () shouldEqual List(1)
     }
-    
+
     scenario("char, not null") {
       DT where (_.charTest isnt "abc") select (_.id) list () shouldEqual List(2)
     }
@@ -301,13 +301,13 @@ abstract class WhereTest extends FeatureSpec with Matchers with BeforeAndAfter {
     scenario("char, nullable") {
       DT where (_.charTestNullable isnt "abc") select (_.id) list () shouldEqual Nil
     }
-    
+
     scenario("char, nullable, isn't some") {
-      DT where(_.charTestNullable isnt Some("abc")) select(_.id) list() shouldEqual List(2)
+      DT where (_.charTestNullable isnt Some("abc")) select (_.id) list () shouldEqual List(2)
     }
-    
+
     scenario("char, nullable, isn't null") {
-      DT where(_.charTestNullable isnt None) select(_.id) list() shouldEqual List(1)
+      DT where (_.charTestNullable isnt None) select (_.id) list () shouldEqual List(1)
     }
 
     scenario("varchar, not null") {
@@ -317,13 +317,13 @@ abstract class WhereTest extends FeatureSpec with Matchers with BeforeAndAfter {
     scenario("varchar, nullable") {
       DT where (_.varcharTestNullable isnt "John Smith") select (_.id) list () shouldEqual Nil
     }
-    
+
     scenario("varchar, nullable, isn't some") {
-      DT where(_.varcharTestNullable isnt Some("John Smith")) select(_.id) list() shouldEqual List(2)
+      DT where (_.varcharTestNullable isnt Some("John Smith")) select (_.id) list () shouldEqual List(2)
     }
-    
+
     scenario("varchar, nullable, isn't null") {
-      DT where(_.varcharTestNullable isnt None) select(_.id) list() shouldEqual List(1)
+      DT where (_.varcharTestNullable isnt None) select (_.id) list () shouldEqual List(1)
     }
 
     scenario("double, not null") {
@@ -333,15 +333,15 @@ abstract class WhereTest extends FeatureSpec with Matchers with BeforeAndAfter {
     scenario("double, nullable") {
       DT where (_.doubleTestNullable isnt 3.14) select (_.id) list () shouldEqual Nil
     }
-    
+
     scenario("double, nullable, isn't some") {
-      DT where(_.doubleTestNullable isnt Some(3.14)) select(_.id) list() shouldEqual List(2)
+      DT where (_.doubleTestNullable isnt Some(3.14)) select (_.id) list () shouldEqual List(2)
     }
-    
+
     scenario("double, nullable, isn't null") {
-      DT where(_.doubleTestNullable isnt None) select(_.id) list() shouldEqual List(1)
+      DT where (_.doubleTestNullable isnt None) select (_.id) list () shouldEqual List(1)
     }
-    
+
     scenario("timestamp, not null") {
       DT where (_.timestampTest isnt LastSecondOf2012) select (_.id) list () shouldEqual List(2)
     }
@@ -349,13 +349,13 @@ abstract class WhereTest extends FeatureSpec with Matchers with BeforeAndAfter {
     scenario("timestamp, nullable") {
       DT where (_.timestampTestNullable isnt LastSecondOf2012) select (_.id) list () shouldEqual Nil
     }
-    
+
     scenario("timestamp, nullable, isn't some") {
-      DT where(_.timestampTestNullable isnt Some(LastSecondOf2012)) select(_.id) list() shouldEqual List(2)
+      DT where (_.timestampTestNullable isnt Some(LastSecondOf2012)) select (_.id) list () shouldEqual List(2)
     }
-    
+
     scenario("timestamp, nullable, isn't null") {
-      DT where(_.timestampTestNullable isnt None) select(_.id) list() shouldEqual List(1)
+      DT where (_.timestampTestNullable isnt None) select (_.id) list () shouldEqual List(1)
     }
 
     scenario("date, not null") {
@@ -365,15 +365,15 @@ abstract class WhereTest extends FeatureSpec with Matchers with BeforeAndAfter {
     scenario("date, nullable") {
       DT where (_.dateTestNullable isnt LastDayOf2012) select (_.id) list () shouldEqual Nil
     }
-    
+
     scenario("date, nullable, isn't some") {
-      DT where(_.dateTestNullable isnt Some(LastDayOf2012)) select(_.id) list() shouldEqual List(2)
+      DT where (_.dateTestNullable isnt Some(LastDayOf2012)) select (_.id) list () shouldEqual List(2)
     }
-    
+
     scenario("date, nullable, isn't null") {
-      DT where(_.dateTestNullable isnt None) select(_.id) list() shouldEqual List(1)
+      DT where (_.dateTestNullable isnt None) select (_.id) list () shouldEqual List(1)
     }
-    
+
     scenario("numeric, not null") {
       DT where (_.numericTest isnt BigDecimal(123.45)) select (_.id) list () shouldEqual List(2)
     }
@@ -381,15 +381,15 @@ abstract class WhereTest extends FeatureSpec with Matchers with BeforeAndAfter {
     scenario("numeric, nullable") {
       DT where (_.numericTestNullable isnt BigDecimal(123.45)) select (_.id) list () shouldEqual Nil
     }
-    
+
     scenario("numeric, nullable, isn't some") {
-      DT where(_.numericTestNullable isnt Some(BigDecimal(123.45))) select(_.id) list() shouldEqual List(2)
+      DT where (_.numericTestNullable isnt Some(BigDecimal(123.45))) select (_.id) list () shouldEqual List(2)
     }
-    
+
     scenario("numeric, nullable, isn't null") {
-      DT where(_.numericTestNullable isnt None) select(_.id) list() shouldEqual List(1)
+      DT where (_.numericTestNullable isnt None) select (_.id) list () shouldEqual List(1)
     }
-    
+
     scenario("bit, not null") {
       DT where (_.bitTest isnt true) select (_.id) list () shouldEqual List(2)
     }
@@ -397,20 +397,30 @@ abstract class WhereTest extends FeatureSpec with Matchers with BeforeAndAfter {
     scenario("bit, nullable") {
       DT where (_.bitTestNullable isnt true) select (_.id) list () shouldEqual Nil
     }
-    
+
     scenario("bit, nullable, isn't some") {
-      DT where(_.bitTestNullable isnt Some(true)) select(_.id) list() shouldEqual List(2)
+      DT where (_.bitTestNullable isnt Some(true)) select (_.id) list () shouldEqual List(2)
     }
-    
+
     scenario("bit, nullable, isn't null") {
-      DT where(_.bitTestNullable isnt None) select(_.id) list() shouldEqual List(1)
+      DT where (_.bitTestNullable isnt None) select (_.id) list () shouldEqual List(1)
     }
-    
+
   }
 
   // TODO: double, timestamp, date, numeric
-  
-  
+
+  feature("in") {
+
+    scenario("int") {
+      DT where (_.intTest in Nil) select (_.id) list () shouldEqual Nil
+      DT where (_.intTest in Seq(123456)) select (_.id) list () shouldEqual List(1)
+      DT where (_.intTest in Seq(123456, 523456)) select (_.id) list () shouldEqual List(1, 2)
+      DT where (_.intTest in Seq(123456, 523456, 99999)) select (_.id) list () shouldEqual List(1, 2)
+    }
+
+  }
+
   feature(">") {
 
     scenario("smallint, not null") {
