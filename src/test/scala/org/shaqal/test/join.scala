@@ -6,127 +6,82 @@ import org.shaqal.test.db.TestDB
 
 abstract class JoinTest extends FeatureSpec with BeforeAndAfter with Matchers {
 
-  trait JoinTestForeignDefinition extends TableDefinition { this: TableLike with Fields =>
-
-    val id = new int("id") with notnull
-    val text = new varchar(500)("text") with notnull
-
-    def fields = Seq(id, text)
-
-    def constraints = Seq(PrimaryKey(id))
-  }
-
-  trait JoinTestForeignAccessor extends JoinTestForeignDefinition with Accessor with PK[Int] {
-    val pk = id
-  }
-
-  case class JoinTestForeign(id: Int, text: String)
-
-  trait JoinTestForeignMapper extends JoinTestForeignDefinition with PKMapper[JoinTestForeign, Int] {
-
-    val (pk, pkf) = PK(id, _.id)
-
-    val (reader, writer) = RW(
-      implicit rs => JoinTestForeign(id.read, text.read),
-      x => Seq(id := x.id, text := x.text))
-  }
-
-  type JoinTestTuple = (String, Int, Option[Int], Int, Option[Int])
-
-  case class JoinTest(
-    id: String,
-    foreign1Id: Int,
-    foreign2Id: Option[Int],
-    foreign3: JoinTestForeign,
-    foreign4: Option[JoinTestForeign])
-
-  trait JoinTestMapper extends DualPKMapper[JoinTest, JoinTestTuple, String] with TableDefinition {
-
-    val id = new char(1)("id") with notnull
-    val foreign1Id = new int("foreignAccessorId") with notnull
-    val foreign2Id = new int("foreignAccessorNullableId") with nullable
-    val foreign3Id = new int("foreignMapperId") with notnull
-    val foreign4Id = new int("foreignMapperNullableId") with nullable
-
-    val foreign1 = new Join(foreign1Id) with AccessorJoin with JoinTestForeignAccessor {
-      def tableName = DB.JoinTestForeign.tableName
-    }
-
-    val foreign2 = new Join(foreign2Id) with AccessorJoin with JoinTestForeignAccessor {
-      def tableName = DB.JoinTestForeign.tableName
-    }
-
-    val foreign3 = new Join(foreign3Id) with MapperJoin[JoinTestForeign] with JoinTestForeignMapper {
-      def tableName = DB.JoinTestForeign.tableName
-    }
-
-    val foreign4 = new Join(foreign4Id) with MapperJoin[JoinTestForeign] with JoinTestForeignMapper {
-      def tableName = DB.JoinTestForeign.tableName
-    }
-
-    def fields = Seq(id, foreign1, foreign2, foreign3, foreign4)
-
-    def constraints = Seq(
-      ForeignKey(foreign1Id) references DB.JoinTestForeign(_.id),
-      ForeignKey(foreign2Id) references DB.JoinTestForeign(_.id),
-      ForeignKey(foreign3Id) references DB.JoinTestForeign(_.id),
-      ForeignKey(foreign4Id) references DB.JoinTestForeign(_.id))
-
-    val (pk, pkf) = PK(id, _._1)
-
-    val (reader, writer) = RW(
-      implicit rs => JoinTest(id.read, foreign1Id.read, foreign2Id.read, foreign3.read, foreign4.read),
-      x => Seq(id := x._1, foreign1Id := x._2, foreign2Id := x._3, foreign3Id := x._4, foreign4Id := x._5))
-  }
-
   object DB extends Database with DefaultSchema {
-    type D = TestDB
-    object JoinTestForeign extends Table("JoinTestForeign") with JoinTestForeignMapper
-    object JoinTest extends Table("JoinTest") with JoinTestMapper
 
+    type D = TestDB
+
+    trait TableAAccessor extends Accessor with TableDefinition {
+      val id = new int("id") with notnull
+      val pk = id
+      def fields = Seq(id)
+      def constraints = Nil
+    }
+
+    object TableA extends Table("TableA") with TableAAccessor
+
+    object TableB extends Table("TableB") with Accessor with TableDefinition {
+      val id = new int("id") with notnull
+      val aId = new int("aId1") with notnull
+      val a = new LeftJoin(aId) with AccessorJoin with TableAAccessor {
+        def tableName = TableA.tableName
+      }
+      def fields = Seq(id, a)
+      def constraints = Nil
+    }
+
+    object TableC extends Table("TableC") with Accessor with TableDefinition {
+      val id = new int("id") with notnull
+      val aId1 = new int("aId1") with notnull
+      val aId2 = new int("aId2") with notnull
+      val a1 = new Join(aId1) with AccessorJoin with TableAAccessor { def tableName = TableA.tableName }
+      val a2 = new Join(aId2) with AccessorJoin with TableAAccessor {
+        def tableName = TableA.tableName
+        override def aliasName = super.aliasName + "2"
+      }
+      def fields = Seq(id, a1, a2)
+      def constraints = Nil
+    }
   }
 
   implicit def dbc: DBC[TestDB]
 
   before {
 
-    DB.JoinTestForeign create ()
-    DB.JoinTest create ()
-
-    DB.JoinTestForeign ++= Seq(
-      JoinTestForeign(1, "foo"),
-      JoinTestForeign(2, "bar"),
-      JoinTestForeign(3, "zip"))
-
-    DB.JoinTest += ("a", 1, None: Option[Int], 2, Some(3): Option[Int])
+    DB.TableA create ()
+    DB.TableB create ()
+    DB.TableC create ()
   }
 
   after {
-    DB.JoinTest drop (true)
-    DB.JoinTestForeign drop (true)
+    DB.TableA drop (true)
+    DB.TableB drop (true)
+    DB.TableC drop (true)
   }
 
-  feature("accessor join accessor") {
+  feature("join the same table several times") {
 
-    scenario("single column join, not nullable") {
+    scenario("inner join") {
 
-//      DB.JoinTest select (_.foreign1.text) option () should equal(Some("foo", "bar"))
-      println(DB.JoinTest list())
+      DB.TableA insert DB.TableA.Value(_.id := 1)
+      DB.TableC insert DB.TableC.Values(c => Seq(c.id := 1, c.aId1 := 1, c.aId2 := 1))
+
+      val id = DB.TableC where (_.id is 1) select (_.a1.id) option ()
+
+      id shouldEqual Some(1)
     }
 
-    scenario("single column join, nullable, when not null") {
+  }
 
-      //    Person select (p => (p.name, p.occupation.name)) option () should equal(Some(("John", "Plumber")))
+  feature("there is no corresponding entry in the foreign table") {
+
+    scenario("left join") {
+
+        DB.TableB insert DB.TableB.Values(b => Seq(b.id := 1, b.aId := 1))
+        
+        val res = DB.TableB select(b => (b.id, b.a.id)) option()
+   
+        res shouldEqual Some((1, 0))  // note: an int value of null becomes 0
     }
-
-    scenario("single column join, nullable, when null") {
-
-      //    Person updateWhere(_ => True) set Person.Value(_.occupationId := None)
-
-      //	We can't avoid null here...maybe with some hackery
-      //    Person select (p => (p.name, p.occupation.name)) option () should equal(Some(("John", null)))
-    }
-
   }
 
 }

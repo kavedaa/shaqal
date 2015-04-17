@@ -88,6 +88,17 @@ trait Joining { r: ReadOnlyAccessorLike =>
     def f[X](x: => X)(implicit rs: ResultSet) = fk f x
   }
 
+  
+  //  This should be used when there might not be a corresponding entry in the foreign table
+  //  i.e. when no FK constraint is set. TODO not 100% sure we couldn't have fixed this some other way.
+  
+  trait MapperJoinNullable[J] extends MapperForeign[J] with SingleJoinLike { this: ReadOnlyMapperLike[J] =>
+    type F[X] = Option[X]
+    def checkNull(implicit rs: ResultSet) = pk.checkNull
+    def f[X](x: => X)(implicit rs: ResultSet) = if (checkNull) None else Some(x)
+  }
+  
+  
   //	We cannot compute the right types here, so we need to be explicit about nullability
 
   trait MapperJoin2Like[J] extends MapperForeign[J] with DualJoinLike { this: ReadOnlyMapperLike[J] =>

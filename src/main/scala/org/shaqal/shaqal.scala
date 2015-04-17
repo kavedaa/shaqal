@@ -43,11 +43,11 @@ trait SchemaLike {
   def database: Database { type D = SchemaLike.this.D }
   def schemaName: Option[String]
 
-//  def tableExists(table: TableLike)(implicit c: -:[D]) = database tableExists table
+  //  def tableExists(table: TableLike)(implicit c: -:[D]) = database tableExists table
 
   class Table(name: String) extends TableLike {
     val schema: SchemaLike { type D = SchemaLike.this.D } = SchemaLike.this
-//    def database: Database { type D = SchemaLike.this.D } = schema.database
+    //    def database: Database { type D = SchemaLike.this.D } = schema.database
     def tableName = name
   }
 }

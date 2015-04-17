@@ -64,3 +64,5 @@ class SchemaTest extends org.shaqal.test.SchemaTest with MSSQL
 class JoinTest extends org.shaqal.test.JoinTest with MSSQL
 
 class Join2Test extends org.shaqal.test.Join2Test with MSSQL
+
+class MapperJoinTest extends org.shaqal.test.MapperJoinTest with MSSQL
