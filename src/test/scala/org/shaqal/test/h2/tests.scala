@@ -1,4 +1,4 @@
-package org.shaqal.test.feature
+package org.shaqal.test.h2
 
 import org.shaqal._
 import org.shaqal.test.db.TestDB

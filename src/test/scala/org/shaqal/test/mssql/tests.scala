@@ -1,4 +1,4 @@
-package org.shaqal.test.integration.mssql
+package org.shaqal.test.mssql
 
 import org.shaqal._
 import org.shaqal.sql.adapter.MSSQLAdapter
@@ -17,17 +17,17 @@ object JtdsFactory extends DataSourceFactory {
 }
 
 class MSSQLDBC[D <: Database]
-  extends DataSourceDBC[D]("mssql-test-db.properties", JtdsFactory)
+  extends DataSourceDBC[D](System.getProperty("user.home") + "/mssql-test-db.properties", JtdsFactory)
   with UseSingleConnection {
-  
+
   override implicit val adapter = MSSQLAdapter
-  
-//  override def onSql(sql: SQL) { println(sql.pp.render)}
+
+  //  override def onSql(sql: SQL) { println(sql.pp.render)}
 }
-   
+
 trait MSSQL {
-  implicit def dbc = new MSSQLDBC[TestDB]   {
-//    override def onSql(sql: SQL) = println(sql.pp.render)
+  implicit def dbc = new MSSQLDBC[TestDB] {
+    //    override def onSql(sql: SQL) = println(sql.pp.render)
   }
 }
 
@@ -42,7 +42,7 @@ class DataTypesTest extends org.shaqal.test.DataTypesTest with MSSQL
 class DefinitionTest extends org.shaqal.test.DefinitionTest with MSSQL
 
 class InheritDBTest extends org.shaqal.test.InheritDBTest {
-  implicit def dbc = new MSSQLDBC[SubDB]  
+  implicit def dbc = new MSSQLDBC[SubDB]
 }
 
 class SelectTest extends org.shaqal.test.SelectTest with MSSQL
