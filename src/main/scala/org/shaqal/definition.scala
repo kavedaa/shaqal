@@ -22,23 +22,26 @@ trait TableDefinition extends Constraints { this: TableLike with Fields =>
   }
 
   def create[U](f: String => U)(implicit c: -:[D]): Boolean = {
-    if (!database.tableExists(this)) {
-      createTable()
+    val created = createTable()
+    if (created) {
       addReferentialConstraints()
       f(path mkString ".")
-      true
     }
-    else false
+    created
   }
 
   def create()(implicit c: -:[D]): Boolean = {
     create(s => Unit)
   }
 
-  def createTable()(implicit c: -:[D]) {
-    val sql = c.adapter createTableSql (this, cols map c.adapter.columnDefinitionSql)
-    c execute sql
-    addNonReferentialConstraints()
+  def createTable()(implicit c: -:[D]) = {
+    if (!database.tableExists(this)) {
+      val sql = c.adapter createTableSql (this, cols map c.adapter.columnDefinitionSql)
+      c execute sql
+      addNonReferentialConstraints()
+      true
+    }
+    else false
   }
 
   def addConstraints()(implicit c: -:[D]) {
@@ -60,7 +63,7 @@ trait TableDefinition extends Constraints { this: TableLike with Fields =>
     }
   }
 
-//  def tableExists()(implicit c: -:[D]) = c.adapter tableExists this
+  //  def tableExists()(implicit c: -:[D]) = c.adapter tableExists this
 
   def drop(areYouSure: Boolean)(implicit c: -:[D]) =
     if (areYouSure) {
