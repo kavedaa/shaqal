@@ -5,24 +5,36 @@ import org.shaqal.sql.adapter._
 import org.shaqal.sql.pretty._
 import scala.collection.mutable.ListBuffer
 
-class DataLength(val value: Option[Int]) extends AnyVal
+sealed abstract class DataLength {
+  def render: Option[String]
+}
 
 object DataLength {
-  implicit def fromInt(i: Int) = new DataLength(Some(i))
+
+  case class Value(value: Int) extends DataLength {
+    def render = Some(s"${value.toString}")
+  }
+
+  case object Max extends DataLength {
+    def render = Some("max")
+  }
+
+  case object None extends DataLength {
+    def render = scala.None
+  }
+
+  implicit def fromInt(i: Int) = Value(i)
 }
 
 trait ColumnDefinition extends ColumnLike {
 
   def sqlType: Int
-  
+
   def dataTypeName(adapter: Adapter) = fullDataType(adapter dataType sqlType)
-  
-  //  val dataLength: ColumnDefinition.DataLength
+
   val elements = ListBuffer[ColumnDefinitionElement[_]]()
 
   def addElement(element: ColumnDefinitionElement[_]) { elements += element }
-
-  //  def dataType = List(Some(dataTypeName), dataLength.value map ("(" + _ + ")")).flatten mkString
 
   def fullDataType(typeName: String): String
 
@@ -31,11 +43,6 @@ trait ColumnDefinition extends ColumnLike {
   def definitionSql(implicit adapter: Adapter) = adapter columnDefinitionSql this
 }
 
-//trait NoColumnDefinition extends ColumnDefinition {
-//  val dataLength = None
-//  val elements = Nil
-//}
-//
 abstract class ColumnDefinitionElement[C] {
   val hasGeneratedValue = false
   def render(implicit adapter: Adapter): String

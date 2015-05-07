@@ -25,13 +25,13 @@ abstract class char1(name: String)(implicit t: TableLike)
 
 abstract class char(val length: DataLength)(name: String)(implicit t: TableLike)
   extends CharCol(name) with ColumnDefinition {
-  def this(name: String)(implicit t: TableLike) = this(new DataLength(None))(name)
+  def this(name: String)(implicit t: TableLike) = this(DataLength.None)(name)
   def table = t
 }
 
 abstract class varchar(val length: DataLength)(name: String)(implicit t: TableLike)
   extends VarcharCol(name) with ColumnDefinition {
-  def this(name: String)(implicit t: TableLike) = this(new DataLength(None))(name)
+  def this(name: String)(implicit t: TableLike) = this(DataLength.None)(name)
   def table = t
 }
 
@@ -52,8 +52,8 @@ abstract class date(name: String)(implicit t: TableLike)
 
 abstract class numeric(val precision: DataLength, val scale: DataLength)(name: String)(implicit t: TableLike)
   extends NumericCol(name) with ColumnDefinition {
-  def this(precision: DataLength)(name: String)(implicit t: TableLike) = this(precision, new DataLength(None))(name)
-  def this(name: String)(implicit t: TableLike) = this(new DataLength(None), new DataLength(None))(name)
+  def this(precision: DataLength)(name: String)(implicit t: TableLike) = this(precision, DataLength.None)(name)
+  def this(name: String)(implicit t: TableLike) = this(DataLength.None, DataLength.None)(name)
   def table = t
 }
 

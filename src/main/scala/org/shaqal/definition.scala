@@ -8,6 +8,8 @@ import scala.collection.mutable.ListBuffer
 
 trait TableDefinition extends Constraints { this: TableLike with Fields =>
 
+  def max = DataLength.Max
+
   trait identity extends notnull { this: Col =>
     addElement(ColumnDefinitionElements.Identity)
   }

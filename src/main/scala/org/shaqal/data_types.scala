@@ -138,7 +138,7 @@ abstract class StringLikeCol(name: String, sqlType: Int, dataTypeName: String) e
   
   val length: DataLength
   
-  def fullDataType(typeName: String) = List(Some(typeName), length.value map ("(" + _ + ")")).flatten mkString
+  def fullDataType(typeName: String) = List(Some(typeName), length.render map("(" + _ + ")")).flatten mkString
   
   def set(v: String) = ColumnParam(this, v)
   def set(v: Option[String]) = ColumnParam(this, v map Param.apply getOrElse Null)
@@ -261,7 +261,7 @@ abstract class NumericCol(name: String) extends Col(name, Types.NUMERIC) {
   val precision: DataLength
   val scale: DataLength
   
-  def dim = List(precision.value, scale.value).flatten mkString ", " match {
+  def dim = List(precision, scale) flatMap(_.render) mkString ", " match {
     case s if s.isEmpty => None
     case s => Some("(" + s + ")")
   }
