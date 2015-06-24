@@ -34,12 +34,12 @@ trait Constraints { this: TableLike with TableDefinition =>
   }
 
   object Unique {
-    def apply(c: Column) = new Unique(Seq(c))
-    private def product(p: Product) = new Unique(p.productIterator.toSeq.asInstanceOf[Seq[Column]])
-    def apply(cs: (Column, Column)) = product(cs)
-    def apply(cs: (Column, Column, Column)) = product(cs)
-    def apply(cs: (Column, Column, Column, Column)) = product(cs)
-    def apply(cs: (Column, Column, Column, Column, Column)) = product(cs)
+    def apply(cs: Column*) = new Unique(cs)
+//    private def product(p: Product) = new Unique(p.productIterator.toSeq.asInstanceOf[Seq[Column]])
+//    def apply(cs: (Column, Column)) = product(cs)
+//    def apply(cs: (Column, Column, Column)) = product(cs)
+//    def apply(cs: (Column, Column, Column, Column)) = product(cs)
+//    def apply(cs: (Column, Column, Column, Column, Column)) = product(cs)
   }
 
   sealed trait ReferentialAction {
