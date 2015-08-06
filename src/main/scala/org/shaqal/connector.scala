@@ -7,10 +7,10 @@ import scala.util._
 
 abstract class ConnectorBase {
   def getConnection: Connection
-  def close(conn: Connection)  
+  def close(conn: Connection)
 }
 
-trait Counter extends ConnectorBase { 
+trait Counter extends ConnectorBase {
   var count: Long = _
   def resetCounter() { count = 0 }
   abstract override def getConnection = {
@@ -19,21 +19,21 @@ trait Counter extends ConnectorBase {
   }
 }
 
-trait UseSingleConnection extends ConnectorBase { 
-  val conn = super.getConnection  
+trait UseSingleConnection extends ConnectorBase {
+  val conn = super.getConnection
   abstract override def getConnection = conn
   abstract override def close(conn: Connection) {}
 }
 
 abstract class Connector[+D <: Database] extends ConnectorBase with DBOperations {
-  
+
   def throwOnQuery: Boolean
   def throwOnUpdate = true
   def throwOnInsert = true
   def throwOnDelete = true
 
   implicit def adapter: Adapter
-  
+
   def onSql(sql: SQL) {}
   def onError(t: Throwable) { println(t) }
   def onError(sql: SQL, t: Throwable) { println(sql.pp.render); println(t) }
@@ -44,6 +44,35 @@ abstract class Connector[+D <: Database] extends ConnectorBase with DBOperations
   def onTransaction() {}
   def onRollback() {}
   def onCommit() {}
+  
+  case class Debug(queries: Long, rows: Long, millis: Long) {
+    override def toString = s"$queries queries, $rows rows, $millis ms"
+  }
+  
+  object Debug {
+
+    private var q = 0
+    private var r = 0
+    private var startTime = 0L
+
+    def start() = {
+      q = 0
+      r = 0
+      startTime = System.currentTimeMillis
+    }
+
+    def end() = {
+      val endTime = System.currentTimeMillis
+      Debug(q, r, endTime - startTime)
+    }
+    
+    private[shaqal] def incQueries() = { q = q + 1 }
+    private[shaqal] def incRows() = { r = r + 1 }
+
+    def numQueries = q
+    def numRows = r
+  }
+  
 }
 
 abstract class DBC[D <: Database] extends Connector[D] with Transactions[D] {
@@ -54,21 +83,22 @@ abstract class DBC[D <: Database] extends Connector[D] with Transactions[D] {
     try {
       close(getConnection)
       Right("OK")
-    } catch {
+    }
+    catch {
       case ex: Exception =>
         onError(ex)
         Left(ex)
     }
 
   def throwOnQuery = false
-  
+
   def createTXC(conn: Connection) = new TXC(this, conn)
 }
 
 class TXC[+D <: Database](dbc: DBC[D], conn: Connection) extends Connector[D] {
 
   def adapter = dbc.adapter
-  
+
   def getConnection = conn
   def close(conn: Connection) {}
 
@@ -83,12 +113,12 @@ class TXC[+D <: Database](dbc: DBC[D], conn: Connection) extends Connector[D] {
 
   def commit() {
     onCommit()
-    conn commit()
+    conn commit ()
   }
 
   def rollback() {
     onRollback()
-    conn rollback()
+    conn rollback ()
   }
 
   def transaction[T, E >: D <: Database](tx: TXC[E] => T) = Success(tx(this))
