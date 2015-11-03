@@ -58,3 +58,8 @@ class JoinTest extends org.shaqal.test.JoinTest with H2
 class Join2Test extends org.shaqal.test.Join2Test with H2
 
 class MapperJoinTest extends org.shaqal.test.MapperJoinTest with H2
+
+class ForUpdateTest extends org.shaqal.test.ForUpdateTest with H2
+
+//  H2 does not support locks (?)
+// class LockTest extends org.shaqal.test.LockTest with H2

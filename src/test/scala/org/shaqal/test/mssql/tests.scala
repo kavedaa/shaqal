@@ -27,7 +27,7 @@ class MSSQLDBC[D <: Database]
 
 trait MSSQL {
   implicit def dbc = new MSSQLDBC[TestDB] {
-    //    override def onSql(sql: SQL) = println(sql.pp.render)
+//    override def onSql(sql: SQL) = println(sql.render)
   }
 }
 
@@ -66,3 +66,8 @@ class JoinTest extends org.shaqal.test.JoinTest with MSSQL
 class Join2Test extends org.shaqal.test.Join2Test with MSSQL
 
 class MapperJoinTest extends org.shaqal.test.MapperJoinTest with MSSQL
+
+//  MSSQL does not support "for update".
+// class ForUpdateTest extends org.shaqal.test.ForUpdateTest with MSSQL
+
+class LockTest extends org.shaqal.test.LockTest with MSSQL

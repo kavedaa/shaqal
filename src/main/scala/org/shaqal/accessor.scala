@@ -18,7 +18,7 @@ trait Query extends Selecting with AggregateFunctions with Adhoc {
   def fromItem: FromItem
   def whereExpr: Expr = True
 
-  protected def selectSql(s: SelectExpression) = SelectSQL(s, fromItem, whereExpr)
+  protected def selectSql(s: SelectExpression, forUpdate: Boolean = false, locks: Seq[Lock] = Nil) = SelectSQL(s, fromItem, whereExpr, forUpdate, locks)
 
   def where(w: R => Expr): QueryType {
     type QueryType = Query.this.QueryType

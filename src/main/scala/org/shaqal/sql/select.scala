@@ -8,13 +8,13 @@ abstract class SelectExpression extends Renderable {
 }
 
 class ColumnSeq(self: Seq[Column]) extends SelectExpression {
-  implicit val cf = ColumnFormat.Full  
- def render(implicit adapter: Adapter) = self map(_.render) mkString ", "  
- override def pp(implicit adapter: Adapter) = CommaLines(self map(_.render) toList)
+  implicit val cf = ColumnFormat.Full
+  def render(implicit adapter: Adapter) = self map (_.render) mkString ", "
+  override def pp(implicit adapter: Adapter) = CommaLines(self map (_.render) toList)
 }
 
 object SelectExpression {
-  implicit def columnSeq(cs: Seq[Column]) = new ColumnSeq(cs) 
+  implicit def columnSeq(cs: Seq[Column]) = new ColumnSeq(cs)
 }
 
 abstract class FromItem {
@@ -28,38 +28,40 @@ case class TableName(table: TableLike) extends FromItem {
 }
 
 trait SelectLike extends SingleSQL {
-  
-  val selectExpression: SelectExpression
-  val from: FromItem
-  val where: Expr
-  
+
+  def selectExpression: SelectExpression
+  def fromItem: FromItem
+  def whereExpr: Expr
+  def forUpdate: Boolean
+  def locks: Seq[Lock]
+
   implicit val cf = ColumnFormat.TableAlias
-  
-  def render(implicit adapter: Adapter) = List(
-    "select", 
-    selectExpression.render, 
-    "from", 
-    from.render) :::
-    (if (where == True) 
-      Nil 
-    else 
-      List("where", Expr render where)) mkString " "
-      
-  def params = where.params
-  
+
+  val Select = "select"
+  val From = "from"
+  val With = "with"
+  val Where = "where"
+  val ForUpdate = "for update"
+
+  def render(implicit adapter: Adapter) = {
+    val selectFrom = Seq(Select, selectExpression.render, From, fromItem.render)
+    val withLock = if (locks.nonEmpty) Seq(With, Lock render locks) else Nil
+    val where = if (whereExpr != True) Seq(Where, Expr render whereExpr) else Nil 
+    val updateHint = if (forUpdate) Seq(ForUpdate) else Nil
+    (selectFrom ++: withLock ++: where ++: updateHint) mkString " "
+  }
+
+  def params = whereExpr.params
+
   val es: List[Element] = Nil
-  
-  override def pp(implicit adapter: Adapter) = ElementList(
-    "select",
-    Indent(selectExpression.pp),
-    "from",
-    Indent(from.pp)) ++ 
-    (if (where != True)
-      ElementList(
-        "where", 
-        Indent(Expr pp where))
-    else
-      ElementList())    
+
+  override def pp(implicit adapter: Adapter) = {
+    val selectFrom = ElementList(Select, Indent(selectExpression.pp), From, Indent(fromItem.pp))
+    val withLock = if (locks.nonEmpty) ElementList(With, Indent(Lock render locks)) else ElementList()
+    val where = if (whereExpr != True) ElementList(Where, Indent(Expr pp whereExpr)) else ElementList()
+    val updateHint = if (forUpdate) ElementList(ForUpdate) else ElementList()
+    ElementList(selectFrom, withLock, where, updateHint)   
+  }
 }
 
-case class SelectSQL(selectExpression: SelectExpression, from: FromItem, where: Expr) extends SelectLike
+case class SelectSQL(selectExpression: SelectExpression, fromItem: FromItem, whereExpr: Expr, forUpdate: Boolean = false, locks: Seq[Lock] = Nil) extends SelectLike
