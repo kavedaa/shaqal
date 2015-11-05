@@ -38,7 +38,7 @@ trait TableDefinition extends Constraints { this: TableLike with Fields =>
 
   def createTable()(implicit c: -:[D]) = {
     if (!database.tableExists(this)) {
-      val sql = c.adapter createTableSql (this, cols map c.adapter.columnDefinitionSql)
+      val sql = c.adapter createTableSql (this, cols.distinct map c.adapter.columnDefinitionSql)
       c execute sql
       addNonReferentialConstraints()
       true
