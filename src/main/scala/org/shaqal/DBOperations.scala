@@ -79,6 +79,8 @@ trait DBOperations { this: Connector[_] =>
     try {
       val conn = getConnection
       try {
+        //  TODO jtds (at least) throw an exception when there are more than one auto columns
+        //  perhaps better to always just have one
         val prep = if (autosMapper.isDefined) conn.prepareStatement(sql.render, autos.toArray)
         else conn.prepareStatement(sql.render)
         try {

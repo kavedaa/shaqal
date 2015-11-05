@@ -16,7 +16,7 @@ trait Fields { this: TableLike =>
     val fks: Seq[Col]
     def joinExpr: JoinExpr
 
-    override def aliasPath = Fields.this.tableLike.aliasPath :+ tableLike    
+    override def aliasPath = Fields.this.tableLike.aliasPath :+ tableLike
   }
 
   def fields: Seq[Field]
@@ -25,9 +25,12 @@ trait Fields { this: TableLike =>
 
   //  def cols = (fields collect { case c: Col => c }) ++ (foreigns flatMap (_.fks))
 
-  def cols = fields flatMap {
-    case col: Col         => Seq(col)
-    case foreign: Foreign => foreign.fks
+  def cols = {
+    val flattened = fields flatMap {
+      case col: Col         => Seq(col)
+      case foreign: Foreign => foreign.fks
+    }
+    flattened.distinct
   }
 
 }
