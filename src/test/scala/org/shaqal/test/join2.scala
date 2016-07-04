@@ -29,7 +29,7 @@ abstract class Join2Test extends FunSuite with BeforeAndAfter with Matchers {
       val pk = (id1, id2)
 
       val (reader, writer) = RW(
-        implicit rs => model.Address(id1.read, id2.read, street.read),
+        implicit rs => model.Address(id1.read, id2.read, street.read.trim),
         a => Seq(id1 := a.id1, id2 := a.id2, street := a.street))
 
       def constraints = Nil
@@ -102,8 +102,11 @@ abstract class Join2Test extends FunSuite with BeforeAndAfter with Matchers {
 
   test("nullable join") {
 
-    DB.Address ++= Seq(model.Address(1, 1, "Strandgaten"), model.Address(1, 2, "Bryggen"))
     DB.NPerson ++= Seq(model.NPersonT(1, Some(1), Some(1)), model.NPersonT(2, Some(1), None), model.NPersonT(3, Some(1), Some(2)))
+
+    DB.NPerson list () map (_.address map (_.street)) shouldEqual (Seq(None, None, None))
+
+    DB.Address ++= Seq(model.Address(1, 1, "Strandgaten"), model.Address(1, 2, "Bryggen"))
 
     DB.NPerson list () map (_.address map (_.street)) shouldEqual (Seq(Some("Strandgaten"), None, Some("Bryggen")))
 

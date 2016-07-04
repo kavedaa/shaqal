@@ -161,3 +161,38 @@ trait DualPK4Mapper[A, B, C1, C2, C3, C4] extends DualPK4MapperLike[A, B, C1, C2
 
 trait PK4Mapper[A, C1, C2, C3, C4] extends DualPK4Mapper[A, A, C1, C2, C3, C4]
 
+
+trait ReadOnlyPK7MapperLike[A, C1, C2, C3, C4, C5, C6, C7] extends CompositePKLike[A] with ReadOnlyMapperLike[A] with ReadOnlyPK7[C1, C2, C3, C4, C5, C6, C7] with MapperQuery[A] {
+
+  def apply(v: (C1, C2, C3, C4, C5, C6, C7))(implicit c: -:[D]) = at(v._1, v._2, v._3, v._4, v._5, v._6, v._7) option ()
+  def apply(v1: C1, v2: C2, v3: C3, v4: C4, v5: C5, v6: C6, v7: C7)(implicit c: -:[D]) = at(v1, v2, v3, v4, v5, v6, v7) option ()
+}
+
+trait ReadOnlyPK7Mapper[A, C1, C2, C3, C4, C5, C6, C7] extends ReadOnlyPK7MapperLike[A, C1, C2, C3, C4, C5, C6, C7] {
+
+  type R = this.type
+  val r: R = this
+}
+
+trait DualPK7MapperLike[A, B, C1, C2, C3, C4, C5, C6, C7] extends ReadOnlyPK7MapperLike[A, C1, C2, C3, C4, C5, C6, C7] with DualMapperLike[A, B] with PK7[C1, C2, C3, C4, C5, C6, C7] {
+
+  val pkf: A => (C1, C2, C3, C4, C5, C6, C7)
+
+  def update(a: A)(implicit writer: W[A], c: -:[D]) = updateAtValues(pkf(a)) set a
+  def delete(a: A)(implicit c: -:[D]) = deleteAtValues(pkf(a))
+
+  def update(values: (C1, C2, C3, C4, C5, C6, C7), a: A)(implicit writer: W[A], c: -:[D]) = updateAtValues(values) set a
+
+  def insertOrUpdate(a: A)(implicit writer: W[A], c: -:[D]): Either[Option[GG], Int] =
+    if (existsAtValues(pkf(a))) Right(update(a)) else Left(insert(a))
+
+  object PK { def apply(pk: (ColOf[C1], ColOf[C2], ColOf[C3], ColOf[C4], ColOf[C5], ColOf[C6], ColOf[C7]), pkf: B => (C1, C2, C3, C4, C5, C6, C7)) = (pk, pkf) }
+}
+
+trait DualPK7Mapper[A, B, C1, C2, C3, C4, C5, C6, C7] extends DualPK7MapperLike[A, B, C1, C2, C3, C4, C5, C6, C7] with MapperQuery[A] {
+  type R = this.type
+  val r: R = this
+}
+
+trait PK7Mapper[A, C1, C2, C3, C4, C5, C6, C7] extends DualPK7Mapper[A, A, C1, C2, C3, C4, C5, C6, C7]
+
