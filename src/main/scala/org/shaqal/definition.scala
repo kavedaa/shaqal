@@ -51,20 +51,17 @@ trait TableDefinition extends Constraints { this: TableLike with Fields =>
     addReferentialConstraints()
   }
 
-  def addReferentialConstraints()(implicit c: -:[D]) {
-    referentialConstraints foreach { constraint =>
-      val sql = c.adapter addConstraintSql (this, constraint)
-      c execute sql
-    }
-  }
+  def addReferentialConstraints()(implicit c: -:[D]) =
+    referentialConstraints foreach addConstraint
 
-  def addNonReferentialConstraints()(implicit c: -:[D]) {
-    nonReferentialConstraints foreach { constraint =>
-      val sql = c.adapter addConstraintSql (this, constraint)
-      c execute sql
-    }
-  }
+  def addNonReferentialConstraints()(implicit c: -:[D]) = 
+    nonReferentialConstraints foreach addConstraint
 
+  def addConstraint(constraint: Constraint)(implicit c: -:[D]) = {
+      val sql = c.adapter addConstraintSql (this, constraint)
+      c execute sql    
+  }
+  
   //  def tableExists()(implicit c: -:[D]) = c.adapter tableExists this
 
   def drop(areYouSure: Boolean)(implicit c: -:[D]) =
