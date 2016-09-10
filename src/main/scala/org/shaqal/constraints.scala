@@ -8,6 +8,7 @@ trait Constraints { this: TableLike with TableDefinition =>
 
   sealed trait Constraint extends SingleSQL {
     val name: Option[String]
+    def constraintName(implicit adapter: Adapter): String
   }
 
   class PrimaryKey private (columns: Seq[Column], val name: Option[String] = None) extends Constraint {

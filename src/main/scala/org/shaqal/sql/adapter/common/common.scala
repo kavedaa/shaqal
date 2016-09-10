@@ -7,7 +7,7 @@ import org.shaqal.sql.pretty._
 import org.shaqal.sql.adapter.Adapter
 
 abstract class CreateTableSQL(table: TableLike, columnDefs: Seq[SingleSQL])
-  extends SingleSQL {
+    extends SingleSQL {
 
   val instruction: String
 
@@ -35,7 +35,7 @@ object AdapterCommons {
   }
 
   class AddConstraintSQL(table: TableLike, constraint: SingleSQL)
-    extends SingleSQL {
+      extends SingleSQL {
 
     def render(implicit adapter: Adapter) =
       Seq(
@@ -45,6 +45,19 @@ object AdapterCommons {
         constraint.render) mkString " "
 
     def params = constraint.params
+  }
+
+  class DropConstraintSQL(table: TableLike, constraintName: String)
+      extends SingleSQL {
+
+    def render(implicit adapter: Adapter) =
+      Seq(
+        "alter table",
+        table.fullName,
+        "drop constraint",
+        constraintName) mkString " "
+
+    def params = Nil
   }
 
   def createTableSql(table: TableLike, columnDefs: Seq[SingleSQL]) = new CreateTableSQL(table, columnDefs) {
@@ -63,29 +76,29 @@ object AdapterCommons {
     def params = Nil
   }
 
-  def createSchemaSql(name: String)(implicit adapter: Adapter) = 
+  def createSchemaSql(name: String)(implicit adapter: Adapter) =
     SQL { s"create schema if not exists ${adapter identifier name}" }
-  
-  def dropSchemaSql(name: String)(implicit adapter: Adapter) = 
+
+  def dropSchemaSql(name: String)(implicit adapter: Adapter) =
     SQL { s"drop schema if exists ${adapter identifier name}" }
-  
-//  def tableExists(table: TableLike)(implicit c: -:[Database]) = {
-//    val sql = table.schema.schemaName match {      
-//      case Some(schemaName) =>
-//        table.database.InformationSchema.Tables where(t => (t.table_Schema is schemaName) && (t.table_Name is table.tableName))
-////        new SingleSQL {
-////          def render(implicit adapter: Adapter) = "select 1 from information_schema.tables where table_name = (?) and table_schema = (?)"
-////          def params = Seq[StringParam](table.tableName.toUpperCase, schemaName.toUpperCase)
-////        }
-//      case None =>
-//        table.database.InformationSchema.Tables where(t => t.table_Name is table.tableName)
-////        new SingleSQL {
-////          def render(implicit adapter: Adapter) = "select 1 from information_schema.tables where table_name = (?)"
-////          def params = Seq[StringParam](table.tableName.toUpperCase)
-////        }
-//    }
-//    sql exists()
-//  }
+
+  //  def tableExists(table: TableLike)(implicit c: -:[Database]) = {
+  //    val sql = table.schema.schemaName match {      
+  //      case Some(schemaName) =>
+  //        table.database.InformationSchema.Tables where(t => (t.table_Schema is schemaName) && (t.table_Name is table.tableName))
+  ////        new SingleSQL {
+  ////          def render(implicit adapter: Adapter) = "select 1 from information_schema.tables where table_name = (?) and table_schema = (?)"
+  ////          def params = Seq[StringParam](table.tableName.toUpperCase, schemaName.toUpperCase)
+  ////        }
+  //      case None =>
+  //        table.database.InformationSchema.Tables where(t => t.table_Name is table.tableName)
+  ////        new SingleSQL {
+  ////          def render(implicit adapter: Adapter) = "select 1 from information_schema.tables where table_name = (?)"
+  ////          def params = Seq[StringParam](table.tableName.toUpperCase)
+  ////        }
+  //    }
+  //    sql exists()
+  //  }
 
   def schemaExists(schema: Database#Schema)(implicit c: -:[Database]) = {
     val sql = new SingleSQL {

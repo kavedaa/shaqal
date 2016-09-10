@@ -62,6 +62,11 @@ trait TableDefinition extends Constraints { this: TableLike with Fields =>
       c execute sql    
   }
   
+  def dropConstraint(constraint: Constraint)(implicit c: -:[D]) = {
+      val sql = c.adapter dropConstraintSql (this, constraint constraintName c.adapter)
+      c execute sql    
+  }
+  
   //  def tableExists()(implicit c: -:[D]) = c.adapter tableExists this
 
   def drop(areYouSure: Boolean)(implicit c: -:[D]) =

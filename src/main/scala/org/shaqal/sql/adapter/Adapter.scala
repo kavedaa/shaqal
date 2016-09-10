@@ -38,6 +38,10 @@ abstract class Adapter {
     table: TableLike,
     constraint: SingleSQL) = new AdapterCommons.AddConstraintSQL(table, constraint)
 
+  def dropConstraintSql(
+    table: TableLike,
+    constraintName: String) = new AdapterCommons.DropConstraintSQL(table, constraintName)
+
   def dropTableSql(table: TableLike): SingleSQL
 
   def createSchemaSql(name: String): SingleSQL
