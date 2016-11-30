@@ -55,17 +55,21 @@ trait TableLike {
   type D = schema.D
 
   def tableName: String
-  def path = List(schema.schemaName, Some(tableName)).flatten
-
+  
+  protected def tableAlias = tableName
+  
+  protected def schemaTableName = List(schema.schemaName, Some(tableName)).flatten
+  private def schemaTableAlias = List(schema.schemaName, Some(tableAlias)).flatten
+  
   //  TODO reconsider naming here
 
-  def fullName(implicit adapter: Adapter) = path map adapter.identifier mkString "."
+  def fullName(implicit adapter: Adapter) = schemaTableName map adapter.identifier mkString "."
 
-  def underscoreName = path mkString "_"
+  def underscoreName = schemaTableName mkString "_"
 
   def aliasPath: Seq[TableLike] = Seq(this)
 
-  def aliasName = (aliasPath flatMap (_.path) mkString "_").toLowerCase + "$"
+  def aliasName = (aliasPath flatMap (_.schemaTableAlias) mkString "_").toLowerCase + "$"
 
   def fullNameAndAlias(implicit adapter: Adapter) = Seq(fullName, "as", aliasName) mkString " "
 
@@ -73,7 +77,7 @@ trait TableLike {
 
   def tableExists()(implicit c: -:[D]) = database tableExists this
 
-  override def toString = path mkString "."
+  override def toString = schemaTableName mkString "."
 }
 
 trait DefaultSchema extends SchemaLike { this: Database =>

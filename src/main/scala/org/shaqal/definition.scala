@@ -27,7 +27,7 @@ trait TableDefinition extends Constraints { this: TableLike with Fields =>
     val created = createTable()
     if (created) {
       addReferentialConstraints()
-      f(path mkString ".")
+      f(schemaTableName mkString ".")
     }
     created
   }
