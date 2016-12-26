@@ -1,13 +1,11 @@
 package org.shaqal.test
 
 import org.shaqal._
-import org.scalatest.FeatureSpec
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.BeforeAndAfter
+import org.scalatest._
 import org.shaqal.test.db.TestDB
 import scala.util.Failure
 
-abstract class TransactionsTest extends FeatureSpec with ShouldMatchers with BeforeAndAfter {
+abstract class TransactionsTest extends FeatureSpec with Matchers with BeforeAndAfter {
 
   trait TableTemplate extends Accessor with TableDefinition {
 

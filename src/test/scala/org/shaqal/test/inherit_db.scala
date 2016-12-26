@@ -1,13 +1,10 @@
 package org.shaqal.test
 
-import org.scalatest.FunSuite
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.BeforeAndAfter
-
+import org.scalatest._
 import org.shaqal._
 import org.shaqal.test.db.TestDB
 
-abstract class InheritDBTest extends FunSuite with ShouldMatchers with BeforeAndAfter {
+abstract class InheritDBTest extends FunSuite with Matchers with BeforeAndAfter {
 
   trait PersonAccessor extends Accessor with TableDefinition {
     val name = new varchar(100)("name") with notnull

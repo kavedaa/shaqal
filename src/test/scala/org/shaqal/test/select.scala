@@ -1,13 +1,11 @@
 package org.shaqal.test
 
-import org.scalatest.FunSuite
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.BeforeAndAfter
+import org.scalatest._
 import org.shaqal._
 import org.shaqal.test.db.TestDB
 import scala.collection.generic.CanBuildFrom
 
-abstract class SelectTest extends FunSuite with BeforeAndAfter with ShouldMatchers {
+abstract class SelectTest extends FunSuite with BeforeAndAfter with Matchers {
 
   implicit def dbc: DBC[TestDB]
 

@@ -4,7 +4,7 @@ import org.scalatest._
 import org.shaqal._
 import org.shaqal.test.db.TestDB
 
-abstract class CrudTest extends FeatureSpec with BeforeAndAfter with ShouldMatchers {
+abstract class CrudTest extends FeatureSpec with BeforeAndAfter with Matchers {
 
   trait PersonAccessor extends Accessor with TableDefinition {
     val name = new varchar(100)("name") with notnull

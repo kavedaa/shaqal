@@ -9,7 +9,7 @@ scalaVersion := "2.11.5"
 crossScalaVersions := Seq("2.10.4", "2.11.5")
 
 libraryDependencies ++= Seq(
-	"org.scalatest" %% "scalatest" % "2.2.1" % "test",
+	"org.scalatest" %% "scalatest" % "3.0.1" % "test",
 	"com.h2database" % "h2" % "1.3.170" % "test",
 	"net.sourceforge.jtds" % "jtds" % "1.3.1" % "test",
 	"org.postgresql" % "postgresql" % "9.4.1212" % "test"

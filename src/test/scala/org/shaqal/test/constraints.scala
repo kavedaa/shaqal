@@ -1,8 +1,6 @@
 package org.shaqal.test
 
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.BeforeAndAfter
-import org.scalatest.FeatureSpec
+import org.scalatest._
 import java.sql.SQLException
 import org.shaqal._
 import org.shaqal.test.db.TestDB
@@ -60,7 +58,7 @@ object ConstraintsTestDB extends ConstraintsTestDB {
   type D = TestDB
 }
 
-abstract class ConstraintsTest extends FeatureSpec with BeforeAndAfter with ShouldMatchers {
+abstract class ConstraintsTest extends FeatureSpec with BeforeAndAfter with Matchers {
 
   implicit def dbc: DBC[TestDB]
 
@@ -76,15 +74,15 @@ abstract class ConstraintsTest extends FeatureSpec with BeforeAndAfter with Shou
     ConstraintUQTestTable drop (true)
 
     ConstraintPKTestTable createTable ()
-    ConstraintPKTestTable addReferentialConstraints()
+    ConstraintPKTestTable addReferentialConstraints ()
     ConstraintPK2TestTable createTable ()
-    ConstraintPK2TestTable addReferentialConstraints()
-    ConstraintUQTestTable create()
-    ConstraintUQ2TestTable create()
+    ConstraintPK2TestTable addReferentialConstraints ()
+    ConstraintUQTestTable create ()
+    ConstraintUQ2TestTable create ()
     ConstraintFKTestTable createTable ()
-    ConstraintFKTestTable addReferentialConstraints()
+    ConstraintFKTestTable addReferentialConstraints ()
     ConstraintFK2TestTable createTable ()
-    ConstraintFK2TestTable addReferentialConstraints()
+    ConstraintFK2TestTable addReferentialConstraints ()
   }
 
   feature("primary key") {
@@ -93,9 +91,9 @@ abstract class ConstraintsTest extends FeatureSpec with BeforeAndAfter with Shou
 
       ConstraintPKTestTable insert ConstraintPKTestTable.Value(_.id := 1)
 
-      evaluating {
+      intercept[SQLException] {
         ConstraintPKTestTable insert ConstraintPKTestTable.Value(_.id := 1)
-      } should produce[SQLException]
+      }
     }
   }
 
@@ -105,9 +103,9 @@ abstract class ConstraintsTest extends FeatureSpec with BeforeAndAfter with Shou
 
       ConstraintPK2TestTable insert ConstraintPK2TestTable.Values(c => Seq(c.id1 := 1, c.id2 := 1))
 
-      evaluating {
+      intercept[SQLException] {
         ConstraintPK2TestTable insert ConstraintPK2TestTable.Values(c => Seq(c.id1 := 1, c.id2 := 1))
-      } should produce[SQLException]
+      }
     }
   }
 
@@ -117,9 +115,9 @@ abstract class ConstraintsTest extends FeatureSpec with BeforeAndAfter with Shou
 
       ConstraintUQTestTable insert ConstraintUQTestTable.Value(_.id := 1)
 
-      evaluating {
+      intercept[SQLException] {
         ConstraintUQTestTable insert ConstraintUQTestTable.Value(_.id := 1)
-      } should produce[SQLException]
+      }
     }
   }
 
@@ -129,18 +127,18 @@ abstract class ConstraintsTest extends FeatureSpec with BeforeAndAfter with Shou
 
       ConstraintUQ2TestTable insert ConstraintUQ2TestTable.Values(c => Seq(c.id1 := 1, c.id2 := 1))
 
-      evaluating {
+      intercept[SQLException] {
         ConstraintUQ2TestTable insert ConstraintUQ2TestTable.Values(c => Seq(c.id1 := 1, c.id2 := 1))
-      } should produce[SQLException]
+      }
     }
   }
 
   feature("foreign key") {
 
     scenario("inserting a row with an FK value that does not exists in the foreign table") {
-      evaluating {
+      intercept[SQLException] {
         ConstraintFKTestTable insert ConstraintFKTestTable.Value(_.foreignId := 1)
-      } should produce[SQLException]
+      }
     }
 
     scenario("deleting a row that has a column referenced from another table") {
@@ -148,9 +146,9 @@ abstract class ConstraintsTest extends FeatureSpec with BeforeAndAfter with Shou
       ConstraintPKTestTable insert ConstraintPKTestTable.Value(_.id := 1)
       ConstraintFKTestTable insert ConstraintFKTestTable.Value(_.foreignId := 1)
 
-      evaluating {
+      intercept[SQLException] {
         ConstraintPKTestTable deleteWhere (_.id is 1)
-      } should produce[SQLException]
+      }
     }
 
     scenario("deleting rows where some of them has columns referenced from another table") {
@@ -160,9 +158,9 @@ abstract class ConstraintsTest extends FeatureSpec with BeforeAndAfter with Shou
       ConstraintPKTestTable insert ConstraintPKTestTable.Value(_.id := 3)
       ConstraintFKTestTable insert ConstraintFKTestTable.Value(_.foreignId := 2)
 
-      evaluating {
+      intercept[SQLException] {
         ConstraintPKTestTable deleteWhere (_ => True)
-      } should produce[SQLException]
+      }
 
       ConstraintPKTestTable count () shouldEqual 3
     }
@@ -171,9 +169,9 @@ abstract class ConstraintsTest extends FeatureSpec with BeforeAndAfter with Shou
   feature("composite foreign key") {
 
     scenario("inserting a row with FK values that does not exists in the foreign table") {
-      evaluating {
+      intercept[SQLException] {
         ConstraintFK2TestTable insert ConstraintFK2TestTable.Values(c => Seq(c.foreignId1 := 1, c.foreignId2 := 1))
-      } should produce[SQLException]
+      }
     }
 
     scenario("deleting a row that has columns referenced from another table") {
@@ -181,9 +179,9 @@ abstract class ConstraintsTest extends FeatureSpec with BeforeAndAfter with Shou
       ConstraintPK2TestTable insert ConstraintPK2TestTable.Values(c => Seq(c.id1 := 1, c.id2 := 1))
       ConstraintFK2TestTable insert ConstraintFK2TestTable.Values(c => Seq(c.foreignId1 := 1, c.foreignId2 := 1))
 
-      evaluating {
+      intercept[SQLException] {
         ConstraintPK2TestTable deleteWhere (c => (c.id1 is 1) && (c.id2 is 1))
-      } should produce[SQLException]
+      }
     }
   }
 }

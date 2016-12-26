@@ -1,9 +1,8 @@
 package org.shaqal.sql.pretty
 
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.FunSuite
+import org.scalatest._
 
-class PrettyTest extends FunSuite with ShouldMatchers {
+class PrettyTest extends FunSuite with Matchers {
 
   test("simple pretty rendering and unprettify") {
     

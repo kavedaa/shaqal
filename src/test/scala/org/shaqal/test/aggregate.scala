@@ -1,13 +1,11 @@
 package org.shaqal.test
 
-import org.scalatest.FeatureSpec
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.BeforeAndAfter
+import org.scalatest._
 
 import org.shaqal._
 import org.shaqal.test.db.TestDB
 
-abstract class AggregateTest extends FeatureSpec with ShouldMatchers with BeforeAndAfter {
+abstract class AggregateTest extends FeatureSpec with Matchers with BeforeAndAfter {
 
   implicit def dbc: DBC[TestDB]
 

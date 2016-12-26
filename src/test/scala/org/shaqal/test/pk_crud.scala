@@ -5,7 +5,7 @@ import org.shaqal._
 import org.shaqal.test.db.TestDB
 import org.shaqal.sql.True
 
-abstract class PKCrudTest extends FeatureSpec with BeforeAndAfter with ShouldMatchers {
+abstract class PKCrudTest extends FeatureSpec with BeforeAndAfter with Matchers {
 
   trait PersonAccessor extends Accessor with PK[Int] with TableDefinition {
     val id = new int("id") with notnull
@@ -57,8 +57,8 @@ abstract class PKCrudTest extends FeatureSpec with BeforeAndAfter with ShouldMat
     scenario("single PK") {
 
       Person insert john
-      Person existsAt 1 should be(true)
-      Person existsAt 2 should be(false)
+      Person existsAt 1 shouldBe true
+      Person existsAt 2 shouldBe false
     }
 
     scenario("PK2") {
