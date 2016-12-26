@@ -10,12 +10,28 @@ import java.io.FileInputStream
 import java.io.File
 
 abstract class UrlDBC[D <: Database](
-//  val description: String,
   url: String,
   driver: Driver,
   username: String,
   password: String)
-extends DBC[D] {
+  extends DBC[D] {
+
+  def this(protocol: String, properties: Properties, driver: Driver) =
+    this(
+      s"$protocol://${properties getProperty "server"}:${properties getProperty "port" toInt}/${properties getProperty "database"}",
+      driver,
+      properties getProperty "username",
+      properties getProperty "password")
+
+  def this(protocol: String, propertiesFileName: String, driver: Driver) =
+    this(
+      protocol,
+      {
+        val properties = new Properties
+        properties load new FileInputStream(propertiesFileName)
+        properties
+      },
+      driver)
 
   DriverManager registerDriver driver
 
@@ -23,9 +39,8 @@ extends DBC[D] {
 }
 
 abstract class NamedDataSourceDBC[D <: Database](
-//  val description: String,
   name: String)
-extends DBC[D] {
+  extends DBC[D] {
 
   val ds = (new InitialContext).lookup(name).asInstanceOf[DataSource]
 
@@ -33,18 +48,16 @@ extends DBC[D] {
 }
 
 abstract class DataSourceDBC[D <: Database](
-//  val description: String,
   val server: String,
-  val database: String,
+  val dbName: String,
   val port: Int,
   username: String,
   password: String,
   dsFactory: DataSourceFactory)
-extends DBC[D] {
+  extends DBC[D] {
 
   def this(properties: Properties, dsFactory: DataSourceFactory) =
     this(
-//      description,
       properties getProperty "server",
       properties getProperty "database",
       properties getProperty "port" toInt,
@@ -54,7 +67,6 @@ extends DBC[D] {
 
   def this(propertiesStream: InputStream, dsFactory: DataSourceFactory) =
     this(
-//      description,
       {
         val properties = new Properties
         properties load propertiesStream
@@ -64,17 +76,15 @@ extends DBC[D] {
 
   def this(propertiesFile: File, dsFactory: DataSourceFactory) =
     this(
-//      description,
       new FileInputStream(propertiesFile),
       dsFactory)
 
   def this(propertiesFileName: String, dsFactory: DataSourceFactory) =
     this(
-//      description,
       new File(propertiesFileName),
       dsFactory)
 
-  def getConnection = dsFactory getDataSource (server, database, port) getConnection (username, password)
+  def getConnection = dsFactory getDataSource (server, dbName, port) getConnection (username, password)
 }
 
 abstract class DataSourceFactory {

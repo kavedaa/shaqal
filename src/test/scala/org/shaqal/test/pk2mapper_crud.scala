@@ -44,8 +44,8 @@ abstract class PK2MapperCrudTest extends FeatureSpec with BeforeAndAfter with Ma
       DB.City insertAll Seq(london, paris)
 
       val num = DB.City update City(1, 1, "Londinium")
-      num should equal(1)
-      DB.City list () should equal(List(City(1, 1, "Londinium"), paris))
+      num shouldEqual 1
+      DB.City set () shouldEqual Set(City(1, 1, "Londinium"), paris)
     }
 
     scenario("the item does not exist") {
@@ -53,8 +53,8 @@ abstract class PK2MapperCrudTest extends FeatureSpec with BeforeAndAfter with Ma
       DB.City insertAll Seq(london, paris)
 
       val num = DB.City update berlin
-      num should equal(0)
-      DB.City list () should equal(List(london, paris))
+      num shouldEqual 0
+      DB.City set () shouldEqual Set(london, paris)
     }
 
   }

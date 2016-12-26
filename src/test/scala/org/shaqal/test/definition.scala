@@ -1,11 +1,10 @@
 package org.shaqal.test
 
 import org.shaqal._
-import org.scalatest.FunSuite
 import org.shaqal.test.db.TestDB
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 
-abstract class DefinitionTest extends FunSuite with ShouldMatchers {
+abstract class DefinitionTest extends FunSuite with Matchers with BeforeAndAfter {
 
   implicit def dbc: DBC[TestDB]
 
@@ -34,37 +33,49 @@ abstract class DefinitionTest extends FunSuite with ShouldMatchers {
 
   import DefinitionDB._
 
+  after {
+    TestTable drop true
+    TestSchema.TestTable drop true
+    TestSchema drop true
+  }
+
   test("table definition") {
 
-    TestTable create (name => println(s"Created table: $name."))
-    TestTable tableExists () should be(true)
+    TestTable create ()
+    TestTable.tableExists shouldBe true
 
     TestTable drop true
-    TestTable tableExists () should be(false)
+    TestTable.tableExists shouldBe false
   }
 
-  def andPrint(name: String) { println (name) }
-  
+  //  def andPrint(name: String) { println (name) }
+
   test("schema definition") {
 
-    TestSchema create andPrint
-    TestSchema schemaExists () should be(true)
+    TestSchema create ()
+    TestSchema.schemaExists shouldBe true
 
     TestSchema drop true
-    TestSchema schemaExists () should be(false)
+    TestSchema.schemaExists shouldBe false
   }
 
-  test("table definition in schema") {
+  test("table definition with schema") {
 
-    TestSchema create andPrint
-    
-    TestSchema.TestTable create andPrint
-    TestSchema.TestTable tableExists () should be(true)
+    TestSchema create ()
+
+    TestSchema.TestTable create ()
+    TestSchema.TestTable.tableExists shouldBe true
 
     TestSchema.TestTable drop true
-    TestSchema.TestTable tableExists () should be(false)
-    
-    TestSchema drop true    
+    TestSchema.TestTable.tableExists shouldBe false
   }
 
+  test("mix same table name with and without schema") {
+
+    TestSchema create ()
+    TestSchema.TestTable create ()
+
+    TestSchema.TestTable.tableExists shouldBe true
+    TestTable.tableExists shouldBe false
+  }
 }

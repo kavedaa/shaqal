@@ -30,6 +30,8 @@ trait Selecting { this: Query =>
       c queryColl (sql, selectReader(s), cbf())
 
     def list()(implicit c: -:[D]) = into[List]
+    
+    def set()(implicit c: -:[D]) = into[Set]
 
     def option()(implicit c: -:[D]) = list.headOption
 

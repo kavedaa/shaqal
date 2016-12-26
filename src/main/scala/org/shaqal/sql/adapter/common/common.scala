@@ -100,12 +100,21 @@ object AdapterCommons {
   //    sql exists()
   //  }
 
-  def schemaExists(schema: Database#Schema)(implicit c: -:[Database]) = {
-    val sql = new SingleSQL {
-      def render(implicit adapter: Adapter) = "select 1 from information_schema.schemata where schema_name = (?)"
-      def params = Seq(StringParam(schema.name.toUpperCase))
-    }
-    c.queryElement(sql, identity).isDefined
-  }
+//  def schemaExists(schema: Database#Schema)(implicit c: -:[Database]) = {
+//    val sql = new SingleSQL {
+//      def render(implicit adapter: Adapter) = "select 1 from information_schema.schemata where schema_name = (?)"
+//      def params = Seq(StringParam(schema.name.toUpperCase))
+//    }
+//    c.queryElement(sql, identity).isDefined
+//  }
+  
+  def informationSchemaObjects = Map(
+    'schInformationSchema -> "information_schema",
+    'schSchemata -> "schemata",
+    'tblTables -> "tables",
+    'colSchemaName -> "schema_name",
+    'colTableSchema -> "table_schema",
+    'colTableName -> "table_name")
+  
 
 }

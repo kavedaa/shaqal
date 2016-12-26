@@ -25,14 +25,16 @@ trait UseSingleConnection extends ConnectorBase {
   abstract override def close(conn: Connection) {}
 }
 
-abstract class Connector[+D <: Database] extends ConnectorBase with DBOperations {
+abstract class Connector[+D <: Database] extends ConnectorBase with DBOperations { conn =>
 
+  implicit def connector = this
+  
   def throwOnQuery: Boolean
   def throwOnUpdate = true
   def throwOnInsert = true
   def throwOnDelete = true
 
-  implicit def adapter: Adapter
+  implicit val adapter: Adapter
 
   def onSql(sql: SQL) {}
   def onError(t: Throwable) { println(t) }
@@ -44,11 +46,11 @@ abstract class Connector[+D <: Database] extends ConnectorBase with DBOperations
   def onTransaction() {}
   def onRollback() {}
   def onCommit() {}
-  
+
   case class Debug(queries: Long, rows: Long, millis: Long) {
     override def toString = s"$queries queries, $rows rows, $millis ms"
   }
-  
+
   object Debug {
 
     private var q = 0
@@ -65,14 +67,14 @@ abstract class Connector[+D <: Database] extends ConnectorBase with DBOperations
       val endTime = System.currentTimeMillis
       Debug(q, r, endTime - startTime)
     }
-    
+
     private[shaqal] def incQueries() = { q = q + 1 }
     private[shaqal] def incRows() = { r = r + 1 }
 
     def numQueries = q
     def numRows = r
   }
-  
+
 }
 
 abstract class DBC[D <: Database] extends Connector[D] with Transactions[D] {
@@ -97,7 +99,7 @@ abstract class DBC[D <: Database] extends Connector[D] with Transactions[D] {
 
 class TXC[+D <: Database](dbc: DBC[D], conn: Connection) extends Connector[D] {
 
-  def adapter = dbc.adapter
+  val adapter = dbc.adapter
 
   def getConnection = conn
   def close(conn: Connection) {}

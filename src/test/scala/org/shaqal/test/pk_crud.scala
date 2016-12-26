@@ -1,8 +1,6 @@
 package org.shaqal.test
 
-import org.scalatest.FeatureSpec
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.BeforeAndAfter
+import org.scalatest._
 import org.shaqal._
 import org.shaqal.test.db.TestDB
 import org.shaqal.sql.True
@@ -101,7 +99,7 @@ abstract class PKCrudTest extends FeatureSpec with BeforeAndAfter with ShouldMat
       Person insertAll Seq(john, tom)
 
       Person updateAt 1 set Person.Value(_.name := "Johnny")
-      Person select (_.name) list () should equal(List("Johnny", "Tom"))
+      Person select (_.name) set () shouldEqual Set("Johnny", "Tom")
     }
 
     scenario("PK2") {
@@ -109,25 +107,25 @@ abstract class PKCrudTest extends FeatureSpec with BeforeAndAfter with ShouldMat
       City insertAll Seq(london, berlin, paris, rome)
 
       City updateAt (1, 1) set City.Value(_.name := "Copenhagen")
-      City select (_.name) list () should equal(List("Copenhagen", "Berlin", "Paris", "Rome"))
+      City select (_.name) set () shouldEqual Set("Copenhagen", "Berlin", "Paris", "Rome")
 
       City deleteWhere (_ => True)
       City insertAll Seq(london, berlin, paris, rome)
 
       City updateAt (*, 1) set City.Value(_.name := "Madrid")
-      City select (_.name) list () should equal(List("Madrid", "Madrid", "Paris", "Rome"))
+      City select (_.name) set () shouldEqual Set("Madrid", "Madrid", "Paris", "Rome")
 
       City deleteWhere (_ => True)
       City insertAll Seq(london, berlin, paris, rome)
 
       City updateAt (1, *) set City.Value(_.name := "Prague")
-      City select (_.name) list () should equal(List("Prague", "Berlin", "Prague", "Rome"))
+      City select (_.name) set () shouldEqual Set("Prague", "Berlin", "Prague", "Rome")
 
       City deleteWhere (_ => True)
       City insertAll Seq(london, berlin, paris, rome)
 
       City updateAt (*, *) set City.Value(_.name := "New York")
-      City select (_.name) list () should equal(List("New York", "New York", "New York", "New York"))
+      City select (_.name) set () shouldEqual Set("New York", "New York", "New York", "New York")
     }
   }
 

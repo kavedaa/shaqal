@@ -12,14 +12,14 @@ class H2DBC[D <: Database](name: String) extends UrlDBC[D](
   "") with UseSingleConnection {
 
   implicit val adapter = H2Adapter
-  
-  override def onTransaction() { println("transaction") }
+
+//  override def onTransaction() { println("transaction") }
 }
 
 trait H2 {
   implicit def dbc = new H2DBC[TestDB]("test") {
-//    override def onSql(sql: SQL) = println(sql.pp.render)
-  }   
+    //    override def onSql(sql: SQL) = println(sql.pp.render)
+  }
 }
 
 // class AdhocJoiningTest extends org.shaqal.test.AdhocJoiningTest with H2
@@ -30,8 +30,7 @@ class ConstraintsTest extends org.shaqal.test.ConstraintsTest with H2
 
 class DataTypesTest extends org.shaqal.test.DataTypesTest with H2
 
-//	some features tested here are not supported on H2
-// class DefinitionTest extends org.shaqal.test.DefinitionTest with H2
+class DefinitionTest extends org.shaqal.test.DefinitionTest with H2
 
 class SelectTest extends org.shaqal.test.SelectTest with H2
 

@@ -29,8 +29,10 @@ object MSSQLAdapter extends Adapter {
   def dropSchemaSql(name: String) = 
     new DropSchemaSQL(name)
   
+  def defaultSchemaName = "dbo"
+  
 //  def tableExists(table: TableLike)(implicit c: -:[Database]) = AdapterCommons tableExists table
   
-  def schemaExists(schema: Database#Schema)(implicit c: -:[Database]) = AdapterCommons schemaExists schema
+//  def schemaExists(schema: Database#Schema)(implicit c: -:[Database]) = AdapterCommons schemaExists schema
   
 }

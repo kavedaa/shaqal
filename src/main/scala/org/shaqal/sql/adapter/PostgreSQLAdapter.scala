@@ -8,6 +8,10 @@ import org.shaqal.sql.adapter.common.AdapterCommons
 
 abstract class PostgreSQLAdapter extends Adapter {
 
+  dataTypes += Types.DOUBLE -> "float"
+  dataTypes += Types.TIMESTAMP -> "timestamp"
+  dataTypes += Types.BIT -> "boolean"
+
   def identifier(s: String) = List("\"", s, "\"").mkString
 
   def identity = ""
@@ -29,23 +33,25 @@ abstract class PostgreSQLAdapter extends Adapter {
   def createSchemaSql(name: String) = AdapterCommons createSchemaSql name
 
   def dropSchemaSql(name: String) = AdapterCommons dropSchemaSql name
+
+  def defaultSchemaName = "public"
   
-//  def tableExists(table: TableLike)(implicit c: -:[Database]) = AdapterCommons tableExists table
-  
-  def schemaExists(schema: Database#Schema)(implicit c: -:[Database]) = AdapterCommons schemaExists schema  
+  //  def tableExists(table: TableLike)(implicit c: -:[Database]) = AdapterCommons tableExists table
+
+//  def schemaExists(schema: Database#Schema)(implicit c: -:[Database]) = AdapterCommons schemaExists schema
 
 }
+
+//object PostgreSQLAdapter extends PostgreSQLAdapter {
+//
+//  def createTableSql(table: TableLike, columnDefs: Seq[SingleSQL]) =
+//    throw new UnsupportedOperationException("Only supported on PostgreSQL 9.1 or higher, use PostgreSQL9Adapter if applicable.")
+//
+//  def dropTableSql(table: TableLike) =
+//    throw new UnsupportedOperationException("Only supported on PostgreSQL 9.1 or higher, use PostgreSQL9Adapter if applicable.")
+//}
 
 object PostgreSQLAdapter extends PostgreSQLAdapter {
-
-  def createTableSql(table: TableLike, columnDefs: Seq[SingleSQL]) =
-    throw new UnsupportedOperationException("Only supported on PostgreSQL 9.1 or higher, use PostgreSQL9Adapter if applicable.")
-
-  def dropTableSql(table: TableLike) =
-    throw new UnsupportedOperationException("Only supported on PostgreSQL 9.1 or higher, use PostgreSQL9Adapter if applicable.")
-}
-
-object PostgreSQL9Adapter extends PostgreSQLAdapter {
 
   def createTableSql(table: TableLike, columnDefs: Seq[SingleSQL]) =
     AdapterCommons createTableSql (table, columnDefs)

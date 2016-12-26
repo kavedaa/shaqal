@@ -37,13 +37,25 @@ trait TableDefinition extends Constraints { this: TableLike with Fields =>
   }
 
   def createTable()(implicit c: -:[D]) = {
-    if (!database.tableExists(this)) {
+    if (!tableExists) {
       val sql = c.adapter createTableSql (this, cols map c.adapter.columnDefinitionSql)
       c execute sql
       addNonReferentialConstraints()
       true
     }
     else false
+  }
+
+  def drop(areYouSure: Boolean)(implicit c: -:[D]) =
+    if (areYouSure && tableExists) {
+      val sql = c.adapter dropTableSql this
+      c execute sql
+    }
+
+  def tableExists(implicit c: -:[D]): Boolean = {
+    object InformationSchema extends c.adapter.InformationSchema[D]
+    val schemaName = schema.schemaName getOrElse c.adapter.defaultSchemaName
+    InformationSchema.Tables where (t => (t.table_schema is schemaName) && (t.table_name is tableName)) exists ()
   }
 
   def addConstraints()(implicit c: -:[D]) {
@@ -54,26 +66,18 @@ trait TableDefinition extends Constraints { this: TableLike with Fields =>
   def addReferentialConstraints()(implicit c: -:[D]) =
     referentialConstraints foreach addConstraint
 
-  def addNonReferentialConstraints()(implicit c: -:[D]) = 
+  def addNonReferentialConstraints()(implicit c: -:[D]) =
     nonReferentialConstraints foreach addConstraint
 
   def addConstraint(constraint: Constraint)(implicit c: -:[D]) = {
-      val sql = c.adapter addConstraintSql (this, constraint)
-      c execute sql    
+    val sql = c.adapter addConstraintSql (this, constraint)
+    c execute sql
   }
-  
-  def dropConstraint(constraint: Constraint)(implicit c: -:[D]) = {
-      val sql = c.adapter dropConstraintSql (this, constraint constraintName c.adapter)
-      c execute sql    
-  }
-  
-  //  def tableExists()(implicit c: -:[D]) = c.adapter tableExists this
 
-  def drop(areYouSure: Boolean)(implicit c: -:[D]) =
-    if (areYouSure) {
-      val sql = c.adapter dropTableSql this
-      c execute sql
-    }
+  def dropConstraint(constraint: Constraint)(implicit c: -:[D]) = {
+    val sql = c.adapter dropConstraintSql (this, constraint constraintName c.adapter)
+    c execute sql
+  }
 
 }
 
@@ -86,7 +90,7 @@ trait SchemaDefinition { this: Database#Schema =>
     adapter dropSchemaSql name
 
   def create[U](f: String => U)(implicit c: -:[D]) {
-    if (!schemaExists()) {
+    if (!schemaExists) {
       createSchema()
       f(name)
     }
@@ -96,9 +100,19 @@ trait SchemaDefinition { this: Database#Schema =>
     create(s => Unit)
   }
 
-  def createSchema()(implicit c: -:[D]) { c execute createSql(c.adapter) }
+  def createSchema()(implicit c: -:[D]) = {
+    c execute createSql(c.adapter)
+  }
 
-  def schemaExists()(implicit c: -:[D]) = c.adapter schemaExists this
+  def drop(areYouSure: Boolean)(implicit c: -:[D]) = {
+    if (areYouSure && schemaExists) {
+      c execute dropSql(c.adapter)
+    }
+  }
 
-  def drop(areYouSure: Boolean)(implicit c: -:[D]) { c execute dropSql(c.adapter) }
+  def schemaExists(implicit c: -:[D]): Boolean = {
+    object InformationSchema extends c.adapter.InformationSchema[D]
+    schemaName exists { name => InformationSchema.Schemata where (_.schema_name is name) exists () }
+  }
+
 }

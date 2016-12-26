@@ -17,7 +17,7 @@ object JtdsFactory extends DataSourceFactory {
 }
 
 class MSSQLDBC[D <: Database]
-  extends DataSourceDBC[D](System.getProperty("user.home") + "/mssql-test-db.properties", JtdsFactory)
+  extends DataSourceDBC[D]("mssql-test-db.properties", JtdsFactory)
   with UseSingleConnection {
 
   override implicit val adapter = MSSQLAdapter

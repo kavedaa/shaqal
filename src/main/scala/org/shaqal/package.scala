@@ -7,6 +7,8 @@ package object shaqal {
 
   type -:[+D <: Database] = Connector[D]
 
+  type DatabaseOf[+DD] = Database { type D <: DD }
+
   implicit def timestamp(d: Date) = new Timestamp(d.getTime)
   implicit def timestamp(d: Option[Date]) = d map (d => new Timestamp(d.getTime))
 

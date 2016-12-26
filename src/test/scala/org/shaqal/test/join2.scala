@@ -93,10 +93,10 @@ abstract class Join2Test extends FunSuite with BeforeAndAfter with Matchers {
 
   test("join") {
 
-    DB.Address ++= Seq(model.Address(1, 1, "Strandgaten"), model.Address(1, 2, "Bryggen"))
-    DB.Person ++= Seq(model.PersonT(1, 1, 1), model.PersonT(2, 1, 1), model.PersonT(3, 1, 2))
+    DB.Address ++= Seq(model.Address(1, 1, "Strandgaten"), model.Address(1, 2, "Bryggen"), model.Address(2, 2, "Torget"))
+    DB.Person ++= Seq(model.PersonT(1, 1, 1), model.PersonT(2, 1, 2), model.PersonT(3, 2, 2))
 
-    DB.Person list () map (_.address.street) shouldEqual Seq("Strandgaten", "Strandgaten", "Bryggen")
+    DB.Person set () map (_.address.street) shouldEqual Set("Strandgaten", "Bryggen", "Torget")
 
   }
 
@@ -104,11 +104,11 @@ abstract class Join2Test extends FunSuite with BeforeAndAfter with Matchers {
 
     DB.NPerson ++= Seq(model.NPersonT(1, Some(1), Some(1)), model.NPersonT(2, Some(1), None), model.NPersonT(3, Some(1), Some(2)))
 
-    DB.NPerson list () map (_.address map (_.street)) shouldEqual (Seq(None, None, None))
+    DB.NPerson set() map (_.address map (_.street)) shouldEqual Set(None)
 
     DB.Address ++= Seq(model.Address(1, 1, "Strandgaten"), model.Address(1, 2, "Bryggen"))
 
-    DB.NPerson list () map (_.address map (_.street)) shouldEqual (Seq(Some("Strandgaten"), None, Some("Bryggen")))
+    DB.NPerson set () map (_.address map (_.street)) shouldEqual Set(Some("Strandgaten"), None, Some("Bryggen"))
 
   }
 

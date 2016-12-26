@@ -5,15 +5,13 @@ import org.shaqal.sql.adapter._
 import org.shaqal.sql.pretty._
 import scala.util.Try
 
-trait Database {
+trait Database { db =>
 
   type D <: Database
 
-  def db: Database { type D = Database.this.D } = this
-
   class Schema(val name: String) extends SchemaLike {
-    type D = Database.this.D
-    def database = db
+    type D = db.D
+    //    def database = db
     def schemaName = Some(name)
   }
 
@@ -25,42 +23,31 @@ trait Database {
     c autoTransaction tx
   }
 
-  object InformationSchema extends Schema("INFORMATION_SCHEMA") with InformationSchema
-
-  def tableExists(table: TableLike)(implicit c: -:[D]): Boolean = {
-    table.schema.schemaName match {
-      case Some(schemaName) =>
-        InformationSchema.Tables where (t => (t.table_Schema is schemaName) && (t.table_Name is table.tableName)) exists ()
-      case None =>
-        InformationSchema.Tables where (t => t.table_Name is table.tableName) exists ()
-    }
-  }
-
 }
 
-trait SchemaLike {
+trait SchemaLike { sch =>
   type D <: Database
-  def database: Database { type D = SchemaLike.this.D }
+  //  def database: Database { type D = sch.D }
   def schemaName: Option[String]
 
   class Table(name: String) extends TableLike {
-    val schema: SchemaLike { type D = SchemaLike.this.D } = SchemaLike.this
+    val schema: SchemaLike { type D = sch.D } = sch
     def tableName = name
   }
 }
 
-trait TableLike {
+trait TableLike { tbl =>
   val schema: SchemaLike
-  def database: Database { type D = schema.D } = schema.database
+  //  def database: Database { type D = schema.D } = schema.database
   type D = schema.D
 
   def tableName: String
-  
+
   protected def tableAlias = tableName
-  
+
   protected def schemaTableName = List(schema.schemaName, Some(tableName)).flatten
   private def schemaTableAlias = List(schema.schemaName, Some(tableAlias)).flatten
-  
+
   //  TODO reconsider naming here
 
   def fullName(implicit adapter: Adapter) = schemaTableName map adapter.identifier mkString "."
@@ -75,14 +62,11 @@ trait TableLike {
 
   implicit val tableLike = this
 
-  def tableExists()(implicit c: -:[D]) = database tableExists this
-
   override def toString = schemaTableName mkString "."
 }
 
-trait DefaultSchema extends SchemaLike { this: Database =>
-  //  type D = Database.this.D
-  def database = db
+trait DefaultSchema extends SchemaLike { db: Database =>
+  //  def database = db
   def schemaName = None
 }
 

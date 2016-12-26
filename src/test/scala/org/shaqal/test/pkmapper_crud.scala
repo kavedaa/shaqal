@@ -61,7 +61,7 @@ abstract class PKMapperCrudTest extends FeatureSpec with BeforeAndAfter with Mat
 
       val num = DB.Person update Person(1, "Johnny")
       num should equal(1)
-      DB.Person list () should equal(List(Person(1, "Johnny"), tom))
+      DB.Person set () shouldEqual Set(Person(1, "Johnny"), tom)
     }
 
     scenario("the item does not exist") {
@@ -70,7 +70,7 @@ abstract class PKMapperCrudTest extends FeatureSpec with BeforeAndAfter with Mat
 
       val num = DB.Person update lisa
       num should equal(0)
-      DB.Person list () should equal(List(john, tom))
+      DB.Person set () shouldEqual Set(john, tom)
     }
 
   }
@@ -83,7 +83,7 @@ abstract class PKMapperCrudTest extends FeatureSpec with BeforeAndAfter with Mat
 
       val autoOrNum = DB.Person insertOrUpdate Person(1, "Johnny")
       autoOrNum should equal(Right(1))
-      DB.Person list () should equal(List(Person(1, "Johnny"), tom))
+      DB.Person set () shouldEqual Set(Person(1, "Johnny"), tom)
     }
 
     scenario("the item does not exist") {
@@ -92,7 +92,7 @@ abstract class PKMapperCrudTest extends FeatureSpec with BeforeAndAfter with Mat
 
       val autoOrNum = DB.Person insertOrUpdate lisa
       autoOrNum should equal(Left(None))
-      DB.Person list () should equal(List(john, tom, lisa))
+      DB.Person set () shouldEqual Set(john, tom, lisa)
     }
 
   }
@@ -105,7 +105,7 @@ abstract class PKMapperCrudTest extends FeatureSpec with BeforeAndAfter with Mat
 
       val num = DB.Person delete john
       num should equal(1)
-      DB.Person list () should equal(List(tom))
+      DB.Person set () shouldEqual Set(tom)
     }
 
     scenario("the item does not exist") {
@@ -114,7 +114,7 @@ abstract class PKMapperCrudTest extends FeatureSpec with BeforeAndAfter with Mat
 
       val num = DB.Person delete lisa
       num should equal(0)
-      DB.Person list () should equal(List(john, tom))
+      DB.Person set () shouldEqual Set(john, tom)
     }
   }
 

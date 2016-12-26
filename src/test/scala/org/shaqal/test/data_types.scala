@@ -18,6 +18,7 @@ abstract class DataTypesTest extends FeatureSpec with BeforeAndAfter with Matche
   val df = new SimpleDateFormat("yyyy.MM.dd")
 
   before {
+    DT drop (true)
     DT createTable ()
 
     DT insert DT.Values(d => Seq(
@@ -36,7 +37,7 @@ abstract class DataTypesTest extends FeatureSpec with BeforeAndAfter with Matche
   }
 
   after {
-    DT drop (true)
+//    DT drop (true)
   }
 
   feature("smallint") {
