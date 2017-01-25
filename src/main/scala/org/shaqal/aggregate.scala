@@ -41,7 +41,7 @@ trait AggregateFunctions { this: Query =>
     (c queryColl (selectSql(sexpr), rs => rs getLong sexpr.columnAlias, implicitly[CanBuildFrom[Nothing, Long, Seq[Long]]].apply())).head
   }
 
-  def max[U](f: R => Col { type T = U } )(implicit c: -:[D]): Option[U] = {
+  def max[U](f: R => Col { type T = U })(implicit c: -:[D]): Option[U] = {
     val col = f(r)
     val sexpr = Max(col)
     (c queryColl (selectSql(sexpr), implicit rs => if (col.checkNull) None else Some(col.get), implicitly[CanBuildFrom[Nothing, Option[U], Seq[Option[U]]]].apply())).head
