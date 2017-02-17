@@ -2,7 +2,9 @@ package org.shaqal
 
 import org.shaqal.sql._
 import java.sql.ResultSet
+
 import scala.collection.generic.CanBuildFrom
+import scala.util.Try
 
 trait Selecting { this: Query =>
 
@@ -34,6 +36,8 @@ trait Selecting { this: Query =>
     def set()(implicit c: -:[D]) = into[Set]
 
     def option()(implicit c: -:[D]) = list.headOption
+
+    def get()(implicit c: -:[D]) = list.head
 
     def apply[Coll[_]]()(implicit cbf: CanBuildFrom[Nothing, A, Coll[A]], c: -:[D]): Coll[A] = into[Coll]
   }

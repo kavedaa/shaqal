@@ -23,6 +23,8 @@ trait MapperQuery[A] extends Query { builder =>
   def set()(implicit c: -:[D]) = into[Set]
 
   def option()(implicit c: -:[D]) = list.headOption
+
+  def get()(implicit c: -:[D]) = list.head
 }
 
 trait ReadOnlyMapperLike[A] extends ReadOnlyAccessorLike with MapperQuery[A] { mapper =>
