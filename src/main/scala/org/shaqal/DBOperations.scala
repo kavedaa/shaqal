@@ -76,6 +76,7 @@ trait DBOperations { this: Connector[_] =>
 
   def insert[A](sql: SingleSQL, autos: Seq[String], autosMapper: Option[ResultSet => A] = None): Option[A] = {
     onSql(sql)
+    Debug incInserts()
     try {
       val conn = getConnection
       try {
@@ -108,6 +109,7 @@ trait DBOperations { this: Connector[_] =>
 
   def batchInsert[A](batch: BatchSQL, autos: Seq[String], autosMapper: Option[ResultSet => A] = None): List[A] = {
     onSql(batch)
+    Debug incBatchInserts()
     try {
       val conn = getConnection
       try {
@@ -139,6 +141,7 @@ trait DBOperations { this: Connector[_] =>
   //  returns number of rows affected
   def update(sql: SingleSQL): Int = {
     onSql(sql)
+    Debug incUpdates()
     try {
       val conn = getConnection
       try {
