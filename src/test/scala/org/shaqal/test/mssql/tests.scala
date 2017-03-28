@@ -1,5 +1,6 @@
 package org.shaqal.test.mssql
 
+import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 import org.shaqal._
 import org.shaqal.sql.adapter.MSSQLAdapter
 import net.sourceforge.jtds.jdbcx.JtdsDataSource
@@ -7,26 +8,31 @@ import org.shaqal.sql.SQL
 import org.shaqal.test.db.TestDB
 
 object JtdsFactory extends DataSourceFactory {
-  def getDataSource(server: String, database: String, port: Int) = {
+  def getDataSource(server: String, database: String, port: Int, user: String, password: String) = {
     val ds = new JtdsDataSource
-    ds setServerName (server)
-    ds setDatabaseName (database)
-    ds setPortNumber (port)
-    ds
+    ds setServerName server
+    ds setDatabaseName database
+    ds setPortNumber port
+    ds setUser user
+    ds setPassword password
+    val config = new HikariConfig
+    config setDataSource ds
+    config setConnectionTestQuery "SELECT 1"
+    new HikariDataSource(config)
   }
 }
 
 class MSSQLDBC[D <: Database]
-  extends DataSourceDBC[D]("mssql-test-db.properties", JtdsFactory)
-  with UseSingleConnection {
+  extends DataSourceDBC[D]("mssql-test-db.properties", JtdsFactory) {
 
   override implicit val adapter = MSSQLAdapter
 
   //  override def onSql(sql: SQL) { println(sql.pp.render)}
+  override def onError(sql: SQL, t: Throwable): Unit = throw t
 }
 
 trait MSSQL {
-  implicit def dbc = new MSSQLDBC[TestDB] {
+  implicit val dbc = new MSSQLDBC[TestDB] {
 //    override def onSql(sql: SQL) = println(sql.render)
   }
 }

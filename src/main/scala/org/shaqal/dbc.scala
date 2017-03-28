@@ -60,7 +60,7 @@ abstract class DataSourceDBC[D <: Database](
     this(
       properties getProperty "server",
       properties getProperty "database",
-      properties getProperty "port" toInt,
+      (properties getProperty "port").toInt,
       properties getProperty "username",
       properties getProperty "password",
       dsFactory)
@@ -84,9 +84,11 @@ abstract class DataSourceDBC[D <: Database](
       new File(propertiesFileName),
       dsFactory)
 
-  def getConnection = dsFactory getDataSource (server, dbName, port) getConnection (username, password)
+  val dataSource = dsFactory getDataSource (server, dbName, port, username, password)
+
+  def getConnection = dataSource.getConnection
 }
 
 abstract class DataSourceFactory {
-  def getDataSource(server: String, database: String, port: Int): DataSource
+  def getDataSource(server: String, database: String, port: Int, user: String, password: String): DataSource
 }
