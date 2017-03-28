@@ -15,15 +15,22 @@ object JtdsFactory extends DataSourceFactory {
     ds setPortNumber port
     ds setUser user
     ds setPassword password
+    ds
+  }
+}
+
+object HikariFactory extends DataSourceFactory {
+  def getDataSource(server: String, database: String, port: Int, user: String, password: String) = {
+    val ds = JtdsFactory getDataSource(server, database, port, user, password)
     val config = new HikariConfig
     config setDataSource ds
-    config setConnectionTestQuery "SELECT 1"
+    config setConnectionTestQuery "select 1"
     new HikariDataSource(config)
   }
 }
 
 class MSSQLDBC[D <: Database]
-  extends DataSourceDBC[D]("mssql-test-db.properties", JtdsFactory) {
+  extends DataSourceDBC[D]("mssql-test-db.properties", HikariFactory) {
 
   override implicit val adapter = MSSQLAdapter
 
@@ -33,7 +40,7 @@ class MSSQLDBC[D <: Database]
 
 trait MSSQL {
   implicit val dbc = new MSSQLDBC[TestDB] {
-//    override def onSql(sql: SQL) = println(sql.render)
+    //    override def onSql(sql: SQL) = println(sql.render)
   }
 }
 
