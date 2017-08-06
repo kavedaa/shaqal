@@ -38,7 +38,7 @@ trait ColumnDefinition extends ColumnLike {
 
   def fullDataType(typeName: String): String
 
-  override def hasGeneratedValue = elements filter (_.hasGeneratedValue) nonEmpty
+  override def hasGeneratedValue = elements exists(_.hasGeneratedValue)
 
   def definitionSql(implicit adapter: Adapter) = adapter columnDefinitionSql this
 }

@@ -10,7 +10,7 @@ abstract class SelectExpression extends Renderable {
 class ColumnSeq(self: Seq[Column]) extends SelectExpression {
   implicit val cf = ColumnFormat.Full
   def render(implicit adapter: Adapter) = self map (_.render) mkString ", "
-  override def pp(implicit adapter: Adapter) = CommaLines(self map (_.render) toList)
+  override def pp(implicit adapter: Adapter) = CommaLines((self map (_.render)).toList)
 }
 
 object SelectExpression {

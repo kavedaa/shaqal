@@ -69,14 +69,14 @@ abstract class AggregateTest extends FeatureSpec with Matchers with BeforeAndAft
     
     scenario("empty table") {
       
-//      DB.Number max(_.number) should equal(None)
+      DB.Number max(_.number) should equal(None)
     }
     
     scenario("no predicate") {
       
       DB.Number insertAll Seq(1, 2, 3, 4, 5)
 
-//      DB.Number max(_.number) should equal(Some(5))      
+      DB.Number max(_.number) should equal(Some(5))
     }
     
     scenario("with predicate") {

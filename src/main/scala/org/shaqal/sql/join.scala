@@ -39,5 +39,5 @@ class JoinElement(item: FromItem, joinType: JoinType, condition: JoinExpr) {
 class JoinedItem(baseTable: TableLike, joins: Seq[JoinElement]) extends FromItem {
   
   def render(implicit adapter: Adapter) = (baseTable.fullNameAndAlias +: (joins map(_.render))) mkString " "
-  override def pp(implicit adapter: Adapter) = ElementList(Indent(baseTable.fullNameAndAlias), joins map(_.pp) toList)
+  override def pp(implicit adapter: Adapter) = ElementList(Indent(baseTable.fullNameAndAlias), (joins map(_.pp)).toList)
 }

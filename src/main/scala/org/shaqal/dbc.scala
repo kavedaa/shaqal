@@ -18,7 +18,7 @@ abstract class UrlDBC[D <: Database](
 
   def this(protocol: String, properties: Properties, driver: Driver) =
     this(
-      s"$protocol://${properties getProperty "server"}:${properties getProperty "port" toInt}/${properties getProperty "database"}",
+      s"$protocol://${properties getProperty "server"}:${(properties getProperty "port").toInt}/${properties getProperty "database"}",
       driver,
       properties getProperty "username",
       properties getProperty "password")

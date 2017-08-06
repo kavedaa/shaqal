@@ -15,7 +15,7 @@ abstract class CreateTableSQL(table: TableLike, columnDefs: Seq[SingleSQL])
     List(
       instruction,
       table.fullName,
-      columnDefs map (_.render) mkString ", " parens) mkString " "
+      (columnDefs map (_.render) mkString ", ").parens) mkString " "
 
   def createPp(implicit adapter: Adapter) = ElementList(
     List(instruction, table.fullName) mkString " ",

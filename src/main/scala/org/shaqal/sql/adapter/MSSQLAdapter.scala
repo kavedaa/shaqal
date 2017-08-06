@@ -10,7 +10,7 @@ object MSSQLAdapter extends Adapter {
 
   dataTypes += Types.DOUBLE -> "float"
   
-  def identifier(s: String) = List("[", s, "]") mkString
+  def identifier(s: String) = List("[", s, "]").mkString
 
   def identity = "identity"
 

@@ -28,7 +28,7 @@ object True extends Primitive {
   override def and(that: Expr) = that
   override def or(that: Expr) = this
 
-  def render(implicit adapter: Adapter) = "1 = 1" parens
+  def render(implicit adapter: Adapter) = "1 = 1".parens
 }
 
 object False extends Primitive {
@@ -36,7 +36,7 @@ object False extends Primitive {
   override def and(that: Expr) = this
   override def or(that: Expr) = that
 
-  def render(implicit adapter: Adapter) = "1 = 0" parens
+  def render(implicit adapter: Adapter) = "1 = 0".parens
 }
 
 abstract class BooleanExpr(val op: String) extends Expr {
@@ -45,7 +45,7 @@ abstract class BooleanExpr(val op: String) extends Expr {
 //  def render(implicit adapter: Adapter) = es map { _ render (adapter) } mkString (" " + op + " ") parens
   def params = es flatMap (_.params)
 
-  def containsComplex = es collect { case e: BooleanExpr => e } nonEmpty
+  def containsComplex = (es collect { case e: BooleanExpr => e } ).nonEmpty
 
 //  def pp(implicit adapter: Adapter) =
 //    if (containsComplex)

@@ -16,16 +16,16 @@ trait InsertSQL { this: SQL =>
   def render(implicit adapter: Adapter) = List(
     keywordInsertInto,
     table.fullName,
-    columns map (adapter identifier _.columnName) mkString ", " parens,
+    (columns map (adapter identifier _.columnName) mkString ", ").parens,
     keywordValues,
-    columns map (_ => "?") mkString ", " parens) mkString " "
+    (columns map (_ => "?") mkString ", ").parens) mkString " "
 
   override def pp(implicit adapter: Adapter) = ElementList(
     keywordInsertInto,
     Indent(
       table.fullName,
-      Indent(CommaLines(columns map (adapter identifier _.columnName) toList).parens)),
-    keywordValues + " " + (columns map (_ => "?") mkString ", " parens))
+      Indent(CommaLines((columns map (adapter identifier _.columnName)).toList).parens)),
+    keywordValues + " " + ((columns map (_ => "?") mkString ", ").parens))
 }
 
 class SingleInsertSQL(val table: TableLike, val columns: Seq[Column], columnParams: Seq[ColumnParam])
