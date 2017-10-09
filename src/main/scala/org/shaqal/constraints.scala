@@ -36,6 +36,7 @@ trait Constraints { this: TableLike with TableDefinition =>
 
   object Unique {
     def apply(cs: Column*) = new Unique(cs)
+    def apply(name: String, cs: Column*) = new Unique(cs, Some(name))
 //    private def product(p: Product) = new Unique(p.productIterator.toSeq.asInstanceOf[Seq[Column]])
 //    def apply(cs: (Column, Column)) = product(cs)
 //    def apply(cs: (Column, Column, Column)) = product(cs)
@@ -80,8 +81,13 @@ trait Constraints { this: TableLike with TableDefinition =>
     def params = Nil
   }
 
-  case class ForeignKey(columns: Column*) {
-    def references(refColumns: TableColumns) = new ReferentialConstraint(columns, refColumns)
+  class ForeignKey private (columns: Seq[Column], val name: Option[String] = None) {
+    def references(refColumns: TableColumns) = new ReferentialConstraint(columns, refColumns, name)
+  }
+
+  object ForeignKey {
+    def apply(columns: Column*) = new ForeignKey(columns)
+    def apply(name: String, columns: Column*) = new ForeignKey(columns, Some(name))
   }
 
   def constraints: Seq[Constraint]
