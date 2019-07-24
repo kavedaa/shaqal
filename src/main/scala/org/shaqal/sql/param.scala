@@ -64,6 +64,13 @@ case class BigDecimalParam(v: BigDecimal) extends ValueParam[BigDecimal] {
   def set(ps: PreparedStatement, index: Int) = {
     ps setBigDecimal (index, new java.math.BigDecimal(v.toString))
   }
+  //   Yes like this:
+
+  val jb = v.bigDecimal
+
+  // And other way:
+
+  val sb2 = BigDecimal(jb)
 }
 
 case class BooleanParam(v: Boolean) extends ValueParam[Boolean] {

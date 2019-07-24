@@ -4,9 +4,9 @@ organization := "org.shaqal"
 
 version := "0.4-SNAPSHOT"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.11.12"
 
-crossScalaVersions := Seq("2.10.4", "2.11.8", "2.12.2")
+crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.8")
 
 libraryDependencies ++= Seq(
 	"org.scalatest" %% "scalatest" % "3.0.1" % "test",
