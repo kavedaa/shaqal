@@ -47,5 +47,12 @@ trait AggregateFunctions { this: Query =>
     (c queryColl (selectSql(sexpr), implicit rs => if (col.checkNull) None else Some(col.get), implicitly[CanBuildFrom[Nothing, Option[U], Seq[Option[U]]]].apply())).head
   }
 
+  //  workaround for https://github.com/scala/bug/issues/10407
+  def maxCompat[U](col: Col { type T = U })(implicit c: -:[D]): Option[U] = {
+//    val col = f(r)
+    val sexpr = Max(col)
+    (c queryColl (selectSql(sexpr), implicit rs => if (col.checkNull) None else Some(col.get), implicitly[CanBuildFrom[Nothing, Option[U], Seq[Option[U]]]].apply())).head
+  }
+
 }
 

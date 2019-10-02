@@ -4,7 +4,7 @@ organization := "org.shaqal"
 
 version := "0.4-SNAPSHOT"
 
-scalaVersion := "2.11.12"
+scalaVersion := "2.12.8"
 
 crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.8")
 
