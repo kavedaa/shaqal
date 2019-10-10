@@ -28,12 +28,12 @@ abstract class ForUpdateTest extends FunSuite with Matchers with BeforeAndAfter 
   implicit def dbc: Connector[TestDB]
 
   before {
-    DB.TableA drop true
-    DB.TableA createTable ()
+    DB.TableA create ()
     DB.TableA insert DB.TableA.Values(a => Seq(a.id := 1, a.name := "John"))
   }
 
   after {
+    DB.TableA drop true
   }
 
   test("select") {

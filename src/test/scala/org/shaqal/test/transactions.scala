@@ -30,8 +30,8 @@ abstract class TransactionsTest extends FeatureSpec with Matchers with BeforeAnd
   implicit def dbc: Connector[TestDB]
 
   before {
-    TableA createTable ()
-    TableB createTable ()
+    TableA create ()
+    TableB create ()
   }
 
   after {

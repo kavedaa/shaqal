@@ -21,7 +21,7 @@ abstract class WhereTest extends FeatureSpec with Matchers with BeforeAndAfter {
 
   before {
 
-    DT createTable ()
+    DT create()
 
     DT insert DT.Values(d => Seq(
       d.id := 1,
@@ -64,7 +64,7 @@ abstract class WhereTest extends FeatureSpec with Matchers with BeforeAndAfter {
   }
 
   after {
-    DT drop (true)
+    DT drop true
   }
 
   info("Test all supported 'where' predicates with all applicable data types")
