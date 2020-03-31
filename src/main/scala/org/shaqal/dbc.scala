@@ -44,7 +44,7 @@ abstract class NamedDataSourceDBC[D <: Database](
 
   val ds = (new InitialContext).lookup(name).asInstanceOf[DataSource]
 
-  def getConnection() = ds getConnection ()
+  def getConnection() = ds.getConnection()
 }
 
 abstract class DataSourceDBC[D <: Database](

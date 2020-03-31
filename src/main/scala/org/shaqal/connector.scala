@@ -103,7 +103,7 @@ abstract class Connector[+D <: Database] extends ConnectorBase with DBOperations
 
 abstract class DBC[D <: Database] extends Connector[D] with Transactions[D] {
 
-  def close(conn: Connection) { conn close () }
+  def close(conn: Connection) { conn.close() }
 
   def checkConnection(): Either[Throwable, String] =
     try {
@@ -133,18 +133,18 @@ class TXC[+D <: Database](dbc: DBC[D], conn: Connection) extends Connector[D] {
   override def onSql(sql: SQL) { dbc onSql sql }
   override def onError(t: Throwable) { dbc onError t }
   override def onError(sql: SQL, t: Throwable) { dbc onError (sql, t) }
-  override def onTransaction() { dbc onTransaction () }
-  override def onCommit() { dbc onCommit () }
-  override def onRollback() { dbc onRollback () }
+  override def onTransaction() { dbc.onTransaction() }
+  override def onCommit() { dbc.onCommit() }
+  override def onRollback() { dbc.onRollback() }
 
   def commit() {
     onCommit()
-    conn commit ()
+    conn.commit()
   }
 
   def rollback() {
     onRollback()
-    conn rollback ()
+    conn.rollback()
   }
 
   def transaction[T, E >: D <: Database](tx: TXC[E] => T) = Success(tx(this))

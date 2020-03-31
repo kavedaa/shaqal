@@ -33,25 +33,25 @@ trait AggregateFunctions { this: Query =>
 
   def count()(implicit c: -:[D]): Long = {
     val sexpr = Count(None)
-    (c queryColl (selectSql(sexpr), rs => rs getLong sexpr.columnAlias, implicitly[CanBuildFrom[Nothing, Long, Seq[Long]]].apply())).head
+    (c queryColl (selectSql(sexpr), rs => rs getLong sexpr.columnAlias, List.newBuilder[Long])).head
   }
 
   def count(f: R => Col)(implicit c: -:[D]): Long =  {
     val sexpr = Count(Some(f(r)))
-    (c queryColl (selectSql(sexpr), rs => rs getLong sexpr.columnAlias, implicitly[CanBuildFrom[Nothing, Long, Seq[Long]]].apply())).head
+    (c queryColl (selectSql(sexpr), rs => rs getLong sexpr.columnAlias, List.newBuilder[Long])).head
   }
 
   def max[U](f: R => Col { type T = U })(implicit c: -:[D]): Option[U] = {
     val col = f(r)
     val sexpr = Max(col)
-    (c queryColl (selectSql(sexpr), implicit rs => if (col.checkNull) None else Some(col.get), implicitly[CanBuildFrom[Nothing, Option[U], Seq[Option[U]]]].apply())).head
+    (c queryColl (selectSql(sexpr), implicit rs => if (col.checkNull) None else Some(col.get), List.newBuilder[Option[U]])).head
   }
 
   //  workaround for https://github.com/scala/bug/issues/10407
   def maxCompat[U](col: Col { type T = U })(implicit c: -:[D]): Option[U] = {
 //    val col = f(r)
     val sexpr = Max(col)
-    (c queryColl (selectSql(sexpr), implicit rs => if (col.checkNull) None else Some(col.get), implicitly[CanBuildFrom[Nothing, Option[U], Seq[Option[U]]]].apply())).head
+    (c queryColl (selectSql(sexpr), implicit rs => if (col.checkNull) None else Some(col.get), List.newBuilder[Option[U]])).head
   }
 
 }

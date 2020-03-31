@@ -2,7 +2,7 @@ package org.shaqal
 
 import org.shaqal.sql._
 import java.sql.ResultSet
-import scala.collection.generic.CanBuildFrom
+import scala.collection.Factory
 
 trait MapperQuery[A] extends Query { builder =>
 
@@ -13,14 +13,14 @@ trait MapperQuery[A] extends Query { builder =>
   def query(f: A => Any)(implicit c: -:[D]) =
     c query (selectSql, r.reader, f)
 
-  def into[Coll[_]]()(implicit cbf: CanBuildFrom[Nothing, A, Coll[A]], c: -:[D]) =
-    c queryColl (selectSql, r.reader, cbf())
+  def into[Coll[_]](factory: Factory[A, Coll[A]])(implicit c: -:[D]) =
+    c queryColl (selectSql, r.reader, factory.newBuilder)
 
   // TODO: generalize these with the select holder versions?
 
-  def list()(implicit c: -:[D]) = into[List]
+  def list()(implicit c: -:[D]) = into(List)
 
-  def set()(implicit c: -:[D]) = into[Set]
+//  def set()(implicit c: -:[D]) = into[Set]
 
   def option()(implicit c: -:[D]) = list.headOption
 
