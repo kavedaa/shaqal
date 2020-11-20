@@ -6,7 +6,7 @@ import java.sql.ResultSet
 trait ReadOnlyPKMapperLike[A, C] extends ReadOnlyMapperLike[A] with ReadOnlyPK[C] with MapperQuery[A] {
 
   override type QueryType = MapperQuery[A]
-  def apply(value: C)(implicit c: -:[D]) = at(value) option ()
+  def apply(value: C)(implicit c: -:[D]) = at(value).option()
 }
 
 trait ReadOnlyPKMapper[A, C] extends ReadOnlyPKMapperLike[A, C] with MapperQuery[A] {
@@ -55,8 +55,8 @@ trait CompositePKLike[A] extends PKUtil { this: ReadOnlyMapperLike[A] with Mappe
 
 trait ReadOnlyPK2MapperLike[A, C1, C2] extends CompositePKLike[A] with ReadOnlyMapperLike[A] with ReadOnlyPK2[C1, C2] with MapperQuery[A] {
 
-  def apply(v: (C1, C2))(implicit c: -:[D]) = at(v._1, v._2) option ()
-  def apply(v1: C1, v2: C2)(implicit c: -:[D]) = at(v1, v2) option ()
+  def apply(v: (C1, C2))(implicit c: -:[D]) = at(v._1, v._2).option()
+  def apply(v1: C1, v2: C2)(implicit c: -:[D]) = at(v1, v2).option()
 }
 
 trait ReadOnlyPK2Mapper[A, C1, C2] extends ReadOnlyPK2MapperLike[A, C1, C2] { pkm =>
@@ -95,8 +95,8 @@ trait PK2Mapper[A, C1, C2] extends DualPK2Mapper[A, A, C1, C2]
 
 trait ReadOnlyPK3MapperLike[A, C1, C2, C3] extends CompositePKLike[A] with ReadOnlyMapperLike[A] with ReadOnlyPK3[C1, C2, C3] with MapperQuery[A] {
 
-  def apply(v: (C1, C2, C3))(implicit c: -:[D]) = at(v._1, v._2, v._3) option ()
-  def apply(v1: C1, v2: C2, v3: C3)(implicit c: -:[D]) = at(v1, v2, v3) option ()
+  def apply(v: (C1, C2, C3))(implicit c: -:[D]) = at(v._1, v._2, v._3).option()
+  def apply(v1: C1, v2: C2, v3: C3)(implicit c: -:[D]) = at(v1, v2, v3).option()
 }
 
 trait ReadOnlyPK3Mapper[A, C1, C2, C3] extends ReadOnlyPK3MapperLike[A, C1, C2, C3] {
@@ -129,8 +129,8 @@ trait PK3Mapper[A, C1, C2, C3] extends DualPK3Mapper[A, A, C1, C2, C3]
 
 trait ReadOnlyPK4MapperLike[A, C1, C2, C3, C4] extends CompositePKLike[A] with ReadOnlyMapperLike[A] with ReadOnlyPK4[C1, C2, C3, C4] with MapperQuery[A] {
 
-  def apply(v: (C1, C2, C3, C4))(implicit c: -:[D]) = at(v._1, v._2, v._3, v._4) option ()
-  def apply(v1: C1, v2: C2, v3: C3, v4: C4)(implicit c: -:[D]) = at(v1, v2, v3, v4) option ()
+  def apply(v: (C1, C2, C3, C4))(implicit c: -:[D]) = at(v._1, v._2, v._3, v._4).option()
+  def apply(v1: C1, v2: C2, v3: C3, v4: C4)(implicit c: -:[D]) = at(v1, v2, v3, v4).option()
 }
 
 trait ReadOnlyPK4Mapper[A, C1, C2, C3, C4] extends ReadOnlyPK4MapperLike[A, C1, C2, C3, C4] {
@@ -164,8 +164,8 @@ trait PK4Mapper[A, C1, C2, C3, C4] extends DualPK4Mapper[A, A, C1, C2, C3, C4]
 
 trait ReadOnlyPK7MapperLike[A, C1, C2, C3, C4, C5, C6, C7] extends CompositePKLike[A] with ReadOnlyMapperLike[A] with ReadOnlyPK7[C1, C2, C3, C4, C5, C6, C7] with MapperQuery[A] {
 
-  def apply(v: (C1, C2, C3, C4, C5, C6, C7))(implicit c: -:[D]) = at(v._1, v._2, v._3, v._4, v._5, v._6, v._7) option ()
-  def apply(v1: C1, v2: C2, v3: C3, v4: C4, v5: C5, v6: C6, v7: C7)(implicit c: -:[D]) = at(v1, v2, v3, v4, v5, v6, v7) option ()
+  def apply(v: (C1, C2, C3, C4, C5, C6, C7))(implicit c: -:[D]) = at(v._1, v._2, v._3, v._4, v._5, v._6, v._7).option()
+  def apply(v1: C1, v2: C2, v3: C3, v4: C4, v5: C5, v6: C6, v7: C7)(implicit c: -:[D]) = at(v1, v2, v3, v4, v5, v6, v7).option()
 }
 
 trait ReadOnlyPK7Mapper[A, C1, C2, C3, C4, C5, C6, C7] extends ReadOnlyPK7MapperLike[A, C1, C2, C3, C4, C5, C6, C7] {

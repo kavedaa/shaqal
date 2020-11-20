@@ -28,7 +28,7 @@ trait Query extends Selecting with AggregateFunctions with Adhoc {
 
   def exists()(implicit c: -:[D]): Boolean = count > 0
 
-  def existsWhere(w: R => Expr)(implicit c: -:[D]): Boolean = where(w) exists ()
+  def existsWhere(w: R => Expr)(implicit c: -:[D]): Boolean = where(w).exists()
 }
 
 trait ReadOnlyAccessorLike extends TableLike with Fields with Joining with Adhoc { r =>
@@ -51,6 +51,7 @@ trait ReadOnlyAccessorLike extends TableLike with Fields with Joining with Adhoc
   def apply[Z](f: r.type => Z)(implicit columnator: TableColumnator[r.type, Z]) =
     columnator columnate (this, f)
 
+  def test[Z](f: r.type => Z) = ???
 }
 
 trait AccessorLike extends ReadOnlyAccessorLike with Inserting with Updating with Deleting { r =>

@@ -16,9 +16,9 @@ trait DBOperations { this: Connector[_] =>
         val prep = conn prepareStatement sql.render
         try {
           setParams(prep, sql.params)
-          prep execute ()
+          prep.execute()
         }
-        finally { prep close () }
+        finally { prep.close() }
       }
       finally { close(conn) }
     }
@@ -46,24 +46,24 @@ trait DBOperations { this: Connector[_] =>
 
   def query[U, T](sql: SingleSQL, rsMapper: ResultSet => T, process: T => U) {
     onSql(sql)
-    Debug incQueries ()
+    Debug.incQueries()
     try {
       val conn = getConnection
       try {
         val prep = conn prepareStatement sql.render
         try {
           setParams(prep, sql.params)
-          val rs = prep executeQuery ()
+          val rs = prep.executeQuery()
           try {
             while (rs.next()) {
-              Debug incRows ()
+              Debug.incRows()
               process(rsMapper(rs))
             }
           }
           catch { case _: CancelException => }
-          finally { rs close () }
+          finally { rs.close() }
         }
-        finally { prep close () }
+        finally { prep.close() }
       }
       finally { close(conn) }
     }
@@ -76,7 +76,7 @@ trait DBOperations { this: Connector[_] =>
 
   def insert[A](sql: SingleSQL, autos: Seq[String], autosMapper: Option[ResultSet => A] = None): Option[A] = {
     onSql(sql)
-    Debug incInserts()
+    Debug.incInserts()
     try {
       val conn = getConnection
       try {
@@ -109,7 +109,7 @@ trait DBOperations { this: Connector[_] =>
 
   def batchInsert[A](batch: BatchSQL, autos: Seq[String], autosMapper: Option[ResultSet => A] = None): List[A] = {
     onSql(batch)
-    Debug incBatchInserts()
+    Debug.incBatchInserts()
     try {
       val conn = getConnection
       try {
@@ -141,7 +141,7 @@ trait DBOperations { this: Connector[_] =>
   //  returns number of rows affected
   def update(sql: SingleSQL): Int = {
     onSql(sql)
-    Debug incUpdates()
+    Debug.incUpdates()
     try {
       val conn = getConnection
       try {

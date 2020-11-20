@@ -36,13 +36,13 @@ trait Transactions[D <: Database] { this: DBC[D] =>
         val txc = createTXC(conn)
         try {
           val res = tx(txc)
-          txc commit()
+          txc.commit()
           Success(res)
         } 
         catch {
           case t: Throwable =>
             onError(t)
-            txc rollback()
+            txc.rollback()
             Failure(t)
         }
       } 

@@ -3,7 +3,7 @@ package org.shaqal
 import org.shaqal.sql._
 import java.sql.ResultSet
 
-import scala.collection.generic.CanBuildFrom
+import scala.collection.Factory
 import scala.util.Try
 
 trait Selecting { this: Query =>
@@ -28,18 +28,18 @@ trait Selecting { this: Query =>
     def query[U](f: A => U)(implicit c: -:[D]) =
       c query (sql, selectReader(s), f)
 
-    def into[Coll[_]]()(implicit cbf: CanBuildFrom[Nothing, A, Coll[A]], c: -:[D]) =
-      c queryColl (sql, selectReader(s), cbf())
+    def into[Coll[_]](factory: Factory[A, Coll[A]])(implicit c: -:[D]) =
+      c queryColl (sql, selectReader(s), factory.newBuilder)
 
-    def list()(implicit c: -:[D]) = into[List]
+    def list()(implicit c: -:[D]) = into(List)
     
-    def set()(implicit c: -:[D]) = into[Set]
+//    def set()(implicit c: -:[D]) = into[Set]
 
     def option()(implicit c: -:[D]) = list.headOption
 
     def get()(implicit c: -:[D]) = list.head
 
-    def apply[Coll[_]]()(implicit cbf: CanBuildFrom[Nothing, A, Coll[A]], c: -:[D]): Coll[A] = into[Coll]
+//    def apply[Coll[_]]()(implicit cbf: BuildFrom[Nothing, A, Coll[A]], c: -:[D]): Coll[A] = into[Coll]
   }
 
 }

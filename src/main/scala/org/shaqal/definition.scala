@@ -33,7 +33,7 @@ trait TableDefinition extends Constraints { this: TableLike with Fields =>
   }
 
   def create()(implicit c: -:[D]): Boolean = {
-    create(s => Unit)
+    create(s => ())
   }
 
   def createTable()(implicit c: -:[D]) = {
@@ -55,7 +55,7 @@ trait TableDefinition extends Constraints { this: TableLike with Fields =>
   def tableExists(implicit c: -:[D]): Boolean = {
     object InformationSchema extends c.adapter.InformationSchema[D]
     val schemaName = schema.schemaName getOrElse c.adapter.defaultSchemaName
-    InformationSchema.Tables where (t => (t.table_schema is schemaName) && (t.table_name is tableName)) exists ()
+    InformationSchema.Tables.where(t => (t.table_schema is schemaName) && (t.table_name is tableName)).exists()
   }
 
   def addConstraints()(implicit c: -:[D]) {
@@ -97,7 +97,7 @@ trait SchemaDefinition { this: Database#Schema =>
   }
 
   def create()(implicit c: -:[D]) {
-    create(s => Unit)
+    create(s => ())
   }
 
   def createSchema()(implicit c: -:[D]) = {
@@ -112,7 +112,7 @@ trait SchemaDefinition { this: Database#Schema =>
 
   def schemaExists(implicit c: -:[D]): Boolean = {
     object InformationSchema extends c.adapter.InformationSchema[D]
-    schemaName exists { name => InformationSchema.Schemata where (_.schema_name is name) exists () }
+    schemaName exists { name => InformationSchema.Schemata.where(_.schema_name is name).exists() }
   }
 
 }
