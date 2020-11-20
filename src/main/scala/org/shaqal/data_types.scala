@@ -145,6 +145,8 @@ abstract class StringLikeCol(name: String, sqlType: Int, dataTypeName: String) e
 
   def valueParam(value: String) = new StringParam(value)
 
+  def like(value: String) = Like(this, valueParam(value))
+
 //  def is(value: String) = Eq(this, value)
 //  def isnt(value: String) = Ne(this, value)
 

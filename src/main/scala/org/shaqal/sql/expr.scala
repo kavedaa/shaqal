@@ -76,6 +76,7 @@ abstract class InfixColumnExpr(val op: String) extends ColumnExpr {
 //  def pp(implicit adapter: Adapter) = render
 }
 
+case class Like(column: Column, param: Param[_]) extends InfixColumnExpr("like")
 case class Eq(column: Column, param: Param[_]) extends InfixColumnExpr("=")
 case class Ne(column: Column, param: Param[_]) extends InfixColumnExpr("!=")
 case class Gt(column: Column, param: Param[_]) extends InfixColumnExpr(">")
