@@ -17,6 +17,7 @@ abstract class Adapter {
     Types.BIGINT -> "bigint",
     Types.CHAR -> "char",
     Types.VARCHAR -> "varchar",
+    Types.NVARCHAR -> "nvarchar",
     Types.DOUBLE -> "double",
     Types.TIMESTAMP -> "datetime",
     Types.DATE -> "date",

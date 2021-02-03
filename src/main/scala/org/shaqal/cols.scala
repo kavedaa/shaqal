@@ -35,6 +35,12 @@ abstract class varchar(val length: DataLength)(name: String)(implicit t: TableLi
   def table = t
 }
 
+abstract class nvarchar(val length: DataLength)(name: String)(implicit t: TableLike)
+  extends NvarcharCol(name) with ColumnDefinition {
+  def this(name: String)(implicit t: TableLike) = this(DataLength.None)(name)
+  def table = t
+}
+
 abstract class double(name: String)(implicit t: TableLike)
   extends DoubleCol(name) with ColumnDefinition {
   def table = t

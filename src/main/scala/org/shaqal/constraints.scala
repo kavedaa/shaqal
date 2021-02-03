@@ -115,6 +115,12 @@ object TableColumnator {
     def columnate(r: R, f: R => (Column, Column)) =
       new TableColumns(r, f(r).productIterator.toSeq.asInstanceOf[Seq[Column]])
   }
+
+  implicit def seqColumnator[R <: ReadOnlyAccessorLike] = new TableColumnator[R, Seq[Column]] {
+    def columnate(r: R, f: R => Seq[Column]) =
+      new TableColumns(r, f(r))
+  }
+
 }
   
     

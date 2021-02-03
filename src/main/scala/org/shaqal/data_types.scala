@@ -165,6 +165,10 @@ abstract class CharCol(name: String) extends StringLikeCol(name, Types.CHAR, "ch
 
 abstract class VarcharCol(name: String) extends StringLikeCol(name, Types.VARCHAR, "varchar")
 
+//  No idea why type needs to be VARCHAR and not NVARCHAR here. Using the latter (with JTDS) gives:
+//  java.sql.SQLException: Invalid java.sql.Types constant value -9 passed to set or update method.
+abstract class NvarcharCol(name: String) extends StringLikeCol(name, Types.VARCHAR, "nvarchar")
+
 abstract class DoubleCol(name: String) extends Col(name, Types.DOUBLE) {
   
   type T = Double
