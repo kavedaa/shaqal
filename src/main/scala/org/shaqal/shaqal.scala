@@ -31,15 +31,16 @@ trait SchemaLike { sch =>
   def schemaName: Option[String]
 
   class Table(name: String) extends TableLike {
+    type D = sch.D
     val schema: SchemaLike { type D = sch.D } = sch
     def tableName = name
   }
 }
 
 trait TableLike { tbl =>
-  val schema: SchemaLike
+  type D <: Database
+  def schema: SchemaLike
   //  def database: Database { type D = schema.D } = schema.database
-  type D = schema.D
 
   def tableName: String
 
@@ -60,7 +61,7 @@ trait TableLike { tbl =>
 
   def fullNameAndAlias(implicit adapter: Adapter) = Seq(fullName, "as", aliasName) mkString " "
 
-  implicit val tableLike = this
+  implicit val tableLike: TableLike = this
 
   override def toString = schemaTableName mkString "."
 }

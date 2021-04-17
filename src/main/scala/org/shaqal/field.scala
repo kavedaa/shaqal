@@ -11,9 +11,9 @@ trait Fields { this: TableLike =>
 
   trait Foreign extends Field with ReadOnlyAccessorLike { f =>
 
-    lazy val schema = Fields.this.tableLike.schema
+    val schema = Fields.this.tableLike.schema
     val joinType: JoinType
-    val fks: Seq[Col]
+    def fks: Seq[Col]
     def joinExpr: JoinExpr
 
     override def aliasPath = Fields.this.tableLike.aliasPath :+ tableLike

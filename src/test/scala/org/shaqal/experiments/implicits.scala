@@ -1,11 +1,13 @@
 package foo
 
+import scala.language.implicitConversions
+
 object Foo {
 
   class A
   
   object A {
-    implicit def toB(a: A) = new B(a)
+    implicit def toB(a: A): B = new B(a)
   }
   
   class B(a: A) {
@@ -25,7 +27,7 @@ object Foo {
   trait E
   
   object E {
-    implicit def cToD[T](c: C[T]) = new D(c) 
+    implicit def cToD[T](c: C[T]): D[T] = new D(c) 
   } 
   
   val c = new C[E]
@@ -41,7 +43,7 @@ object Bar {
   }
   
   object A {
-    implicit val s = "hello"
+    implicit val s: String = "hello"
     
   }
   

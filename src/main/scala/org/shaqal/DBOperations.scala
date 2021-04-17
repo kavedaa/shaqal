@@ -8,10 +8,10 @@ import scala.collection.generic.CanBuildFrom
 
 trait DBOperations { this: Connector[_] =>
 
-  def execute(sql: SingleSQL) {
+  def execute(sql: SingleSQL) = {
     onSql(sql)
     try {
-      val conn = getConnection
+      val conn = getConnection()
       try {
         val prep = conn prepareStatement sql.render
         try {
@@ -44,11 +44,11 @@ trait DBOperations { this: Connector[_] =>
     builder.result
   }
 
-  def query[U, T](sql: SingleSQL, rsMapper: ResultSet => T, process: T => U) {
+  def query[U, T](sql: SingleSQL, rsMapper: ResultSet => T, process: T => U) = {
     onSql(sql)
     Debug.incQueries()
     try {
-      val conn = getConnection
+      val conn = getConnection()
       try {
         val prep = conn prepareStatement sql.render
         try {
@@ -78,7 +78,7 @@ trait DBOperations { this: Connector[_] =>
     onSql(sql)
     Debug.incInserts()
     try {
-      val conn = getConnection
+      val conn = getConnection()
       try {
         //  TODO jtds (at least) throw an exception when there are more than one auto columns
         //  perhaps better to always just have one
@@ -111,7 +111,7 @@ trait DBOperations { this: Connector[_] =>
     onSql(batch)
     Debug.incBatchInserts()
     try {
-      val conn = getConnection
+      val conn = getConnection()
       try {
         val prep = if (autosMapper.isDefined) conn.prepareStatement(batch.render, autos.toArray)
         else conn.prepareStatement(batch.render)
@@ -143,7 +143,7 @@ trait DBOperations { this: Connector[_] =>
     onSql(sql)
     Debug.incUpdates()
     try {
-      val conn = getConnection
+      val conn = getConnection()
       try {
         val prep = conn prepareStatement sql.render
         try {
@@ -163,7 +163,7 @@ trait DBOperations { this: Connector[_] =>
 
   def delete(sql: SingleSQL) = update(sql)
 
-  private def setParams(prep: PreparedStatement, ps: ParamsSeq) {
+  private def setParams(prep: PreparedStatement, ps: ParamsSeq) = {
     ps.zipWithIndex foreach { case (param, index) => param set (prep, index + 1) }
   }
 }

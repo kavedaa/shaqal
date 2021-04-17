@@ -1,5 +1,7 @@
 package org.shaqal.sql
 
+import scala.language.implicitConversions
+
 import org.shaqal._
 import org.shaqal.sql.adapter._
 import org.shaqal.sql.pretty._
@@ -13,13 +15,13 @@ abstract class Params {
   def render: String
 }
 
-case class ParamsSeq(self: Seq[Param[_]]) extends Params {
+case class ParamsSeq(self: Seq[Param[?]]) extends Params {
   def render = self map (_.render) mkString ", "
 }
 
 object ParamsSeq {
-  implicit def toSeq(p: ParamsSeq) = p.self.toSeq
-  implicit def fromSeq(ps: Seq[_ <: Param[_]]) = ParamsSeq(ps)
+  implicit def toSeq(p: ParamsSeq): Seq[Param[?]] = p.self.toSeq
+  implicit def fromSeq(ps: Seq[_ <: Param[?]]): ParamsSeq = ParamsSeq(ps)
 }
 
 case class BatchParams(self: Seq[ParamsSeq]) extends Params {
@@ -27,8 +29,8 @@ case class BatchParams(self: Seq[ParamsSeq]) extends Params {
 }
 
 object BatchParams {
-  implicit def toSeq(b: BatchParams) = b.self.toSeq
-  implicit def fromSeq(ps: Seq[ParamsSeq]) = BatchParams(ps)
+  implicit def toSeq(b: BatchParams): Seq[ParamsSeq] = b.self.toSeq
+  implicit def fromSeq(ps: Seq[ParamsSeq]): BatchParams = BatchParams(ps)
 }
 
 abstract class SQL extends Renderable {
@@ -67,5 +69,5 @@ object Util {
     def parens = "(" + s + ")"
   }
 
-  implicit def stringW(s: String) = new StringW(s)
+  implicit def stringW(s: String): StringW = new StringW(s)
 }

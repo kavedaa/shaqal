@@ -15,7 +15,7 @@ class PostgreSQLDBC[D <: Database] extends UrlDBC[D](
 }
 
 trait PostgreSQL {
-  implicit def dbc = new PostgreSQLDBC[TestDB] {
+  implicit def dbc: DBC[TestDB] = new PostgreSQLDBC[TestDB] {
 //    override def onSql(sql: SQL) = println(sql.pp.render)
   }
 }

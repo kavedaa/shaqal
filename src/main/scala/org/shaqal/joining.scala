@@ -8,14 +8,14 @@ trait Joining { r: ReadOnlyAccessorLike =>
   trait SingleJoinLike {
     val fk: Col //  this is the join column(s) on this table
     val pk: Col //  this is the join column(s) on the table that this will be joined with
-    lazy val fks = Seq(fk)
+    def fks = Seq(fk)
     def joinExpr = new JoinTerm(fk, pk)
   }
 
   trait DualJoinLike {
     val fk: (Col, Col)
     val pk: (Col, Col)
-    lazy val fks = Seq(fk._1, fk._2)
+    def fks = Seq(fk._1, fk._2)
     def joinExpr = JoinExpr(Seq(new JoinTerm(fk._1, pk._1), new JoinTerm(fk._2, pk._2)))
   }
 

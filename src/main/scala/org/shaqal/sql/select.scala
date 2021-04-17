@@ -1,5 +1,7 @@
 package org.shaqal.sql
 
+import scala.language.implicitConversions
+
 import org.shaqal._
 import org.shaqal.sql.adapter._
 import org.shaqal.sql.pretty._
@@ -8,13 +10,13 @@ abstract class SelectExpression extends Renderable {
 }
 
 class ColumnSeq(self: Seq[Column]) extends SelectExpression {
-  implicit val cf = ColumnFormat.Full
+  implicit val cf: ColumnFormat = ColumnFormat.Full
   def render(implicit adapter: Adapter) = self map (_.render) mkString ", "
   override def pp(implicit adapter: Adapter) = CommaLines((self map (_.render)).toList)
 }
 
 object SelectExpression {
-  implicit def columnSeq(cs: Seq[Column]) = new ColumnSeq(cs)
+  implicit def columnSeq(cs: Seq[Column]): ColumnSeq = new ColumnSeq(cs)
 }
 
 abstract class FromItem {
@@ -35,7 +37,7 @@ trait SelectLike extends SingleSQL {
   def forUpdate: Boolean
   def locks: Seq[Lock]
 
-  implicit val cf = ColumnFormat.TableAlias
+  implicit val cf: ColumnFormat = ColumnFormat.TableAlias
 
   val Select = "select"
   val From = "from"

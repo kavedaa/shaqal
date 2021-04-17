@@ -1,5 +1,7 @@
 package org.shaqal.sql.pretty
 
+import scala.language.implicitConversions
+
 case class IndentedLine(s: String, level: Int) {
   def render(implicit size: Int) = " " * (size * level) + s
   def map(f: String => String) = IndentedLine(f(s), level)
@@ -50,9 +52,9 @@ case class CommaLines(ss: List[String]) extends ElementListLike {
 
 object Element {
 
-  implicit def fromString(s: String) = Line(s)
+  implicit def fromString(s: String): Line = Line(s)
 
-  implicit def fromList(es: List[Element]) = ElementList(es)
+  implicit def fromList(es: List[Element]): ElementList = ElementList(es)
 
   def mkIndentList(es: List[Element], sep: Line): ElementList = es match {
     case Nil => Nil
@@ -63,7 +65,7 @@ object Element {
 
 object ElementList {
   def apply(es: Element*) = new ElementList(es.toList)
-  implicit def toList(el: ElementList) = el.es
+  implicit def toList(el: ElementList): List[Element] = el.es
 }
 
 object Pretty {

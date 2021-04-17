@@ -39,7 +39,7 @@ class MSSQLDBC[D <: Database]
 }
 
 trait MSSQL {
-  implicit val dbc = new MSSQLDBC[TestDB] {
+  implicit val dbc: DBC[TestDB] = new MSSQLDBC[TestDB] {
     //    override def onSql(sql: SQL) = println(sql.render)
   }
 }

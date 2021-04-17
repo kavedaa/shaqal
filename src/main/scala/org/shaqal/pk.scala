@@ -1,5 +1,7 @@
 package org.shaqal
 
+import scala.language.implicitConversions
+
 import org.shaqal._
 import org.shaqal.sql._
 
@@ -10,7 +12,7 @@ final case class SomePKVal[C](value: C) extends PKVal[C]
 case object * extends PKVal[Nothing]
 
 object PKVal {
-  implicit def pkVal[C](value: C) = new SomePKVal(value)
+  implicit def pkVal[C](value: C): PKVal[C] = new SomePKVal(value)
 }
 
 trait PKUtil {
@@ -22,7 +24,7 @@ trait ReadOnlyPK[C] extends PKUtil { this: Query =>
   val pk: ColOf[C]
 
   def at(value: C) = where(_ => pk is value)
-  def existsAt(value: C)(implicit c: -:[D]) = at(value).exists
+  def existsAt(value: C)(implicit c: -:[D]) = at(value).exists()
 }
 
 trait PK[C] extends ReadOnlyPK[C] { this: AccessorLike with Query =>
@@ -56,8 +58,8 @@ trait ReadOnlyCompositePK extends PKUtil { this: Query =>
   protected def atValues(values: Product) = where(_ => whereExprValues(values))
   protected def atSpecs(specs: Product) = where(_ => whereExprSpecs(specs))
   
-  protected def existsAtValues(values: Product)(implicit c: -:[D]) = atValues(values).exists 
-  protected def existsAtSpecs(specs: Product)(implicit c: -:[D]) = atSpecs(specs).exists
+  protected def existsAtValues(values: Product)(implicit c: -:[D]) = atValues(values).exists()
+  protected def existsAtSpecs(specs: Product)(implicit c: -:[D]) = atSpecs(specs).exists()
 }
 
 trait CompositePK extends ReadOnlyCompositePK { this: AccessorLike with Query =>

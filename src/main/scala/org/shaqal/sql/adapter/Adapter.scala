@@ -7,7 +7,7 @@ import org.shaqal.sql.adapter.common.AdapterCommons
 
 abstract class Adapter {
 
-  implicit val adapter = this
+  implicit val adapter: Adapter = this
 
   def dataType(sqlType: Int) = dataTypes(sqlType)
 
@@ -55,25 +55,25 @@ abstract class Adapter {
   
   def defaultSchemaName: String
   
-  def informationSchemaObjects: Map[Symbol, String] = AdapterCommons.informationSchemaObjects
+  def informationSchemaObjects: Map[String, String] = AdapterCommons.informationSchemaObjects
     
   class InformationSchema[DD <: Database] extends SchemaLike {    
     
     type D = DD
     
-    def schemaName = Some(informationSchemaObjects('schInformationSchema))
+    def schemaName = Some(informationSchemaObjects("schInformationSchema"))
     
-    object Schemata extends Table(informationSchemaObjects('schSchemata)) with Accessor {
+    object Schemata extends Table(informationSchemaObjects("schSchemata")) with Accessor {
       
-      val schema_name = new varchar(informationSchemaObjects('colSchemaName)) with notnull
+      val schema_name = new varchar(informationSchemaObjects("colSchemaName")) with notnull
       
       def fields = Seq(schema_name)
     }
     
-    object Tables extends Table(informationSchemaObjects('tblTables)) with Accessor {
+    object Tables extends Table(informationSchemaObjects("tblTables")) with Accessor {
 
-      val table_schema = new varchar(informationSchemaObjects('colTableSchema)) with notnull
-      val table_name = new varchar(informationSchemaObjects('colTableName)) with notnull
+      val table_schema = new varchar(informationSchemaObjects("colTableSchema")) with notnull
+      val table_name = new varchar(informationSchemaObjects("colTableName")) with notnull
 
       def fields = Seq(table_schema, table_name)
     }

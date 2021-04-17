@@ -6,7 +6,7 @@ import scala.collection.generic.CanBuildFrom
 import org.shaqal.sql.adapter.Adapter
 
 abstract class AggregateExpression extends SelectExpression {
-  implicit val cf = ColumnFormat.TableAlias    
+  implicit val cf: ColumnFormat = ColumnFormat.TableAlias    
 }
 
 case class Count(column: Option[Column]) extends AggregateExpression {

@@ -22,9 +22,8 @@ trait MapperQuery[A] extends Query { builder =>
 
 //  def set()(implicit c: -:[D]) = into[Set]
 
-  def option()(implicit c: -:[D]) = list.headOption
-
-  def get()(implicit c: -:[D]) = list.head
+  def option()(implicit c: -:[D]) = list().headOption
+  def get()(implicit c: -:[D]) = list().head
 }
 
 trait ReadOnlyMapperLike[A] extends ReadOnlyAccessorLike with MapperQuery[A] { mapper =>
@@ -60,7 +59,7 @@ trait DualMapperLike[A, B] extends AccessorLike with ReadOnlyMapperLike[A] {
   type W[X] = MapperWriter[X]
 
   object MapperWriter extends AccessorWriterFactory {
-    implicit val mapperWriter = writer
+    implicit val mapperWriter: MapperWriter[B] = writer
     implicit object MapperValueWriter extends AccessorValueWriter with W[Value]
     implicit object MapperValuesWriter extends AccessorValuesWriter with MapperWriter[Values]
   }

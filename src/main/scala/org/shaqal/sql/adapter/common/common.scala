@@ -109,12 +109,12 @@ object AdapterCommons {
 //  }
   
   def informationSchemaObjects = Map(
-    'schInformationSchema -> "information_schema",
-    'schSchemata -> "schemata",
-    'tblTables -> "tables",
-    'colSchemaName -> "schema_name",
-    'colTableSchema -> "table_schema",
-    'colTableName -> "table_name")
+    "schInformationSchema" -> "information_schema",
+    "schSchemata" -> "schemata",
+    "tblTables" -> "tables",
+    "colSchemaName" -> "schema_name",
+    "colTableSchema" -> "table_schema",
+    "colTableName" -> "table_name")
   
 
 }

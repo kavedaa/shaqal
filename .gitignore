@@ -1,0 +1,11 @@
+target/
+.cache*
+*.properties
+
+.bsp/
+.bloop/
+.metals/
+metals.sbt
+
+.vscode/
+null

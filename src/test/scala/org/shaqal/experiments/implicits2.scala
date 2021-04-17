@@ -1,5 +1,7 @@
 package org.shaqal.experiments
 
+import scala.language.implicitConversions
+
 object Implicits2 {
   
   trait Foocator[A, B]
@@ -13,7 +15,7 @@ object Implicits2 {
   trait Bar
   
   object Bar {
-    implicit val intFoocator = new Foocator[Int, Bar] {}
+    implicit val intFoocator: Foocator[Int, Bar] = new Foocator[Int, Bar] {}
   }
   
   IntFoo.foo[Bar]
