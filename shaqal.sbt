@@ -4,10 +4,10 @@ organization := "org.shaqal"
 
 version := "0.4.4"
 
-scalaVersion := "3.0.0-RC1"
+scalaVersion := "3.0.1"
 
 libraryDependencies ++= Seq(
-	"org.scalatest" %% "scalatest" % "3.2.5" % "test",
+	"org.scalatest" %% "scalatest" % "3.2.10" % "test",
 	"com.h2database" % "h2" % "1.3.170" % "test",
 	"net.sourceforge.jtds" % "jtds" % "1.3.1" % "test",
 	"org.postgresql" % "postgresql" % "9.4.1212" % "test",
@@ -18,3 +18,8 @@ libraryDependencies ++= Seq(
 parallelExecution in Test := false 
 
 publishTo := Some("My Maven Repo" at "https://mymavenrepo.com/repo/j1YxfckeUitD5ZGTAisl")
+
+
+// workaround for bug "cannot take signature of MethodType" in doc task
+sources in (Compile,doc) := Seq.empty
+publishArtifact in (Compile, packageDoc) := false

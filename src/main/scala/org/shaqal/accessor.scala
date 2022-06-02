@@ -48,8 +48,10 @@ trait ReadOnlyAccessorLike extends TableLike with Fields with Joining with Adhoc
     }
 
   //	Using typeclass pattern to avoid method overloading (this method is used for FK constraints)
-  def apply[Z](f: r.type => Z)(implicit columnator: TableColumnator[r.type, Z]) =
-    columnator columnate (this, f)
+  // def apply[Z](f: r.type => Z)(implicit columnator: TableColumnator[r.type, Z]) =
+  //   columnator columnate (this, f)
+
+  def apply(f: r.type => Column) = TableColumns(r, Seq(f(r)))
 
   def test[Z](f: r.type => Z) = ???
 }
