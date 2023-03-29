@@ -31,15 +31,15 @@ trait SchemaLike { sch =>
   def schemaName: Option[String]
 
   class Table(name: String) extends TableLike {
+    type D = sch.D
     val schema: SchemaLike { type D = sch.D } = sch
     def tableName = name
   }
 }
 
 trait TableLike { tbl =>
-  val schema: SchemaLike
-  //  def database: Database { type D = schema.D } = schema.database
-  type D = schema.D
+  type D <: Database
+  def schema: SchemaLike
 
   def tableName: String
 
