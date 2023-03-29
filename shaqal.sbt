@@ -2,9 +2,9 @@ name := "shaqal"
 
 organization := "org.shaqal"
 
-version := "0.4.4"
+version := "0.4.5"
 
-scalaVersion := "3.0.1"
+scalaVersion := "3.2.2"
 
 libraryDependencies ++= Seq(
 	"org.scalatest" %% "scalatest" % "3.2.10" % "test",
