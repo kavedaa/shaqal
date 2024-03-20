@@ -17,4 +17,4 @@ libraryDependencies ++= Seq(
 
 parallelExecution in Test := false 
 
-publishTo := Some("My Maven Repo" at "https://mymavenrepo.com/repo/j1YxfckeUitD5ZGTAisl")
+publishTo := Some("Vedaa Data Public publisher" at "https://mymavenrepo.com/repo/zPAvi2SoOMk6Bj2jtxNA/")
