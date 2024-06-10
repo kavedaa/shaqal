@@ -2,7 +2,7 @@ name := "shaqal"
 
 organization := "org.shaqal"
 
-version := "0.4.5"
+version := "0.4.5.2"
 
 scalaVersion := "2.13.4"
 

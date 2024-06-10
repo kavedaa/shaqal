@@ -15,6 +15,22 @@ abstract class Col(val columnName: String, val sqlType: Int)
   def checkNull(implicit rs: ResultSet) = ((rs getObject aliasName) == null)
   //  def is(other: Col { type T = col.T } ) = new JoinExpr(this, other) 
 
+  def asNullable = new Col(columnName, sqlType) with nullable {
+
+    type T = col.T
+
+    def auto(colIndex: Int)(implicit rs: java.sql.ResultSet) = col.auto(colIndex)
+    def auto(implicit rs: java.sql.ResultSet) = col.auto
+    def valueParam(value: T) = col.valueParam(value)
+    def table = col.table
+    def fullDataType(typeName: String) = col.fullDataType(typeName)
+    def get(implicit rs: java.sql.ResultSet) = col.get
+    def set(v: Option[T]) = col.set(v)
+    def set(v: T) = col.set(v)
+  }
+    
+
+
   def valueParam(value: T): Param[_]
 
   def is(value: T) = Eq(this, valueParam(value))
