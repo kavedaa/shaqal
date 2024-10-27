@@ -4,7 +4,7 @@ organization := "org.shaqal"
 
 version := "0.4.5.2"
 
-scalaVersion := "3.2.2"
+scalaVersion := "3.3.3"
 
 libraryDependencies ++= Seq(
 	"org.scalatest" %% "scalatest" % "3.2.10" % "test",
@@ -21,5 +21,5 @@ publishTo := Some("Vedaa Data Public publisher" at "https://mymavenrepo.com/repo
 
 
 // workaround for bug "cannot take signature of MethodType" in doc task
-sources in (Compile,doc) := Seq.empty
-publishArtifact in (Compile, packageDoc) := false
+Compile / doc / sources := Seq.empty
+Compile / packageDoc / publishArtifact := false
