@@ -4,7 +4,7 @@ import org.shaqal._
 import org.shaqal.sql._
 import org.shaqal.sql.adapter._
 
-trait Constraints { this: TableLike with TableDefinition =>
+trait Constraints { this: TableLike & TableDefinition & Fields =>
 
   sealed trait Constraint extends SingleSQL {
     val name: Option[String]
@@ -106,17 +106,17 @@ trait TableColumnator[R <: ReadOnlyAccessorLike, -Z] {
 
 object TableColumnator {
 
-  implicit def singleColumnator[R <: ReadOnlyAccessorLike] = new TableColumnator[R, Column] {
+  implicit def singleColumnator[R <: ReadOnlyAccessorLike]: TableColumnator[R, Column] = new TableColumnator[R, Column] {
     def columnate(r: R, f: R => Column) =
       new TableColumns(r, Seq(f(r)))
   }
 
-  implicit def tuple2Columnator[R <: ReadOnlyAccessorLike] = new TableColumnator[R, (Column, Column)] {
+  implicit def tuple2Columnator[R <: ReadOnlyAccessorLike]: TableColumnator[R, (Column, Column)] = new TableColumnator[R, (Column, Column)] {
     def columnate(r: R, f: R => (Column, Column)) =
       new TableColumns(r, f(r).productIterator.toSeq.asInstanceOf[Seq[Column]])
   }
 
-  implicit def seqColumnator[R <: ReadOnlyAccessorLike] = new TableColumnator[R, Seq[Column]] {
+  implicit def seqColumnator[R <: ReadOnlyAccessorLike]: TableColumnator[R, Seq[Column]] = new TableColumnator[R, Seq[Column]] {
     def columnate(r: R, f: R => Seq[Column]) =
       new TableColumns(r, f(r))
   }

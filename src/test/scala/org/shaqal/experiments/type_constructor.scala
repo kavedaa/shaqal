@@ -21,32 +21,32 @@ object type_constructor {
     
   }
   
-  def juice(apple1: Apple, apple2: Apple) {
+  def juice(apple1: Apple, apple2: Apple) = {
     
     
     
   }
   
-trait Value {
-  type T
-  type F[X]
-  type Q = F[T]
-  def value: T
-  def output: Q
-}  
-  
-trait NotNullableValue extends Value {
-  type F[X] = X
-}
-  
-trait NullableValue extends Value {
-  type F[X] = Option[X]
-}
-  
-trait Value2[V1 <: Value, V2 <: Value] {
-  type F[X1, X2] = Nothing // ???
-  def combine(value1: V1, value2: V2): F[V1, V2]
-}
+  trait Value {
+    type T
+    type F[X]
+    type Q = F[T]
+    def value: T
+    def output: Q
+  }  
+    
+  trait NotNullableValue extends Value {
+    type F[X] = X
+  }
+    
+  trait NullableValue extends Value {
+    type F[X] = Option[X]
+  }
+    
+  trait Value2[V1 <: Value, V2 <: Value] {
+    type F[X1, X2] = Nothing // ???
+    def combine(value1: V1, value2: V2): F[V1, V2]
+  }
 
 }
 

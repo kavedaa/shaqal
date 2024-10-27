@@ -1,8 +1,9 @@
 package org.shaqal.sql
 
-import org.scalatest._
+import org.scalatest.funsuite._
+import org.scalatest.matchers.should._
 
-class ExprTest extends FunSuite with Matchers {
+class ExprTest extends AnyFunSuite with Matchers {
   
   test("basic expressions") {
     

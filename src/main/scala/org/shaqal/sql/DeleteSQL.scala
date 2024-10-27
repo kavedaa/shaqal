@@ -6,7 +6,7 @@ import org.shaqal.sql.adapter._
 
 case class DeleteSQL(table: TableLike, where: Expr) extends SingleSQL {
 
-  implicit val cf = ColumnFormat.Name
+  implicit val cf: ColumnFormat = ColumnFormat.Name
   
   def render(implicit adapter: Adapter) = List(
     "delete from",

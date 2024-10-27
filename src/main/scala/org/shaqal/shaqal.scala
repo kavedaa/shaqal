@@ -60,7 +60,7 @@ trait TableLike { tbl =>
 
   def fullNameAndAlias(implicit adapter: Adapter) = Seq(fullName, "as", aliasName) mkString " "
 
-  implicit val tableLike = this
+  implicit val tableLike: TableLike = this
 
   override def toString = schemaTableName mkString "."
 }

@@ -6,28 +6,28 @@ import org.shaqal.sql.adapter._
 import scala.util._
 
 abstract class ConnectorBase {
-  def getConnection: Connection
-  def close(conn: Connection)
+  def getConnection(): Connection
+  def close(conn: Connection): Unit
 }
 
 trait Counter extends ConnectorBase {
   var count: Long = _
-  def resetCounter() { count = 0 }
-  abstract override def getConnection = {
+  def resetCounter() = { count = 0 }
+  abstract override def getConnection() = {
     count += 1
-    super.getConnection
+    super.getConnection()
   }
 }
 
 trait UseSingleConnection extends ConnectorBase {
-  val conn = super.getConnection
-  abstract override def getConnection = conn
-  abstract override def close(conn: Connection) {}
+  val conn = super.getConnection()
+  abstract override def getConnection() = conn
+  abstract override def close(conn: Connection) = {}
 }
 
 abstract class Connector[+D <: Database] extends ConnectorBase with DBOperations { conn =>
 
-  implicit def connector = this
+  implicit def connector: Connector[D] = this
   
   def throwOnQuery: Boolean
   def throwOnUpdate = true
@@ -36,16 +36,16 @@ abstract class Connector[+D <: Database] extends ConnectorBase with DBOperations
 
   implicit val adapter: Adapter
 
-  def onSql(sql: SQL) {}
-  def onError(t: Throwable) { println(t) }
-  def onError(sql: SQL, t: Throwable) { println(sql.pp.render); println(t) }
+  def onSql(sql: SQL)= {}
+  def onError(t: Throwable) = { println(t) }
+  def onError(sql: SQL, t: Throwable) = { println(sql.pp.render); println(t) }
 
   def transaction[T, E >: D <: Database](tx: TXC[E] => T): Try[T]
   def autoTransaction[T, E >: D <: Database](tx: TXC[E] => T): Try[T]
 
-  def onTransaction() {}
-  def onRollback() {}
-  def onCommit() {}
+  def onTransaction() = {}
+  def onRollback() = {}
+  def onCommit() = {}
 
   case class Debug(queries: Long, rows: Long, inserts: Long, batchInserts: Long, updates: Long, deletes: Long, millis: Long) {
     val qs = if (queries > 0) Some(s"$queries queries") else None
@@ -103,11 +103,11 @@ abstract class Connector[+D <: Database] extends ConnectorBase with DBOperations
 
 abstract class DBC[D <: Database] extends Connector[D] with Transactions[D] {
 
-  def close(conn: Connection) { conn.close() }
+  def close(conn: Connection) = { conn.close() }
 
   def checkConnection(): Either[Throwable, String] =
     try {
-      close(getConnection)
+      close(getConnection())
       Right("OK")
     }
     catch {
@@ -125,24 +125,24 @@ class TXC[+D <: Database](dbc: DBC[D], conn: Connection) extends Connector[D] {
 
   val adapter = dbc.adapter
 
-  def getConnection = conn
-  def close(conn: Connection) {}
+  def getConnection() = conn
+  def close(conn: Connection) = {}
 
   def throwOnQuery = true
 
-  override def onSql(sql: SQL) { dbc onSql sql }
-  override def onError(t: Throwable) { dbc onError t }
-  override def onError(sql: SQL, t: Throwable) { dbc onError (sql, t) }
-  override def onTransaction() { dbc.onTransaction() }
-  override def onCommit() { dbc.onCommit() }
-  override def onRollback() { dbc.onRollback() }
+  override def onSql(sql: SQL) = { dbc onSql sql }
+  override def onError(t: Throwable) = { dbc onError t }
+  override def onError(sql: SQL, t: Throwable) = { dbc onError (sql, t) }
+  override def onTransaction() = { dbc.onTransaction() }
+  override def onCommit() = { dbc.onCommit() }
+  override def onRollback() = { dbc.onRollback() }
 
-  def commit() {
+  def commit() = {
     onCommit()
     conn.commit()
   }
 
-  def rollback() {
+  def rollback() = {
     onRollback()
     conn.rollback()
   }

@@ -58,7 +58,7 @@ trait TableDefinition extends Constraints { this: TableLike with Fields =>
     InformationSchema.Tables.where(t => (t.table_schema is schemaName) && (t.table_name is tableName)).exists()
   }
 
-  def addConstraints()(implicit c: -:[D]) {
+  def addConstraints()(implicit c: -:[D]) = {
     addNonReferentialConstraints()
     addReferentialConstraints()
   }
@@ -89,14 +89,14 @@ trait SchemaDefinition { this: Database#Schema =>
   protected def dropSql(implicit adapter: Adapter) =
     adapter dropSchemaSql name
 
-  def create[U](f: String => U)(implicit c: -:[D]) {
+  def create[U](f: String => U)(implicit c: -:[D]) = {
     if (!schemaExists) {
       createSchema()
       f(name)
     }
   }
 
-  def create()(implicit c: -:[D]) {
+  def create()(implicit c: -:[D]): Unit = {
     create(s => ())
   }
 

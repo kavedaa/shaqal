@@ -1,5 +1,7 @@
 package org.shaqal
 
+import scala.language.implicitConversions
+
 import org.shaqal.sql._
 import org.shaqal.sql.adapter._
 import org.shaqal.sql.pretty._
@@ -18,7 +20,7 @@ abstract class JoinExpr extends Renderable { self =>
 }
 
 class JoinTerm(left: Column, right: Column) extends JoinExpr {
-  implicit val cf = ColumnFormat.TableAlias
+  implicit val cf: ColumnFormat = ColumnFormat.TableAlias
   def terms = Seq(this)
   override def render(implicit adapter: Adapter) = left.render + " = " + right.render
 }
@@ -28,7 +30,7 @@ object JoinExpr {
 }
 
 object JoinTerm {
-  implicit def joinTerm(t: (Column, Column)) = new JoinTerm(t._1, t._2)
+  implicit def joinTerm(t: (Column, Column)): JoinTerm = new JoinTerm(t._1, t._2)
 }
 
 class JoinElement(item: FromItem, joinType: JoinType, condition: JoinExpr) {

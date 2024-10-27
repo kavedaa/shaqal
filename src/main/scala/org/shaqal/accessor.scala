@@ -26,7 +26,7 @@ trait Query extends Selecting with AggregateFunctions with Adhoc {
     type R = Query.this.R
   }
 
-  def exists()(implicit c: -:[D]): Boolean = count > 0
+  def exists()(implicit c: -:[D]): Boolean = count() > 0
 
   def existsWhere(w: R => Expr)(implicit c: -:[D]): Boolean = where(w).exists()
 }
@@ -48,13 +48,15 @@ trait ReadOnlyAccessorLike extends TableLike with Fields with Joining with Adhoc
     }
 
   //	Using typeclass pattern to avoid method overloading (this method is used for FK constraints)
-  def apply[Z](f: r.type => Z)(implicit columnator: TableColumnator[r.type, Z]) =
-    columnator columnate (this, f)
+  // def apply[Z](f: r.type => Z)(implicit columnator: TableColumnator[r.type, Z]) =
+  //   columnator columnate (this, f)
+
+  def apply(f: r.type => Column) = TableColumns(r, Seq(f(r)))
 
   def test[Z](f: r.type => Z) = ???
 }
 
-trait AccessorLike extends ReadOnlyAccessorLike with Inserting with Updating with Deleting { r =>
+trait AccessorLike extends ReadOnlyAccessorLike with Inserting with Updating with Deleting { 
 
   type GG
 
@@ -106,8 +108,8 @@ trait Accessor extends AccessorLike with Query { relation =>
 
   object AccessorWriter extends AccessorWriterFactory {
 
-    implicit object AccessorValueWriter extends AccessorValueWriter with AccessorWriter[Value]
-    implicit object AccessorValuesWriter extends AccessorValuesWriter with AccessorWriter[Values]
+    implicit object accessorValueWriter extends AccessorValueWriter with AccessorWriter[Value]
+    implicit object accessorValuesWriter extends AccessorValuesWriter with AccessorWriter[Values]
 
     def apply[A](f: (r.type, A) => Seq[ColumnParam]) = new AccessorWriter[A] {
       def apply(a: A) = f(r, a)

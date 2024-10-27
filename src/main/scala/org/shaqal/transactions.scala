@@ -8,7 +8,7 @@ trait Transactions[D <: Database] { this: DBC[D] =>
   def transaction[T, E >: D <: Database](tx: TXC[E] => T): Try[T] = {
     onTransaction()
     try {
-      val conn = getConnection
+      val conn = getConnection()
       val autoCommit = conn.getAutoCommit
       try {
         conn setAutoCommit false
@@ -29,7 +29,7 @@ trait Transactions[D <: Database] { this: DBC[D] =>
   def autoTransaction[T, E >: D <: Database](tx: TXC[E] => T): Try[T] = {
     onTransaction()
     try {
-      val conn = getConnection
+      val conn = getConnection()
       val autoCommit = conn.getAutoCommit
       try {
         conn setAutoCommit false

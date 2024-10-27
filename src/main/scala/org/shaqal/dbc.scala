@@ -86,7 +86,7 @@ abstract class DataSourceDBC[D <: Database](
 
   val dataSource = dsFactory getDataSource (server, dbName, port, username, password)
 
-  def getConnection = dataSource.getConnection
+  def getConnection() = dataSource.getConnection
 }
 
 abstract class DataSourceFactory {

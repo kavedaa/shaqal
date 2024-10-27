@@ -2,9 +2,13 @@ package org.shaqal.test
 
 import org.shaqal._
 import org.shaqal.test.db.TestDB
-import org.scalatest._
 
-abstract class AdhocJoiningTest extends FeatureSpec with Matchers with BeforeAndAfter {
+import org.scalatest._
+import org.scalatest.featurespec._
+import org.scalatest.matchers.should._
+
+
+abstract class AdhocJoiningTest extends AnyFeatureSpec with Matchers with BeforeAndAfter {
 
   implicit def dbc: DBC[TestDB]
 
@@ -41,8 +45,8 @@ abstract class AdhocJoiningTest extends FeatureSpec with Matchers with BeforeAnd
 
     FooTable drop true
     BarTable drop true
-    FooTable createTable ()
-    BarTable createTable ()
+    FooTable.createTable()
+    BarTable.createTable()
   }
 
   feature("join on single column") {
@@ -57,7 +61,7 @@ abstract class AdhocJoiningTest extends FeatureSpec with Matchers with BeforeAnd
 
       val joined = FooTable join BarTable on(_.i is _.i)
       
-      val data = joined select { case (foo, bar) => (foo.s, bar.s) } list()
+      val data = joined.select { case (foo, bar) => (foo.s, bar.s) } .list()
       
       data shouldEqual Seq(("two", "a"))
     }
@@ -87,7 +91,7 @@ abstract class AdhocJoiningTest extends FeatureSpec with Matchers with BeforeAnd
 
       val joined = FooTable join BarTable on { (foo, bar) => (foo.i is bar.i) && (foo.i is bar.i) }
 
-      val data = joined select { case (foo, bar) => (foo.s, bar.s) } list ()
+      val data = joined.select { case (foo, bar) => (foo.s, bar.s) } .list()
 
       data should equal(List(("two", "a"), ("three", "b")))
     }

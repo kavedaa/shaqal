@@ -1,9 +1,11 @@
 package org.shaqal.sql
 
+import scala.language.implicitConversions
+import scala.collection.mutable.ListBuffer
+
 import org.shaqal.sql.Util._
 import org.shaqal.sql.adapter._
 import org.shaqal.sql.pretty._
-import scala.collection.mutable.ListBuffer
 
 sealed abstract class DataLength {
   def render: Option[String]
@@ -23,7 +25,7 @@ object DataLength {
     def render = scala.None
   }
 
-  implicit def fromInt(i: Int) = Value(i)
+  implicit def fromInt(i: Int): Value = Value(i)
 }
 
 trait ColumnDefinition extends ColumnLike {
@@ -32,9 +34,9 @@ trait ColumnDefinition extends ColumnLike {
 
   def dataTypeName(adapter: Adapter) = fullDataType(adapter dataType sqlType)
 
-  val elements = ListBuffer[ColumnDefinitionElement[_]]()
+  val elements = ListBuffer[ColumnDefinitionElement[?]]()
 
-  def addElement(element: ColumnDefinitionElement[_]) { elements += element }
+  def addElement(element: ColumnDefinitionElement[?]) = { elements += element }
 
   def fullDataType(typeName: String): String
 

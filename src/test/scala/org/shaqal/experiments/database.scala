@@ -4,7 +4,7 @@ trait Box {
 
   type B <: Box
  
-  def fix(implicit fixer: Fixer[B])
+  def fix(implicit fixer: Fixer[B]): Unit
 }
 
 trait ThingLike {
@@ -29,7 +29,7 @@ trait Database {
 
   type D <: Database
 
-  def tableExists(implicit c: -:[D])
+  def tableExists(implicit c: -:[D]): Unit
 
 }
 
