@@ -1,11 +1,14 @@
 package org.shaqal.test
 
 import org.scalatest._
+import org.scalatest.featurespec._
+import org.scalatest.matchers.should._
+
 import org.shaqal._
 import org.shaqal.test.db.TestDB
 import org.shaqal.sql.True
 
-abstract class PKCrudTest extends FeatureSpec with BeforeAndAfter with Matchers {
+abstract class PKCrudTest extends AnyFeatureSpec with BeforeAndAfter with Matchers {
 
   trait PersonAccessor extends Accessor with PK[Int] with TableDefinition {
     val id = new int("id") with notnull
@@ -35,8 +38,8 @@ abstract class PKCrudTest extends FeatureSpec with BeforeAndAfter with Matchers 
   import DB._
 
   before {
-    Person createTable ()
-    City createTable ()
+    Person.createTable()
+    City.createTable()
   }
 
   after {
@@ -78,17 +81,17 @@ abstract class PKCrudTest extends FeatureSpec with BeforeAndAfter with Matchers 
     scenario("single PK") {
 
       Person insert john
-      Person at 1 select (_.name) option () should equal(Some("John"))
+      Person.at(1).select(_.name).option() shouldEqual Some("John")
     }
 
     scenario("PK2") {
 
       City insertAll Seq(london, berlin, paris, rome)
 
-      City at (1, 1) select (_.name) list () should equal(List("London"))
-      City at (*, 1) select (_.name) list () should equal(List("London", "Berlin"))
-      City at (1, *) select (_.name) list () should equal(List("London", "Paris"))
-      City at (*, *) select (_.name) list () should equal(List("London", "Berlin", "Paris", "Rome"))
+      City.at(1, 1).select(_.name).list() shouldEqual List("London")
+      City.at(*, 1).select(_.name).list() shouldEqual List("London", "Berlin")
+      City.at(1, *).select(_.name).list() shouldEqual List("London", "Paris")
+      City.at(*, *).select(_.name).list() shouldEqual List("London", "Berlin", "Paris", "Rome")
     }
   }
 
@@ -99,7 +102,7 @@ abstract class PKCrudTest extends FeatureSpec with BeforeAndAfter with Matchers 
       Person insertAll Seq(john, tom)
 
       Person updateAt 1 set Person.Value(_.name := "Johnny")
-      Person select (_.name) set () shouldEqual Set("Johnny", "Tom")
+      Person.select(_.name).list() shouldEqual List("Johnny", "Tom")
     }
 
     scenario("PK2") {
@@ -107,25 +110,25 @@ abstract class PKCrudTest extends FeatureSpec with BeforeAndAfter with Matchers 
       City insertAll Seq(london, berlin, paris, rome)
 
       City updateAt (1, 1) set City.Value(_.name := "Copenhagen")
-      City select (_.name) set () shouldEqual Set("Copenhagen", "Berlin", "Paris", "Rome")
+      City.select(_.name).list() shouldEqual List("Copenhagen", "Berlin", "Paris", "Rome")
 
       City deleteWhere (_ => True)
       City insertAll Seq(london, berlin, paris, rome)
 
       City updateAt (*, 1) set City.Value(_.name := "Madrid")
-      City select (_.name) set () shouldEqual Set("Madrid", "Madrid", "Paris", "Rome")
+      City.select(_.name).list() shouldEqual List("Madrid", "Madrid", "Paris", "Rome")
 
       City deleteWhere (_ => True)
       City insertAll Seq(london, berlin, paris, rome)
 
       City updateAt (1, *) set City.Value(_.name := "Prague")
-      City select (_.name) set () shouldEqual Set("Prague", "Berlin", "Prague", "Rome")
+      City.select(_.name).list() shouldEqual List("Prague", "Berlin", "Prague", "Rome")
 
       City deleteWhere (_ => True)
       City insertAll Seq(london, berlin, paris, rome)
 
       City updateAt (*, *) set City.Value(_.name := "New York")
-      City select (_.name) set () shouldEqual Set("New York", "New York", "New York", "New York")
+      City.select(_.name).list() shouldEqual List("New York", "New York", "New York", "New York")
     }
   }
 
@@ -136,7 +139,7 @@ abstract class PKCrudTest extends FeatureSpec with BeforeAndAfter with Matchers 
       Person insertAll Seq(john, tom)
 
       Person deleteAt 1
-      Person select (_.name) list () should equal(List("Tom"))
+      Person.select(_.name).list() shouldEqual List("Tom")
     }
 
     scenario("PK2") {
@@ -144,25 +147,25 @@ abstract class PKCrudTest extends FeatureSpec with BeforeAndAfter with Matchers 
       City insertAll Seq(london, berlin, paris, rome)
 
       City deleteAt (1, 1)
-      City select (_.name) list () should equal(List("Berlin", "Paris", "Rome"))
+      City.select(_.name).list() shouldEqual List("Berlin", "Paris", "Rome")
 
-      City deleteWhere (_ => True)
+      City.deleteWhere(_ => True)
       City insertAll Seq(london, berlin, paris, rome)
 
       City deleteAt (1, *)
-      City select (_.name) list () should equal(List("Berlin", "Rome"))
+      City.select(_.name).list() shouldEqual List("Berlin", "Rome")
 
       City deleteWhere (_ => True)
       City insertAll Seq(london, berlin, paris, rome)
 
       City deleteAt (*, 1)
-      City select (_.name) list () should equal(List("Paris", "Rome"))
+      City.select(_.name).list() shouldEqual List("Paris", "Rome")
 
       City deleteWhere (_ => True)
       City insertAll Seq(london, berlin, paris, rome)
 
       City deleteAt (*, *)
-      City select (_.name) list () should equal(Nil)
+      City.select(_.name).list() shouldEqual Nil
     }
   }
 }

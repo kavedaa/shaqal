@@ -1,10 +1,13 @@
 package org.shaqal.test
 
 import org.scalatest._
+import org.scalatest.featurespec._
+import org.scalatest.matchers.should._
+
 import org.shaqal._
 import org.shaqal.test.db.TestDB
 
-abstract class JoinTest extends FeatureSpec with BeforeAndAfter with Matchers {
+abstract class JoinTest extends AnyFeatureSpec with BeforeAndAfter with Matchers {
 
   object DB extends Database with DefaultSchema {
 
@@ -47,15 +50,15 @@ abstract class JoinTest extends FeatureSpec with BeforeAndAfter with Matchers {
 
   before {
 
-    DB.TableA create ()
-    DB.TableB create ()
-    DB.TableC create ()
+    DB.TableA.create()
+    DB.TableB.create()
+    DB.TableC.create()
   }
 
   after {
-    DB.TableA drop (true)
-    DB.TableB drop (true)
-    DB.TableC drop (true)
+    DB.TableA.drop(true)
+    DB.TableB.drop(true)
+    DB.TableC.drop(true)
   }
 
   feature("join the same table several times") {
@@ -65,7 +68,7 @@ abstract class JoinTest extends FeatureSpec with BeforeAndAfter with Matchers {
       DB.TableA insert DB.TableA.Value(_.id := 1)
       DB.TableC insert DB.TableC.Values(c => Seq(c.id := 1, c.aId1 := 1, c.aId2 := 1))
 
-      val id = DB.TableC where (_.id is 1) select (_.a1.id) option ()
+      val id = DB.TableC.where(_.id is 1).select(_.a1.id).option()
 
       id shouldEqual Some(1)
     }
@@ -78,7 +81,7 @@ abstract class JoinTest extends FeatureSpec with BeforeAndAfter with Matchers {
 
         DB.TableB insert DB.TableB.Values(b => Seq(b.id := 1, b.aId := 1))
         
-        val res = DB.TableB select(b => (b.id, b.a.id)) option()
+        val res = DB.TableB.select(b => (b.id, b.a.id)).option()
    
         res shouldEqual Some((1, 0))  // note: an int value of null becomes 0
     }

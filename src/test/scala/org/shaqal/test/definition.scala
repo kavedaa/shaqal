@@ -1,10 +1,13 @@
 package org.shaqal.test
 
+import org.scalatest._
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
+
 import org.shaqal._
 import org.shaqal.test.db.TestDB
-import org.scalatest._
 
-abstract class DefinitionTest extends FunSuite with Matchers with BeforeAndAfter {
+abstract class DefinitionTest extends AnyFunSuite with Matchers with BeforeAndAfter {
 
   implicit def dbc: DBC[TestDB]
 
@@ -34,17 +37,17 @@ abstract class DefinitionTest extends FunSuite with Matchers with BeforeAndAfter
   import DefinitionDB._
 
   after {
-    TestTable drop true
-    TestSchema.TestTable drop true
-    TestSchema drop true
+    TestTable.drop(true)
+    TestSchema.TestTable.drop(true)
+    TestSchema.drop(true)
   }
 
   test("table definition") {
 
-    TestTable create ()
+    TestTable.create()
     TestTable.tableExists shouldBe true
 
-    TestTable drop true
+    TestTable.drop(true)
     TestTable.tableExists shouldBe false
   }
 
@@ -52,28 +55,28 @@ abstract class DefinitionTest extends FunSuite with Matchers with BeforeAndAfter
 
   test("schema definition") {
 
-    TestSchema create ()
+    TestSchema.create()
     TestSchema.schemaExists shouldBe true
 
-    TestSchema drop true
+    TestSchema.drop(true)
     TestSchema.schemaExists shouldBe false
   }
 
   test("table definition with schema") {
 
-    TestSchema create ()
+    TestSchema.create()
 
-    TestSchema.TestTable create ()
+    TestSchema.TestTable.create()
     TestSchema.TestTable.tableExists shouldBe true
 
-    TestSchema.TestTable drop true
+    TestSchema.TestTable.drop(true)
     TestSchema.TestTable.tableExists shouldBe false
   }
 
   test("mix same table name with and without schema") {
 
-    TestSchema create ()
-    TestSchema.TestTable create ()
+    TestSchema.create()
+    TestSchema.TestTable.create()
 
     TestSchema.TestTable.tableExists shouldBe true
     TestTable.tableExists shouldBe false

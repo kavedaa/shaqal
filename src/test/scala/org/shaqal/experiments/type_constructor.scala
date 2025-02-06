@@ -11,11 +11,11 @@ object type_constructor {
   
   trait Banana[A1 <: Apple, A2 <: Apple] {
     
-    type T1 = A1#T
-    type T2 = A2#T
+    // type T1 = A1#T
+    // type T2 = A2#T
     
-    type F1[X] = A1#F[X]
-    type F2[X] = A2#F[X]
+    // type F1[X] = A1#F[X]
+    // type F2[X] = A2#F[X]
     
 //    type F[X1, X2] = ???
     

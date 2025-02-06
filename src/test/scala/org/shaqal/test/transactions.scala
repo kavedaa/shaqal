@@ -1,11 +1,15 @@
 package org.shaqal.test
 
-import org.shaqal._
-import org.scalatest._
-import org.shaqal.test.db.TestDB
 import scala.util.Failure
 
-abstract class TransactionsTest extends FeatureSpec with Matchers with BeforeAndAfter {
+import org.scalatest._
+import org.scalatest.featurespec._
+import org.scalatest.matchers.should._
+
+import org.shaqal._
+import org.shaqal.test.db.TestDB
+
+abstract class TransactionsTest extends AnyFeatureSpec with Matchers with BeforeAndAfter {
 
   trait TableTemplate extends Accessor with TableDefinition {
 
@@ -30,13 +34,13 @@ abstract class TransactionsTest extends FeatureSpec with Matchers with BeforeAnd
   implicit def dbc: Connector[TestDB]
 
   before {
-    TableA create ()
-    TableB create ()
+    TableA.create()
+    TableB.create()
   }
 
   after {
-    TableA drop true
-    TableB drop true
+    TableA.drop(true)
+    TableB.drop(true)
   }
 
   feature("auto transaction") {

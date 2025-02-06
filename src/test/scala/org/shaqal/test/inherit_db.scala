@@ -1,10 +1,13 @@
 package org.shaqal.test
 
 import org.scalatest._
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
+
 import org.shaqal._
 import org.shaqal.test.db.TestDB
 
-abstract class InheritDBTest extends FunSuite with Matchers with BeforeAndAfter {
+abstract class InheritDBTest extends AnyFunSuite with Matchers with BeforeAndAfter {
 
   trait PersonAccessor extends Accessor with TableDefinition {
     val name = new varchar(100)("name") with notnull
@@ -14,21 +17,21 @@ abstract class InheritDBTest extends FunSuite with Matchers with BeforeAndAfter 
   }
   
   
-trait DB extends TestDB with Database with DefaultSchema {
-  object Person extends Table("Person") with PersonAccessor
-}  
+  trait DB extends TestDB with Database with DefaultSchema {
+    object Person extends Table("Person") with PersonAccessor
+  }  
 
-object DB extends DB {
-  type D = DB
-}
+  object DB extends DB {
+    type D = DB
+  }
 
-trait SubDB extends DB {  
-  object OtherPerson extends Table("OtherPerson") with PersonAccessor
-}
+  trait SubDB extends DB {  
+    object OtherPerson extends Table("OtherPerson") with PersonAccessor
+  }
 
-object SubDB extends SubDB { 
-  type D = SubDB 
-}
+  object SubDB extends SubDB { 
+    type D = SubDB 
+  }
   
   implicit def dbc: DBC[SubDB]
 
@@ -41,23 +44,23 @@ object SubDB extends SubDB {
   
   before {
     
-    DB.Person createTable ()
+    DB.Person.createTable()
 
-    SubDB.Person createTable ()
-    SubDB.OtherPerson createTable ()
+    SubDB.Person.createTable()
+    SubDB.OtherPerson.createTable()
   }
 
   after {
-    DB.Person drop true
-    SubDB.Person drop true
-    SubDB.OtherPerson drop true
+    DB.Person.drop(true)
+    SubDB.Person.drop(true)
+    SubDB.OtherPerson.drop(true)
   }
   
   test("base DB") {
 
     DB.Person insert DB.Person.Values(b => Seq(b.name := "Tom", b.age := 25))
 
-    val names: List[String] = DB.Person select (_.name) list ()
+    val names: List[String] = DB.Person.select(_.name).list()
 
     names should equal(List("Tom"))
   }
@@ -67,8 +70,8 @@ object SubDB extends SubDB {
     SubDB.Person insert SubDB.Person.Values(b => Seq(b.name := "Tom", b.age := 25))
     SubDB.OtherPerson insert SubDB.OtherPerson.Values(b => Seq(b.name := "John", b.age := 45))
 
-    val names: List[String] = SubDB.Person select (_.name) list ()
-    val otherNames: List[String] = SubDB.OtherPerson select (_.name) list ()
+    val names: List[String] = SubDB.Person.select(_.name).list()
+    val otherNames: List[String] = SubDB.OtherPerson.select(_.name).list()
     
     names should equal(List("Tom")) 
     otherNames should equal(List("John")) 

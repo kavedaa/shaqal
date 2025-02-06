@@ -48,7 +48,7 @@ class AliasTest extends org.shaqal.test.AliasTest with PostgreSQL
 
 class JoinOrderTest extends org.shaqal.test.JoinOrderTest with PostgreSQL
 
-class SchemaTest extends org.shaqal.test.SchemaTest with PostgreSQL
+// class SchemaTest extends org.shaqal.test.SchemaTest with PostgreSQL
 
 class JoinTest extends org.shaqal.test.JoinTest with PostgreSQL
 

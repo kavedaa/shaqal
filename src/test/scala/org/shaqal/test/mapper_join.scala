@@ -1,10 +1,13 @@
 package org.shaqal.test
 
 import org.scalatest._
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
+
 import org.shaqal._
 import org.shaqal.test.db.TestDB
 
-abstract class MapperJoinTest extends FunSuite with BeforeAndAfter with Matchers {
+abstract class MapperJoinTest extends AnyFunSuite with BeforeAndAfter with Matchers {
 
   object model {
     case class TableA(id: Int, value: String)
@@ -55,13 +58,13 @@ abstract class MapperJoinTest extends FunSuite with BeforeAndAfter with Matchers
   implicit def dbc: DBC[TestDB]
 
   before {
-    DB.TableA create ()
-    DB.TableB create ()
+    DB.TableA.create()
+    DB.TableB.create()
   }
 
   after {
-    DB.TableA drop true
-    DB.TableB drop true
+    DB.TableA.drop(true)
+    DB.TableB.drop(true)
   }
 
   import model._
@@ -71,7 +74,7 @@ abstract class MapperJoinTest extends FunSuite with BeforeAndAfter with Matchers
     DB.TableA insert TableA(1, "hello")
     DB.TableB insert TableB(1, Some(TableA(1, "hello")))
 
-    val res = DB.TableB option ()
+    val res = DB.TableB.option()
 
     res shouldEqual Some(TableB(1, Some(TableA(1, "hello"))))
   }
@@ -80,7 +83,7 @@ abstract class MapperJoinTest extends FunSuite with BeforeAndAfter with Matchers
 
     DB.TableB insert TableB(1, Some(TableA(1, "hello")))
 
-    val res = DB.TableB option ()
+    val res = DB.TableB.option()
 
     res shouldEqual Some(TableB(1, None))
   }
@@ -89,7 +92,7 @@ abstract class MapperJoinTest extends FunSuite with BeforeAndAfter with Matchers
 
     DB.TableB insert TableB(1, None)
 
-    val res = DB.TableB option ()
+    val res = DB.TableB.option()
 
     res shouldEqual Some(TableB(1, None))
   }

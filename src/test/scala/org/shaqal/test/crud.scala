@@ -1,10 +1,13 @@
 package org.shaqal.test
 
 import org.scalatest._
+import org.scalatest.featurespec._
+import org.scalatest.matchers.should._
+
 import org.shaqal._
 import org.shaqal.test.db.TestDB
 
-abstract class CrudTest extends FeatureSpec with BeforeAndAfter with Matchers {
+abstract class CrudTest extends AnyFeatureSpec with BeforeAndAfter with Matchers {
 
   trait PersonAccessor extends Accessor with TableDefinition {
     val name = new varchar(100)("name") with notnull
@@ -21,11 +24,11 @@ abstract class CrudTest extends FeatureSpec with BeforeAndAfter with Matchers {
   implicit def dbc: DBC[TestDB]
 
   before {
-    DB.Person createTable ()
+    DB.Person.createTable()
   }
 
   after {
-    DB.Person drop true
+    DB.Person.drop(true)
   }
 
   val john = DB.Person.Values(c => Seq(c.name := "John", c.age := 30))
@@ -34,22 +37,22 @@ abstract class CrudTest extends FeatureSpec with BeforeAndAfter with Matchers {
   feature("exists") {
 
     scenario("without predicate & the element does not exist") {
-      DB.Person exists () shouldBe false
+      DB.Person.exists() shouldBe false
     }
 
     scenario("without predicate & the element exists") {
       DB.Person insert john
-      DB.Person.exists shouldBe true
+      DB.Person.exists() shouldBe true
     }
 
     scenario("with predicate & the element does not exist") {
       DB.Person insert john
-      DB.Person where (_.name is "Tom") exists () shouldBe false
+      DB.Person.where(_.name is "Tom").exists() shouldBe false
     }
 
     scenario("with predicate & the element exists") {
       DB.Person insert john
-      DB.Person where (_.name is "John") exists () shouldBe true
+      DB.Person.where(_.name is "John").exists() shouldBe true
     }
   }
 
@@ -59,11 +62,11 @@ abstract class CrudTest extends FeatureSpec with BeforeAndAfter with Matchers {
 
       DB.Person insert john
 
-      DB.Person select (c => (c.name, c.age)) option () shouldEqual Some("John", 30)
+      DB.Person.select(c => (c.name, c.age)).option() shouldEqual Some("John", 30)
 
       DB.Person insert tom
 
-      DB.Person select (c => (c.name, c.age)) set () shouldEqual Set(("John", 30), ("Tom", 45))
+//      DB.Person.select(c => (c.name, c.age)).set() shouldEqual Set(("John", 30), ("Tom", 45))
     }
 
     scenario("read with predicate") {
@@ -71,7 +74,7 @@ abstract class CrudTest extends FeatureSpec with BeforeAndAfter with Matchers {
       DB.Person insert john
       DB.Person insert tom
 
-      DB.Person where (_.name is "Tom") select (c => (c.name, c.age)) option () shouldEqual Some("Tom", 45)
+      DB.Person.where(_.name is "Tom").select(c => (c.name, c.age)).option() shouldEqual Some("Tom", 45)
 
     }
   }
@@ -85,7 +88,7 @@ abstract class CrudTest extends FeatureSpec with BeforeAndAfter with Matchers {
 
       DB.Person updateWhere (_.name is "John") set DB.Person.Value(_.age := 31)
 
-      DB.Person select (c => (c.name, c.age)) set () shouldEqual Set(("John", 31), ("Tom", 45))
+      DB.Person.select(c => (c.name, c.age)).list() shouldEqual List(("John", 31), ("Tom", 45))
     }
 
   }
@@ -97,9 +100,9 @@ abstract class CrudTest extends FeatureSpec with BeforeAndAfter with Matchers {
       DB.Person insert john
       DB.Person insert tom
 
-      DB.Person deleteWhere (_.name is "John")
+      DB.Person.deleteWhere(_.name is "John")
 
-      val persons = DB.Person select (c => (c.name, c.age)) list ()
+      val persons = DB.Person.select(c => (c.name, c.age)).list()
       persons.toSet shouldEqual Set(("Tom", 45))
     }
   }

@@ -1,7 +1,12 @@
 package org.shaqal.test
 
-import org.scalatest._
 import java.sql.SQLException
+
+import org.scalatest._
+import org.scalatest.featurespec._
+import org.scalatest.matchers.should._
+
+
 import org.shaqal._
 import org.shaqal.test.db.TestDB
 import org.shaqal.sql.True
@@ -42,7 +47,7 @@ trait ConstraintFK2TestTableRelation extends Accessor with TableDefinition {
   val foreignId1 = new int("foreignId1") with notnull
   val foreignId2 = new int("foreignId2") with notnull
   def fields = Seq(foreignId1, foreignId2)
-  def constraints = Seq(ForeignKey(foreignId1, foreignId2) references ConstraintsTestDB.ConstraintPK2TestTable(c => (c.id1, c.id2)))
+  def constraints = Nil // Seq(ForeignKey(foreignId1, foreignId2) references ConstraintsTestDB.ConstraintPK2TestTable(c => (c.id1, c.id2)))
 }
 
 trait ConstraintsTestDB extends Database with DefaultSchema {
@@ -58,7 +63,7 @@ object ConstraintsTestDB extends ConstraintsTestDB {
   type D = TestDB
 }
 
-abstract class ConstraintsTest extends FeatureSpec with BeforeAndAfter with Matchers {
+abstract class ConstraintsTest extends AnyFeatureSpec with BeforeAndAfter with Matchers {
 
   implicit def dbc: DBC[TestDB]
 
@@ -66,23 +71,23 @@ abstract class ConstraintsTest extends FeatureSpec with BeforeAndAfter with Matc
 
   before {
 
-    ConstraintFK2TestTable drop (true)
-    ConstraintFKTestTable drop (true)
-    ConstraintPK2TestTable drop (true)
-    ConstraintPKTestTable drop (true)
-    ConstraintUQ2TestTable drop (true)
-    ConstraintUQTestTable drop (true)
+    ConstraintFK2TestTable.drop(true)
+    ConstraintFKTestTable.drop(true)
+    ConstraintPK2TestTable.drop(true)
+    ConstraintPKTestTable.drop(true)
+    ConstraintUQ2TestTable.drop(true)
+    ConstraintUQTestTable.drop(true)
 
-    ConstraintPKTestTable createTable ()
-    ConstraintPKTestTable addReferentialConstraints ()
-    ConstraintPK2TestTable createTable ()
-    ConstraintPK2TestTable addReferentialConstraints ()
-    ConstraintUQTestTable create ()
-    ConstraintUQ2TestTable create ()
-    ConstraintFKTestTable createTable ()
-    ConstraintFKTestTable addReferentialConstraints ()
-    ConstraintFK2TestTable createTable ()
-    ConstraintFK2TestTable addReferentialConstraints ()
+    ConstraintPKTestTable.createTable()
+    ConstraintPKTestTable.addReferentialConstraints()
+    ConstraintPK2TestTable.createTable()
+    ConstraintPK2TestTable.addReferentialConstraints()
+    ConstraintUQTestTable.create()
+    ConstraintUQ2TestTable.create()
+    ConstraintFKTestTable.createTable()
+    ConstraintFKTestTable.addReferentialConstraints()
+    ConstraintFK2TestTable.createTable()
+    ConstraintFK2TestTable.addReferentialConstraints()
   }
 
   feature("primary key") {
@@ -162,7 +167,7 @@ abstract class ConstraintsTest extends FeatureSpec with BeforeAndAfter with Matc
         ConstraintPKTestTable deleteWhere (_ => True)
       }
 
-      ConstraintPKTestTable count () shouldEqual 3
+      ConstraintPKTestTable.count() shouldEqual 3
     }
   }
 

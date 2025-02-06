@@ -1,10 +1,13 @@
 package org.shaqal.test
 
 import org.scalatest._
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
+
 import org.shaqal._
 import org.shaqal.test.db.TestDB
 
-abstract class JoinOrderTest extends FunSuite with Matchers with BeforeAndAfter {
+abstract class JoinOrderTest extends AnyFunSuite with Matchers with BeforeAndAfter {
 
   object DB extends Database with DefaultSchema {
 
@@ -49,15 +52,15 @@ abstract class JoinOrderTest extends FunSuite with Matchers with BeforeAndAfter 
   implicit def dbc: DBC[TestDB]
   
   before {
-    DB.Country create()
-    DB.Address create()
-    DB.Person create()
+    DB.Country.create()
+    DB.Address.create()
+    DB.Person.create()
   }
 
   after {
-    DB.Person drop true
-    DB.Address drop true
-    DB.Country drop true
+    DB.Person.drop(true)
+    DB.Address.drop(true)
+    DB.Country.drop(true)
   }
   
   test("ensure correct order of joins - needed for outer joins") {
@@ -67,7 +70,7 @@ abstract class JoinOrderTest extends FunSuite with Matchers with BeforeAndAfter 
 
     DB.Person insert DB.Person.Values(p => Seq(p.id := 1, p.name := "Bob", p.addressId := None))
     
-    DB.Person select(_.name) option() shouldEqual Some("Bob")
+    DB.Person.select(_.name).option() shouldEqual Some("Bob")
   }
   
 }

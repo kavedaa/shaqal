@@ -1,10 +1,14 @@
 package org.shaqal.test
 
 import org.scalatest._
+import org.scalatest.featurespec._
+import org.scalatest.matchers.should._
+
+import org.scalatest._
 import org.shaqal._
 import org.shaqal.test.db.TestDB
 
-abstract class PK2MapperCrudTest extends FeatureSpec with BeforeAndAfter with Matchers {
+abstract class PK2MapperCrudTest extends AnyFeatureSpec with BeforeAndAfter with Matchers {
 
   case class City(id1: Int, id2: Int, name: String)
 
@@ -26,7 +30,7 @@ abstract class PK2MapperCrudTest extends FeatureSpec with BeforeAndAfter with Ma
   implicit def dbc: DBC[TestDB]
 
   before {
-    DB.City createTable ()
+    DB.City.createTable()
   }
 
   after {
@@ -45,7 +49,7 @@ abstract class PK2MapperCrudTest extends FeatureSpec with BeforeAndAfter with Ma
 
       val num = DB.City update City(1, 1, "Londinium")
       num shouldEqual 1
-      DB.City set () shouldEqual Set(City(1, 1, "Londinium"), paris)
+      DB.City.list() shouldEqual List(City(1, 1, "Londinium"), paris)
     }
 
     scenario("the item does not exist") {
@@ -54,7 +58,7 @@ abstract class PK2MapperCrudTest extends FeatureSpec with BeforeAndAfter with Ma
 
       val num = DB.City update berlin
       num shouldEqual 0
-      DB.City set () shouldEqual Set(london, paris)
+      DB.City.list() shouldEqual List(london, paris)
     }
 
   }

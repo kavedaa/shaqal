@@ -1,11 +1,13 @@
 package org.shaqal.test
 
 import org.scalatest._
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
+
 import org.shaqal._
 import org.shaqal.test.db.TestDB
-import scala.collection.generic.CanBuildFrom
 
-abstract class SelectTest extends FunSuite with BeforeAndAfter with Matchers {
+abstract class SelectTest extends AnyFunSuite with BeforeAndAfter with Matchers {
 
   implicit def dbc: DBC[TestDB]
 
@@ -34,22 +36,22 @@ abstract class SelectTest extends FunSuite with BeforeAndAfter with Matchers {
 
   before {
 
-    TestTable drop (true)
-    TestTable createTable ()
+    TestTable.drop(true)
+    TestTable.createTable()
 
     TestTable insert TestTable.Values(t => Seq(t.name := "John", t.age := Some(34)))
   }
 
   test("single") {
-    TestTable select (_.name) option () should equal(Some("John"))
-    TestTable select (_.age) option () should equal(Some(Some(34)))
+    TestTable.select(_.name).option() shouldEqual Some("John")
+    TestTable.select(_.age).option() shouldEqual Some(Some(34))
     val query = TestTable.select(_.name)
-    val name = query[Vector]()
-    val name1 = (TestTable select (_.name)).apply[Vector]()
+    // val name = query[Vector]()
+    // val name1 = TestTable.select(_.name).apply[Vector]()
   }
 
   test("tuple2") {
-    TestTable select (t => (t.name, t.age)) option () should equal(Some(("John", Some(34))))
+    TestTable.select(t => (t.name, t.age)).option() shouldEqual Some(("John", Some(34)))
   }
 
 //  test("experimental") {

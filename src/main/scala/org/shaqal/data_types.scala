@@ -138,7 +138,7 @@ abstract class StringLikeCol(name: String, sqlType: Int, dataTypeName: String) e
   
   val length: DataLength
   
-  def fullDataType(typeName: String) = List(Some(typeName), length.render map("(" + _ + ")")).flatten.mkString
+  def fullDataType(typeName: String) = List(Some(dataTypeName), length.render map("(" + _ + ")")).flatten.mkString
   
   def set(v: String) = ColumnParam(this, v)
   def set(v: Option[String]) = ColumnParam(this, v map Param.apply getOrElse Null)
